@@ -1,0 +1,38 @@
+signal_delete *.*
+
+signal_add tb_sgr.sgr.wb_clk_i
+signal_add tb_sgr.sgr.wb_rst_i
+
+# wb signal
+signal_add tb_sgr.sgr.wbs_cyc
+signal_add tb_sgr.sgr.wbs_stb
+signal_add tb_sgr.sgr.wbs_we
+signal_add tb_sgr.sgr.wbs_cab
+signal_add tb_sgr.sgr.wbs_sel
+signal_add tb_sgr.sgr.wbs_ack
+signal_add tb_sgr.sgr.wbs_rty
+signal_add tb_sgr.sgr.wbs_err
+signal_add tb_sgr.sgr.wbs_adr
+signal_add tb_sgr.sgr.wbs_dat_i
+signal_add tb_sgr.sgr.wbs_dat64_i
+signal_add tb_sgr.sgr.wbs_dat_o
+signal_add tb_sgr.sgr.wbs_dat64_o
+signal_highlight tb_sgr.sgr.wbs_dat64_o 8
+
+# control signal
+signal_add tb_sgr.sgr.sg_state
+signal_add tb_sgr.sgr.sg_addr
+signal_add tb_sgr.sgr.sg_next
+signal_highlight tb_sgr.sgr.sg_next 8
+
+# ss
+signal_add tb_sgr.sgr.ss_xfer
+signal_add tb_sgr.sgr.ss_dat
+signal_add tb_sgr.sgr.ss_we
+signal_add tb_sgr.sgr.ss_adr
+signal_add tb_sgr.sgr.ss_done
+signal_add tb_sgr.sgr.ss_ready
+signal_highlight tb_sgr.sgr.ss_ready 8
+
+grid_signal 0   *
+grid_color  0   4
