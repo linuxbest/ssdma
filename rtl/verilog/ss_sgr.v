@@ -12,7 +12,16 @@
  *
  ***********************************************************************/
 
-module ss_sgr(/*AUTOARG*/);
+module ss_sgr(/*AUTOARG*/
+   // Outputs
+   wbs_cyc, wbs_stb, wbs_we, wbs_cab, wbs_sel, wbs_adr,
+   wbs_dat_i, wbs_dat64_i, sg_state, sg_desc, sg_addr,
+   sg_next,
+   // Inputs
+   wb_clk_i, wb_rst_i, wbs_dat_o, wbs_dat64_o, wbs_ack,
+   wbs_err, wbs_rty, wbs_gnt, ss_dat, ss_we, ss_adr,
+   ss_done, fifo_half_empty
+   );
    /*AUTOOUTPUT*/
    /*AUTOINPUT*/
    /*AUTOWIRE*/
@@ -55,11 +64,18 @@ module ss_sgr(/*AUTOARG*/);
     * reg [31:3] addr
     * reg [31:3] next
     */
-
+   input 	 fifo_half_empty;
+   
    /*AUTOREG*/
+   // Beginning of automatic regs (for this module's undeclared outputs)
+   reg [15:0]		sg_desc;
+   reg [7:0]		sg_state;
+   reg [31:0]		wbs_dat64_i;
+   reg [31:0]		wbs_dat_i;
+   // End of automatics
    
    /* wb register */
-   reg [31:3] 	 wbs_adr, wbs_adr_n;
+   reg [31:0] 	 wbs_adr, wbs_adr_n;
    reg 		 wbs_cyc, wbs_cyc_n;
    reg 		 wbs_stb, wbs_stb_n;
    reg 		 wbs_we,  wbs_we_n;
@@ -102,7 +118,7 @@ module ss_sgr(/*AUTOARG*/);
    reg 		 sg_last, sg_last_n;
    reg [15:0] 	 sg_len,  sg_len_n;
    reg [31:3] 	 sg_addr, sg_addr_n;
-   reg [31:0] 	 sg_next, sg_next_n;
+   reg [31:3] 	 sg_next, sg_next_n;
    always @(posedge wb_clk_i)
      begin
 	sg_last <= #1 sg_last_n;
@@ -111,7 +127,12 @@ module ss_sgr(/*AUTOARG*/);
 	sg_next <= #1 sg_next_n;
      end
    
-   always @(/*AS*/)
+   always @(/*AS*/cnt or dc_fc or err or fifo_half_empty
+	    or io or sg_addr or sg_last or sg_len or ss_adr
+	    or ss_dat or ss_done or ss_we or state
+	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
+	    or wbs_dat64_o or wbs_dat_o or wbs_err
+	    or wbs_rty or wbs_sel or wbs_stb or wbs_we)
      begin
 	state_n = state;
 
@@ -171,14 +192,16 @@ module ss_sgr(/*AUTOARG*/);
 		     sg_len_n = wbs_dat64_o[15:0];
 		     sg_addr_n = wbs_dat_o[31:3];
 		     cnt_n = cnt + 1;
-		  else begin
+		  end else begin
 		     sg_next_n = wbs_dat64_o[31:3];
 		     wbs_cyc_n = 0;
 		     state_n   = S_B_WAIT;
 		  end
-	       end
+	       end // case: 3'b100
+	       
 	       3'b010: begin
 	       end
+	       
 	       3'b001: begin
 		  err_n   = state;
 		  state_n = S_PANIC;
@@ -204,7 +227,7 @@ module ss_sgr(/*AUTOARG*/);
 		  end
 	       end
 	       3'b010: begin
-		  if (io_rty) begin
+		  if (io) begin
 		     wbs_cab_n = 1'b0;
 		     state_n   = S_B_WAIT;
 		  end
@@ -218,7 +241,7 @@ module ss_sgr(/*AUTOARG*/);
 	  end
 
 	  S_B_WAIT: begin
-	     if (fifo_halt_empty) begin
+	     if (fifo_half_empty) begin
 		wbs_adr_n = sg_addr;
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;

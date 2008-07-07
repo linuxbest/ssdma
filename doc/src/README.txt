@@ -1,0 +1,7 @@
+[WB SLAVE   0]
+[WB MASTER  0]
+
+[WB SLAVE  S0] 
+[WB SLAVE  S1]
+[WB SLAVE  S2]
+[WB SLAVE  S3]
