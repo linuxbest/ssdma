@@ -1,0 +1,566 @@
+Storage 
+{
+	{ Format 1.33 }
+	{ GeneratedFrom TSTD-version-2.20 }
+	{ WrittenBy hugang }
+	{ WrittenOn "" }
+}
+
+Document 
+{
+	{ Type "State Transition Diagram (Mealy)" }
+	{ Name ss_sgr.std }
+	{ Author hugang }
+	{ CreatedOn "" }
+	{ Annotation "" }
+	{ Hierarchy False }
+}
+
+Page 
+{
+	{ PageOrientation Portrait }
+	{ PageSize A4 }
+	{ ShowHeaders False }
+	{ ShowFooters True }
+	{ ShowNumbers True }
+}
+
+Scale 
+{
+	{ ScaleValue 1 }
+}
+
+# GRAPH NODES
+
+State 4
+{
+	{ Name "S_B_REQ" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
+State 5
+{
+	{ Name "S_B_WAIT" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
+State 6
+{
+	{ Name "S_NEXT" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
+State 7
+{
+	{ Name "S_END" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
+InitialState 1
+{
+	{ Name "S_IDLE" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+	{ ControlProcess "" }
+	{ Actions 1 }
+	{ Action "system reset" } 
+}
+
+State 2
+{
+	{ Name "S_CMD" }
+	{ Annotation "accept command from ss_adma" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
+State 3
+{
+	{ Name "S_D_REQ" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
+# GRAPH EDGES
+
+Transition 16
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 1 }
+	{ Subject2 2 }
+	{ Event "ss_we == 1" }
+	{ Actions 0 }
+}
+
+Transition 17
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 2 }
+	{ Subject2 6 }
+	{ Event "ss_adr == 2'b11 \rss_we == 1" }
+	{ Actions 0 }
+}
+
+Transition 20
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 4 }
+	{ Subject2 6 }
+	{ Event "len == 0" }
+	{ Actions 0 }
+}
+
+Transition 21
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 6 }
+	{ Subject2 3 }
+	{ Event "desc_addr is dirty or\ris not last desc" }
+	{ Actions 0 }
+}
+
+Transition 22
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 3 }
+	{ Subject2 5 }
+	{ Event "" }
+	{ Actions 0 }
+}
+
+Transition 23
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 5 }
+	{ Subject2 4 }
+	{ Event "fifo half empty" }
+	{ Actions 0 }
+}
+
+Transition 24
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 4 }
+	{ Subject2 5 }
+	{ Event "cache line reach" }
+	{ Actions 0 }
+}
+
+Transition 25
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 6 }
+	{ Subject2 7 }
+	{ Event "is last desc" }
+	{ Actions 0 }
+}
+
+Transition 26
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 7 }
+	{ Subject2 1 }
+	{ Event "ss_done == 1" }
+	{ Actions 0 }
+}
+
+# VIEWS AND GRAPHICAL SHAPES
+
+View 8
+{
+	{ Index "0" }
+	{ Parent 0 }
+}
+
+Box 12
+{
+	{ View 8 }
+	{ Subject 4 }
+	{ Position 340 300 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+Box 13
+{
+	{ View 8 }
+	{ Subject 5 }
+	{ Position 340 420 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+Box 14
+{
+	{ View 8 }
+	{ Subject 6 }
+	{ Position 80 300 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+Box 15
+{
+	{ View 8 }
+	{ Subject 7 }
+	{ Position 340 60 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+ArrowBox 9
+{
+	{ View 8 }
+	{ Subject 1 }
+	{ Position 80 60 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+Box 10
+{
+	{ View 8 }
+	{ Subject 2 }
+	{ Position 80 180 }
+	{ Size 81 38 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+TransitionArrow 18
+{
+	{ View 8 }
+	{ Subject 16 }
+	{ FromShape 9 }
+	{ ToShape 10 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 80 80 }
+	{ Point 80 161 }
+	{ NamePosition 66 120 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 80 120 }
+	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 19
+{
+	{ View 8 }
+	{ Subject 17 }
+	{ FromShape 10 }
+	{ ToShape 14 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 80 199 }
+	{ Point 80 280 }
+	{ NamePosition 66 239 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 80 239 }
+	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 27
+{
+	{ View 8 }
+	{ Subject 20 }
+	{ FromShape 12 }
+	{ ToShape 14 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 300 300 }
+	{ Point 120 300 }
+	{ NamePosition 210 290 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 210 300 }
+	{ Separator Up }
+	{ LineNumber 1 }
+}
+
+Box 11
+{
+	{ View 8 }
+	{ Subject 3 }
+	{ Position 80 420 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+TransitionArrow 28
+{
+	{ View 8 }
+	{ Subject 21 }
+	{ FromShape 14 }
+	{ ToShape 11 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 80 320 }
+	{ Point 80 400 }
+	{ NamePosition 66 360 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 80 360 }
+	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 29
+{
+	{ View 8 }
+	{ Subject 22 }
+	{ FromShape 11 }
+	{ ToShape 13 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 120 420 }
+	{ Point 300 420 }
+	{ NamePosition 210 410 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 210 420 }
+	{ Separator Up }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 30
+{
+	{ View 8 }
+	{ Subject 23 }
+	{ FromShape 13 }
+	{ ToShape 12 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 340 400 }
+	{ Point 340 320 }
+	{ NamePosition 326 360 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 340 360 }
+	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 31
+{
+	{ View 8 }
+	{ Subject 24 }
+	{ FromShape 12 }
+	{ ToShape 13 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 4 }
+	{ Point 380 300 }
+	{ Point 500 300 }
+	{ Point 500 420 }
+	{ Point 380 420 }
+	{ NamePosition 486 360 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 500 360 }
+	{ Separator Right }
+	{ LineNumber 2 }
+}
+
+TransitionArrow 32
+{
+	{ View 8 }
+	{ Subject 25 }
+	{ FromShape 14 }
+	{ ToShape 15 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 4 }
+	{ Point 120 289 }
+	{ Point 340 230 }
+	{ Point 340 230 }
+	{ Point 340 80 }
+	{ NamePosition 326 155 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 340 155 }
+	{ Separator Right }
+	{ LineNumber 3 }
+}
+
+TransitionArrow 33
+{
+	{ View 8 }
+	{ Subject 26 }
+	{ FromShape 15 }
+	{ ToShape 9 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 300 60 }
+	{ Point 120 60 }
+	{ NamePosition 210 50 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 210 60 }
+	{ Separator Up }
+	{ LineNumber 1 }
+}
+
