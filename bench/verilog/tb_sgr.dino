@@ -22,6 +22,7 @@ signal_highlight tb_sgr.sgr.wbs_dat64_o 8
 # control signal
 signal_add tb_sgr.sgr.sg_state
 signal_add tb_sgr.sgr.sg_addr
+signal_add tb_sgr.sgr.sg_desc
 signal_add tb_sgr.sgr.sg_next
 signal_highlight tb_sgr.sgr.sg_next 8
 
@@ -33,6 +34,10 @@ signal_add tb_sgr.sgr.ss_adr
 signal_add tb_sgr.sgr.ss_done
 signal_add tb_sgr.sgr.ss_ready
 signal_highlight tb_sgr.sgr.ss_ready 8
+
+signal_states tb_sgr.sgr.sg_state = {
+        0/IDLE, 1/CMD, 2/D_REQ, 3/B_REQ, 4/B_WAIT, 5/NEXT, 6/END, 7/PANIC
+}
 
 grid_signal 0   *
 grid_color  0   4

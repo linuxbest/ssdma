@@ -87,11 +87,104 @@ module ben_sgr(/*AUTOARG*/
 	 @(negedge wb_clk_i);
       end
    endtask // do_reset
+
+   // prepare a job
+   task pre_job ;
+      begin
+      end
+   endtask // pre_job
+
+   reg [31:0] wbmL[4095:0];
+   reg [31:0] wbmH[4095:0];
+   reg [31:0] inc;
+   always @(/*AS*/ /*memory or*/ inc or wbs_adr)
+     begin
+	wbs_dat_o   = wbmL[wbs_adr+inc];
+	wbs_dat64_o = wbmH[wbs_adr+inc];
+     end
    
+   always @(/*AS*/wbs_adr or wbs_cyc)
+     begin
+	if (wbs_adr[8] && wbs_cyc)      /* 0x100 */
+	  wbs_ack = 1;
+	else if (wbs_adr[9] && wbs_cyc) /* 0x200 */
+	  wbs_ack = 1;
+	else if (wbs_adr[10] && wbs_cyc)/* 0x400 */
+	  wbs_ack = 1;
+	else
+	  wbs_ack = 0;
+     end
+
+   // auto increase
+   always @(posedge wb_clk_i)
+     begin
+	if (wbs_cyc == 0)
+	  inc = 0;
+	else if (wbs_cyc && wbs_ack && wbs_cab)
+	  inc = inc + 1;
+     end
+   
+   integer i = 0;
+   // ssadma
+   task do_ssadma ;
+      begin
+	 /* 0 [15:00] total size
+	      [20]    LAST
+	    1 [31:03] address
+	    2 [31:03] next
+	    3 
+	  */
+	 i = 'h100;
+	 wbmH[i] = 'h10; /* total size */
+	 wbmL[i] = 'h200;/* address    */
+	 i = i + 1;
+	 wbmH[i] = 'h400;/* next       */
+	 wbmL[i] = 'h0;
+	 i = 'h400;
+	 wbmH[i] = 'h100010;  /* total size */
+	 wbmL[i] = 'h200;
+	 
+	 ss_adr = 0;
+	 ss_dat = 0;
+	 ss_we  = 1;
+	 @(negedge wb_clk_i); // 00
+	 ss_adr = 1;
+	 ss_dat = 0;
+	 ss_we  = 1;
+	 @(negedge wb_clk_i); // 01 dc and fc
+	 ss_adr = 2;
+	 ss_dat = 32'h100;
+	 ss_we  = 1;
+	 @(negedge wb_clk_i); // 10 address
+	 ss_adr = 3;
+	 ss_dat = 0;
+	 ss_we  = 1;
+	 @(negedge wb_clk_i); // 11
+      end
+   endtask // do_ssadma
+
    initial begin
       wb_clk_i = 1;
       wb_rst_i = 0;
+      wbs_err  = 0;
+      wbs_rty  = 0;
+      inc      = 0;
+      
+      pre_job;
       do_reset;
+      do_ssadma;
+      
+      @(negedge wb_clk_i);
+      @(negedge wb_clk_i);
+      ss_ready = 1;
+
+      for (i = 0; i < 50; i = i + 1) begin
+	 @(negedge wb_clk_i);
+      end
+      ss_done = 1;
+      @(negedge wb_clk_i);
+      @(negedge wb_clk_i);
+      
       $finish;
    end
    

@@ -96,11 +96,17 @@ module ss_sgr(/*AUTOARG*/
    always @(posedge wb_clk_i)
      begin
 	wbs_adr <= #1 wbs_adr_n;
-	wbs_cyc <= #1 wbs_cyc_n;
 	wbs_stb <= #1 wbs_stb_n;
 	wbs_we  <= #1 wbs_we_n;
 	wbs_cab <= #1 wbs_cab_n;
 	wbs_sel <= #1 wbs_sel_n;
+     end
+   always @(posedge wb_clk_i or posedge wb_rst_i)
+     begin
+	if (wb_rst_i)
+	  wbs_cyc <= #1 0;
+	else
+	  wbs_cyc <= #1 wbs_cyc_n;
      end
    
    parameter [2:0] 
@@ -156,7 +162,7 @@ module ss_sgr(/*AUTOARG*/
 	    or wbs_err or wbs_rty or wbs_sel or wbs_stb
 	    or wbs_we)
      begin
-	state_n = state;
+	state_n   = state;
 
 	dc_fc_n   = dc_fc;
 	
@@ -249,7 +255,7 @@ module ss_sgr(/*AUTOARG*/
 		  io_n      = 1'b1;
 		  ss_xfer   = 1'b0;
 		  if (sg_len_n == 0) begin
-		     wbs_cab_n = 1'b0;
+		     wbs_cyc_n = 1'b0;
 		     state_n   = S_NEXT;
 		  end
 	       end
@@ -285,7 +291,7 @@ module ss_sgr(/*AUTOARG*/
 	     end else begin
 		state_n = S_D_REQ;
 		
-		wbs_adr_n = sg_next;
+		wbs_adr_n = {sg_next, 3'b000};
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
 		wbs_we_n  = 1'b0;
@@ -306,10 +312,10 @@ module ss_sgr(/*AUTOARG*/
      end
 
    /*output for debug purpose */
-   always @(/*AS*/state)
-     sg_state = {state[2:0]};
+   always @(/*AS*/sg_last or state)
+     sg_state = {sg_last, 4'h0, state[2:0]};
 
-   always @(/*AS*/sg_last or sg_len)
-     sg_desc = {sg_last, 4'b0000, sg_len};
+   always @(/*AS*/sg_len)
+     sg_desc = {sg_len};
    
 endmodule // ss_copy
