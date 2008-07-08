@@ -1,5 +1,5 @@
 /************************************************************************
- *     File Name  : ss_sgr.v
+ *     File Name  : ss_sg.v
  *        Version : 0.1
  *           Date :
  *    Description : accept command from ss_adma
@@ -14,7 +14,7 @@
  *
  ***********************************************************************/
 
-module ss_sgr(/*AUTOARG*/
+module ss_sg(/*AUTOARG*/
    // Outputs
    wbs_cyc, wbs_stb, wbs_we, wbs_cab, wbs_sel, wbs_adr,
    wbs_dat_i, wbs_dat64_i, sg_state, sg_desc, sg_addr,
@@ -24,6 +24,8 @@ module ss_sgr(/*AUTOARG*/
    wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done,
    ss_ready
    );
+   parameter RW = 0;/* 0 read, 1 write */
+   
    /*AUTOOUTPUT*/
    /*AUTOINPUT*/
    /*AUTOWIRE*/
@@ -244,7 +246,7 @@ module ss_sgr(/*AUTOARG*/
 	     wbs_adr_n = {sg_addr, 3'b000};
 	     wbs_cyc_n = 1'b1;
 	     wbs_stb_n = 1'b1;
-	     wbs_we_n  = 1'b0;
+	     wbs_we_n  = RW;
 	     wbs_cab_n = 1'b1;
 	     wbs_sel_n = 4'h0;
 
@@ -257,6 +259,10 @@ module ss_sgr(/*AUTOARG*/
 		  if (sg_len == 1) begin
 		     wbs_cyc_n = 1'b0;
 		     state_n   = S_NEXT;
+		  end
+		  if (ss_ready == 0) begin
+		     wbs_cyc_n = 1'b0;
+		     state_n   = S_B_WAIT;
 		  end
 	       end
 	       3'b010: begin
@@ -277,7 +283,7 @@ module ss_sgr(/*AUTOARG*/
 		wbs_adr_n = {sg_addr, 3'b000};
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
-		wbs_we_n  = 1'b0;
+		wbs_we_n  = RW;
 		wbs_cab_n = 1'b1;
 		wbs_sel_n = 4'h0;
 		state_n   = S_B_REQ;
