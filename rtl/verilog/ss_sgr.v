@@ -1,6 +1,6 @@
 /************************************************************************
  *     File Name  : ss_sgr.v
- *        Version :
+ *        Version : 0.1
  *           Date :
  *    Description : accept command from ss_adma
  *                  doing sg memory access 
