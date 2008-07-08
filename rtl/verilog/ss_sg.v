@@ -17,8 +17,7 @@
 module ss_sg(/*AUTOARG*/
    // Outputs
    wbs_cyc, wbs_stb, wbs_we, wbs_cab, wbs_sel, wbs_adr,
-   wbs_dat_i, wbs_dat64_i, sg_state, sg_desc, sg_addr,
-   sg_next, ss_xfer,
+   sg_state, sg_desc, sg_addr, sg_next, ss_xfer,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o, wbs_dat64_o, wbs_ack,
    wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done,
@@ -39,9 +38,9 @@ module ss_sg(/*AUTOARG*/
 	  wbs_we, 		// we 
 	  wbs_cab;		// 
    output [3:0] wbs_sel;	// byte select
-   output [31:0] wbs_adr, 	// address 
+   output [31:0] wbs_adr/*, 	// address 
 		 wbs_dat_i, 	// data output
-		 wbs_dat64_i;	// data output high 64
+		 wbs_dat64_i*/;	// data output high 64
    input [31:0]  wbs_dat_o,	// data input
 		 wbs_dat64_o;	// data input high 64
    input 	 wbs_ack, 	// acknowledge
@@ -84,8 +83,6 @@ module ss_sg(/*AUTOARG*/
    reg [15:0]		sg_desc;
    reg [7:0]		sg_state;
    reg			ss_xfer;
-   reg [31:0]		wbs_dat64_i;
-   reg [31:0]		wbs_dat_i;
    // End of automatics
    
    /* wb register */
