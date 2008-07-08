@@ -134,6 +134,11 @@ module ben_sgr(/*AUTOARG*/
 	    2 [31:03] next
 	    3 
 	  */
+	 for (i = 'h200; i < 'h300; i = i + 1) begin
+	    wbmH[i] = i;
+	    wbmL[i] = i;
+	 end
+	 
 	 i = 'h100;
 	 wbmH[i] = 'h80; /* total size */
 	 wbmL[i] = 'h200;/* address    */

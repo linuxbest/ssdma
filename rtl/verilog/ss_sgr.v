@@ -253,7 +253,7 @@ module ss_sgr(/*AUTOARG*/
 		  sg_addr_n = sg_addr + 1;
 		  sg_len_n  = sg_len  - 1;
 		  io_n      = 1'b1;
-		  ss_xfer   = 1'b0;
+		  ss_xfer   = 1'b1;
 		  if (sg_len_n == 0) begin
 		     wbs_cyc_n = 1'b0;
 		     state_n   = S_NEXT;
