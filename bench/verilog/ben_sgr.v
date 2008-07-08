@@ -135,13 +135,13 @@ module ben_sgr(/*AUTOARG*/
 	    3 
 	  */
 	 i = 'h100;
-	 wbmH[i] = 'h10; /* total size */
+	 wbmH[i] = 'h80; /* total size */
 	 wbmL[i] = 'h200;/* address    */
 	 i = i + 1;
 	 wbmH[i] = 'h400;/* next       */
 	 wbmL[i] = 'h0;
 	 i = 'h400;
-	 wbmH[i] = 'h100010;  /* total size */
+	 wbmH[i] = 'h100080;  /* total size */
 	 wbmL[i] = 'h200;
 	 
 	 ss_adr = 0;
@@ -176,11 +176,27 @@ module ben_sgr(/*AUTOARG*/
       
       @(negedge wb_clk_i);
       @(negedge wb_clk_i);
-      ss_ready = 1;
 
+      /* in this cycle the sgr must stay at B_WAIT */
+      if (sg_state != 2) begin
+	 $write("sg_state must stay B_WAIT(2), but current is %d", sg_state);
+	 $finish;
+      end
+      
+      ss_ready = 1;
       for (i = 0; i < 50; i = i + 1) begin
 	 @(negedge wb_clk_i);
       end
+      
+      if (wbs_adr != 'h278) begin
+	 $write("wbs_addr must stay 0x278, but current is %h", wbs_adr);
+	 $finish;
+      end
+      if (sg_addr != 'h50) begin
+	 $write("sg_adr must stay 0x50, but current is %h", sg_addr);
+	 $finish;
+      end
+      
       ss_done = 1;
       @(negedge wb_clk_i);
       @(negedge wb_clk_i);

@@ -219,7 +219,7 @@ module ss_sgr(/*AUTOARG*/
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
 		  if (cnt == 0) begin
-		     sg_len_n  = wbs_dat64_o[15:0];
+		     sg_len_n  = wbs_dat64_o[18:3];
 		     sg_last_n = wbs_dat64_o[20];
 		     sg_addr_n = wbs_dat_o[31:3];
 		     cnt_n = cnt + 1;
