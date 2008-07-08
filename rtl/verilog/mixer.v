@@ -129,7 +129,7 @@ module mixer(/*AUTOARG*/
    input [31:0]  wbm_dat_i,
 		 wbm_dat64_i;
    
-   /* mo AUTO_TEMPLATE "_\([a-z] +\)" (
+   /* mo AUTO_TEMPLATE "_\([a-z]+\)" (
     .O(wbm_@_o[]),
     .gnt(gnt[]),
     .I({wbs_@4,wbs_@3,wbs_@2,wbs_@1,wbs_@0}),
@@ -137,28 +137,28 @@ module mixer(/*AUTOARG*/
 
    mo o_cyc(/*AUTOINST*/
 	    // Outputs
-	    .O				(wbm__o),		 // Templated
+	    .O				(wbm_cyc_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_4,wbs_3,wbs_2,wbs_1,wbs_0})); // Templated
+	    .I				({wbs_cyc4,wbs_cyc3,wbs_cyc2,wbs_cyc1,wbs_cyc0})); // Templated
    mo o_stb(/*AUTOINST*/
 	    // Outputs
-	    .O				(wbm__o),		 // Templated
+	    .O				(wbm_stb_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_4,wbs_3,wbs_2,wbs_1,wbs_0})); // Templated
+	    .I				({wbs_stb4,wbs_stb3,wbs_stb2,wbs_stb1,wbs_stb0})); // Templated
    mo o_we(/*AUTOINST*/
 	   // Outputs
-	   .O				(wbm__o),		 // Templated
+	   .O				(wbm_we_o),		 // Templated
 	   // Inputs
 	   .gnt				(gnt[4:0]),		 // Templated
-	   .I				({wbs_4,wbs_3,wbs_2,wbs_1,wbs_0})); // Templated
+	   .I				({wbs_we4,wbs_we3,wbs_we2,wbs_we1,wbs_we0})); // Templated
    mo o_cab(/*AUTOINST*/
 	    // Outputs
-	    .O				(wbm__o),		 // Templated
+	    .O				(wbm_cab_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_4,wbs_3,wbs_2,wbs_1,wbs_0})); // Templated
+	    .I				({wbs_cab4,wbs_cab3,wbs_cab2,wbs_cab1,wbs_cab0})); // Templated
 
    mo4 o_sel(.O				(wbm_sel_o[3:0]),
 	     .gnt			(gnt[4:0]),		
