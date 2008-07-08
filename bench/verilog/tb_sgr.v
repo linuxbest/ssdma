@@ -47,7 +47,7 @@ module tb_sgr(/*AUTOARG*/);
    wire			wbs_we;			// From sgr of ss_sgr.v
    // End of automatics
    
-   ss_sgr sgr(/*AUTOINST*/
+   ss_sg  sgr(/*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc),
 	      .wbs_stb			(wbs_stb),
