@@ -107,7 +107,7 @@ module ben_sgr(/*AUTOARG*/
      begin
 	if (wbs_adr[8] && wbs_cyc)      /* 0x100 */
 	  wbs_ack = 1;
-	else if (wbs_adr[9] && wbs_cyc) /* 0x200 */
+	else if (wbs_adr[9] && wbs_cyc && inc < 4) /* 0x200 */
 	  wbs_ack = 1;
 	else if (wbs_adr[10] && wbs_cyc)/* 0x400 */
 	  wbs_ack = 1;
@@ -120,8 +120,16 @@ module ben_sgr(/*AUTOARG*/
      begin
 	if (wbs_cyc == 0)
 	  inc = 0;
-	else if (wbs_cyc && wbs_ack && wbs_cab)
+	else if (wbs_cyc && wbs_ack && wbs_cab && inc < 4)
 	  inc = inc + 1;
+     end
+
+   always @(/*AS*/inc)
+     begin
+	if (inc == 4)
+	  wbs_rty = 1;
+	else
+	  wbs_rty = 0;
      end
    
    integer i = 0;
@@ -165,6 +173,7 @@ module ben_sgr(/*AUTOARG*/
 	 ss_dat = 0;
 	 ss_we  = 1;
 	 @(negedge wb_clk_i); // 11
+	 ss_we  = 0;
       end
    endtask // do_ssadma
 
