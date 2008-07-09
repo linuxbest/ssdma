@@ -5,6 +5,8 @@
 #include <getopt.h>
 #include <byteswap.h>
 #include "pcisim.h"
+#include "lzf_chip.h"
+
 #if 0
 #include "../drv/pci_dma.h"
 #include "../drv/liblzs.c"
@@ -56,17 +58,17 @@ pci_reset(unsigned phys_mem)
 	pcisim_config_write((1<<17) + 0x10, phys_mem);
 	pcisim_wait(4, 0);
 }
-#if 0
+
 static void
-lzf_write(unsigned long base, int reg, unsigned long val)
+lzf_write(unsigned long base, unsigned int off, unsigned long val)
 {
-	pcisim_writel(base + reg * 4, val);
+	pcisim_writel(base + off, val);
 }
 
 static unsigned long 
-lzf_read(unsigned int base, int reg)
+lzf_read(unsigned int base, unsigned int off)
 {
-	return pcisim_readl(base + reg*4);
+	return pcisim_readl(base + off);
 }
 
 #define readl(x)  pcisim_readl(x)
@@ -77,7 +79,7 @@ typedef struct {
 } pcidev_t;
 static pcidev_t lzf_dev;
 static pcidev_t *dev = &lzf_dev;
-
+#if 0
 static void dump_reg(unsigned int lzf_mem) 
 {
 	printf("CCR %08X CSR %08X CDAR %08X NDAR %08X\n"
@@ -518,7 +520,7 @@ dev_scan(int dev)
 		}
 		printf("\n");
 		
-                if (pcisim_config_read(1<<i) == (0x100 << 16 | 0x3))
+                if (pcisim_config_read(1<<i) == (0x3 << 16 | 0x100))
                         idx = i;
 	}
 	
@@ -612,9 +614,10 @@ main(int argc, char *argv[])
 
 	dev_scan(idx);
 	
-#if 0	
 	lzf_dev.mmr_base = lzf_mem;
-	sum = lzf_read(lzf_mem, ADMA_OFS_MAGIC);
+	sum = lzf_read(lzf_mem, OFS_CSR);
+        printf("%d\n", sum);
+#if 0	
 	if (sum != DMA_MAGIC_NUM) {
 		printf("Magic %x\n", sum);
                 sum = lzf_read(lzf_mem, ADMA_OFS_MAGIC);
