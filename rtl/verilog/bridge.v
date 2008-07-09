@@ -119,16 +119,16 @@ module bridge(/*AUTOARG*/
    wire [3:0] 	 CBE_in  = PCI_CBE;
    wire [3:0] 	 CBE64_in= PCI_CBE64;
 
-   wire 	 RSTn_in = PCI_RSTn;
-   wire 	 RSTn_out;
-   wire 	 RSTn_en;
+   wire 	 RST_in = PCI_RSTn;
+   wire 	 RST_out;
+   wire 	 RST_en;
 
    wire 	 INTA_in = PCI_INTAn;
    wire 	 INTA_en;
    wire 	 INTA_out;
 
    wire 	 REQ_en;
-   wire 	 REQn_out;
+   wire 	 REQ_out;
 
    wire 	 FRAME_in = PCI_FRAMEn;
    wire 	 FRAME_out,
@@ -175,11 +175,11 @@ module bridge(/*AUTOARG*/
    
    pci_bridge32 
      pci_bridge32(/* WB system signal */
-		  .wb_clk_i(CLKOSC),
-		  .wb_rst_i(RST),
-		  .wb_rst_o(RST_O),
-		  .wb_int_i(INT_I),
-		  .wb_int_o(INT_O),
+		  .wb_clk_i(PCI_CLK),
+		  .wb_rst_i(1'b0),
+		  .wb_rst_o(),
+		  .wb_int_i(wb_int_o),
+		  .wb_int_o(),
 		  /* WB slave */
 		  .wbs_adr_i(wbm_adr_o),
 		  .wbs_dat_i(wbm_dat_o),
@@ -208,11 +208,11 @@ module bridge(/*AUTOARG*/
 		  .wbm_err_i(wbs_err_o),
 		  /* pci interface */
 		  .pci_clk_i    ( PCI_CLK ),
-		  .pci_rst_i    ( RST_in ),
-		  .pci_rst_o    ( RST_out ),
+		  .pci_rst_i    ( PCI_RSTn ),
+		  .pci_rst_o    ( ),
 		  .pci_inta_i   ( INTA_in ),
 		  .pci_inta_o   ( INTA_out),
-		  .pci_rst_oe_o ( RST_en),
+		  .pci_rst_oe_o ( ),
 		  .pci_inta_oe_o( INTA_en ),
 		  /* arbitration pins */
 		  .pci_req_o   ( REQ_out ),
@@ -224,13 +224,13 @@ module bridge(/*AUTOARG*/
 		  .pci_frame_o     ( FRAME_out ),
 		  .pci_frame_oe_o  ( FRAME_en ),
 
-		  .pci_req64_i     ( REQ64n_in),
-		  .pci_req64_o     ( REQ64n_out ),
+		  .pci_req64_i     ( REQ64_in),
+		  .pci_req64_o     ( REQ64_out ),
 		  .pci_req64_oe_o  ( REQ64_en ),
 		  
-		  .pci_ack64_i     ( ACK64n_in),
-		  .pci_ack64_o     ( ACK64n_out ),
-		  .pci_ack64_oe_o  ( ACK64n_en ),
+		  .pci_ack64_i     ( ACK64_in),
+		  .pci_ack64_o     ( ACK64_out ),
+		  .pci_ack64_oe_o  ( ACK64_en ),
 		  
 		  .pci_irdy_oe_o   ( IRDY_en ),
 		  .pci_devsel_oe_o ( DEVSEL_en ),
@@ -244,7 +244,7 @@ module bridge(/*AUTOARG*/
 		  .pci_irdy_i      ( IRDY_in ),
 		  .pci_irdy_o      ( IRDY_out ),
 		  
-		  .pci_idsel_i     ( IDSEL ),
+		  .pci_idsel_i     ( PCI_IDSEL ),
 		  
 		  .pci_devsel_i    ( DEVSEL_in ),
 		  .pci_devsel_o    ( DEVSEL_out ),
@@ -360,21 +360,21 @@ module bridge(/*AUTOARG*/
    bufif0 CBE_buf6 ( PCI_CBE64[2], CBE64_out[2], CBE64_en[2] ) ;
    bufif0 CBE_buf7 ( PCI_CBE64[3], CBE64_out[3], CBE64_en[3] ) ;
    
-   bufif0 FRAME_buf    ( FRAME, FRAME_out, FRAME_en ) ;
-   bufif0 REQ64n_buf   ( REQ64n,FRAME_out, FRAME_en ) ;
+   bufif0 FRAME_buf    ( PCI_FRAMEn, FRAME_out, FRAME_en ) ;
+   bufif0 REQ64n_buf   ( PCI_REQ64n, FRAME_out, FRAME_en ) ;
    
    //bufif0 ACK64n_buf   ( ACK64n, ACK64n_out, ACK64n_en ) ;
-   bufif0 IRDY_buf     ( IRDY, IRDY_out, IRDY_en ) ;
-   bufif0 DEVSEL_buf   ( DEVSEL, DEVSEL_out, DEVSEL_en ) ;
-   bufif0 TRDY_buf     ( TRDY, TRDY_out, TRDY_en ) ;
-   bufif0 STOP_buf     ( STOP, STOP_out, STOP_en ) ;
+   bufif0 IRDY_buf     ( PCI_IRDYn, IRDY_out, IRDY_en ) ;
+   bufif0 DEVSEL_buf   ( PCI_DEVSELn, DEVSEL_out, DEVSEL_en ) ;
+   bufif0 TRDY_buf     ( PCI_TRDYn, TRDY_out, TRDY_en ) ;
+   bufif0 STOP_buf     ( PCI_STOPn, STOP_out, STOP_en ) ;
    
-   bufif0 RST_buf      ( RST, RST_out, RST_en ) ;
-   bufif0 INTA_buf     ( INTA, INTA_out, INTA_en) ;
-   bufif0 REQ_buf      ( REQ, REQ_out, REQ_en ) ;
-   bufif0 PAR_buf      ( PAR, PAR_out, PAR_en ) ;
-   bufif0 PAR64_buf    ( PAR64, PAR64_out, PAR64_en ) ;
-   bufif0 PERR_buf     ( PERR, PERR_out, PERR_en ) ;
-   bufif0 SERR_buf     ( SERR, SERR_out, SERR_en ) ;
+   //bufif0 RST_buf      ( RST, RST_out, RST_en ) ;
+   bufif0 INTA_buf     ( PCI_INTAn, INTA_out, INTA_en) ;
+   bufif0 REQ_buf      ( PCI_REQn, REQ_out, REQ_en ) ;
+   bufif0 PAR_buf      ( PCI_PAR, PAR_out, PAR_en ) ;
+   bufif0 PAR64_buf    ( PCI_PAR64, PAR64_out, PAR64_en ) ;
+   bufif0 PERR_buf     ( PCI_PERRn, PERR_out, PERR_en ) ;
+   bufif0 SERR_buf     ( PCI_SERRn, SERR_out, SERR_en ) ;
 
 endmodule // bridege
