@@ -8,9 +8,8 @@ module dummy(/*AUTOARG*/
    ss_ready3, wbs_dat_i0, wbs_dat_i1, wbs_dat_i2,
    wbs_dat_i3, wbs_dat64_i0, wbs_dat64_i1, wbs_dat64_i2,
    wbs_dat64_i3, wbs_dat_o, wbs_ack_o, wbs_err_o, wbs_rty_o,
-   wb_int_o,
-   // Inouts
-   spi_sel, spi_di, spi_do, spi_clk,
+   wb_int_o, spi_sel_o, spi_di_o, spi_do_o, spi_clk_o,
+   spi_en, spi_do_en, spi_di_en,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, sg_state0, sg_state1, sg_state2,
@@ -18,7 +17,8 @@ module dummy(/*AUTOARG*/
    sg_addr0, sg_addr1, sg_addr2, sg_addr3, sg_next0,
    sg_next1, sg_next2, sg_next3, ss_xfer0, ss_xfer1,
    ss_xfer2, ss_xfer3, wbs_sel_i, wbs_cyc_i, wbs_stb_i,
-   wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i
+   wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i, spi_sel_i,
+   spi_di_i, spi_do_i, spi_clk_i
    );
    
    input wb_clk_i;		// clock signal
@@ -68,17 +68,17 @@ module dummy(/*AUTOARG*/
 		sg_desc1,
 		sg_desc2,
 		sg_desc3;
-   input [31:0] sg_addr0,
+   input [31:3] sg_addr0,
 		sg_addr1,
 		sg_addr2,
 		sg_addr3;
-   input [31:0] sg_next0,
+   input [31:3] sg_next0,
 		sg_next1,
 		sg_next2,
 		sg_next3;
 
    /* gnt */
-   output [3:0] gnt;
+   output [4:0] gnt;
 
    /* fifos */
    input 	ss_xfer0, 
@@ -113,9 +113,16 @@ module dummy(/*AUTOARG*/
    output 	 wb_int_o;
    
    /* SPI */
-   inout spi_sel,
-	 spi_di,
-	 spi_do,
-	 spi_clk;
+   input 	 spi_sel_i,
+		 spi_di_i,
+		 spi_do_i,
+		 spi_clk_i;
+   output 	 spi_sel_o,
+		 spi_di_o,
+		 spi_do_o,
+		 spi_clk_o,
+		 spi_en,
+		 spi_do_en,
+		 spi_di_en;
    
 endmodule // dummy
