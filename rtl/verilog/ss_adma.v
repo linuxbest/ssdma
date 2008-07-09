@@ -16,8 +16,8 @@ module ss_adma(/*AUTOARG*/
    // Outputs
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
    wbm_stb_o, wbm_sel_o, wbm_dat_o, wbm_dat64_o, wbm_cyc_o,
-   wbm_cab_o, wbm_adr_o, wb_int_o, spi_sel_o, spi_en,
-   spi_do_o, spi_do_en, spi_di_o, spi_di_en, spi_clk_o,
+   wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en, spi_do_o,
+   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, wb_int_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
@@ -35,7 +35,6 @@ module ss_adma(/*AUTOARG*/
    output		spi_do_o;		// From wbm of wbm.v
    output		spi_en;			// From wbm of wbm.v
    output		spi_sel_o;		// From wbm of wbm.v
-   output		wb_int_o;		// From d_4 of dummy.v
    output [31:0]	wbm_adr_o;		// From m0 of mixer.v
    output		wbm_cab_o;		// From m0 of mixer.v
    output		wbm_cyc_o;		// From m0 of mixer.v
@@ -73,10 +72,23 @@ module ss_adma(/*AUTOARG*/
    // End of automatics
 
    /*AUTOINOUT*/
+
+   output 		wb_int_o;
    
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   wire			busy;			// From d_4 of dummy.v
+   wire [7:0]		csr;			// From d_4 of dummy.v
+   wire [31:0]		dar;			// From d_4 of dummy.v
+   wire			enable;			// From wbm of wbm.v
    wire [4:0]		gnt;			// From arbiter of arbiter.v
+   wire			int_ack;		// From wbm of wbm.v
+   wire			int_ack_clear;		// From d_4 of dummy.v
+   wire [31:3]		ndar;			// From wbm of wbm.v
+   wire			ndar_dirty;		// From wbm of wbm.v
+   wire			ndar_dirty_clear;	// From d_4 of dummy.v
+   wire			resume;			// From wbm of wbm.v
+   wire			resume_clear;		// From d_4 of dummy.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
    wire [31:3]		sg_addr1;		// From r_1 of ss_sg.v
    wire [31:3]		sg_addr2;		// From r_2 of ss_sg.v
@@ -427,6 +439,12 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_dat64_i2		(wbs_dat64_i2[31:0]),
 	     .wbs_dat64_i3		(wbs_dat64_i3[31:0]),
 	     .wb_int_o			(wb_int_o),
+	     .dar			(dar[31:0]),
+	     .csr			(csr[7:0]),
+	     .ndar_dirty_clear		(ndar_dirty_clear),
+	     .int_ack_clear		(int_ack_clear),
+	     .busy			(busy),
+	     .resume_clear		(resume_clear),
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
@@ -454,7 +472,12 @@ module ss_adma(/*AUTOARG*/
 	     .ss_xfer0			(ss_xfer0),
 	     .ss_xfer1			(ss_xfer1),
 	     .ss_xfer2			(ss_xfer2),
-	     .ss_xfer3			(ss_xfer3));
+	     .ss_xfer3			(ss_xfer3),
+	     .ndar_dirty		(ndar_dirty),
+	     .ndar			(ndar[31:3]),
+	     .int_ack			(int_ack),
+	     .resume			(resume),
+	     .enable			(enable));
 
    /* gnt */
    arbiter arbiter(/*AUTOINST*/
@@ -482,6 +505,11 @@ module ss_adma(/*AUTOARG*/
 	   .spi_en			(spi_en),
 	   .spi_do_en			(spi_do_en),
 	   .spi_di_en			(spi_di_en),
+	   .ndar_dirty			(ndar_dirty),
+	   .ndar			(ndar[31:3]),
+	   .resume			(resume),
+	   .enable			(enable),
+	   .int_ack			(int_ack),
 	   // Inputs
 	   .wb_clk_i			(wb_clk_i),
 	   .wb_rst_i			(wb_rst_i),
@@ -511,7 +539,14 @@ module ss_adma(/*AUTOARG*/
 	   .spi_sel_i			(spi_sel_i),
 	   .spi_di_i			(spi_di_i),
 	   .spi_do_i			(spi_do_i),
-	   .spi_clk_i			(spi_clk_i));
+	   .spi_clk_i			(spi_clk_i),
+	   .dar				(dar[31:0]),
+	   .csr				(csr[7:0]),
+	   .ndar_dirty_clear		(ndar_dirty_clear),
+	   .int_ack_clear		(int_ack_clear),
+	   .resume_clear		(resume_clear),
+	   .wb_int_o			(wb_int_o),
+	   .busy			(busy));
    
    /* for fifo */
 endmodule // top

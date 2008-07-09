@@ -7,14 +7,16 @@ module dummy(/*AUTOARG*/
    ss_adr2, ss_adr3, ss_ready0, ss_ready1, ss_ready2,
    ss_ready3, wbs_dat_i0, wbs_dat_i1, wbs_dat_i2,
    wbs_dat_i3, wbs_dat64_i0, wbs_dat64_i1, wbs_dat64_i2,
-   wbs_dat64_i3, wb_int_o,
+   wbs_dat64_i3, wb_int_o, dar, csr, ndar_dirty_clear,
+   int_ack_clear, busy, resume_clear,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, sg_state0, sg_state1, sg_state2,
    sg_state3, sg_desc0, sg_desc1, sg_desc2, sg_desc3,
    sg_addr0, sg_addr1, sg_addr2, sg_addr3, sg_next0,
    sg_next1, sg_next2, sg_next3, ss_xfer0, ss_xfer1,
-   ss_xfer2, ss_xfer3
+   ss_xfer2, ss_xfer3, ndar_dirty, ndar, int_ack, resume,
+   enable
    );
    
    input wb_clk_i;		// clock signal
@@ -92,6 +94,20 @@ module dummy(/*AUTOARG*/
 		 wbs_dat64_i3;
 
    output 	 wb_int_o;
+
+   output [31:0] dar;
+   output [7:0]  csr;
+   
+   input 	 ndar_dirty;
+   output 	 ndar_dirty_clear;
+   input [31:3]  ndar;
+
+   input 	 int_ack;
+   output 	 int_ack_clear;
+   input 	 resume, enable;
+   output 	 busy;
+
+   output 	 resume_clear;
    
    
 endmodule // dummy
