@@ -42,7 +42,7 @@ module spi_usb(/*AUTOARG*/
    assign 	USB_FWRn   = spi_en ? spi_clk_o : 1'bz;
    assign 	SPI_SEL    = spi_en ? spi_sel_o : 1'bz;
    assign 	spi_clk_i  = USB_FWRn;
-   assign 	spi_sel_i  = spi_sel;
+   assign 	spi_sel_i  = SPI_SEL;
    assign 	USB_D[0]   = (spi_en ? spi_do_en : ~USB_FRDn) ?
 			     (spi_en ? spi_do_o  : USB_Data[0]) : 1'bz;
    assign 	USB_D[2:1] = ~USB_FRDn ? USB_Data[2:1] : 2'hz;
