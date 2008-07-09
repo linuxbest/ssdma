@@ -160,14 +160,9 @@ module mixer(/*AUTOARG*/
 	    .gnt			(gnt[4:0]),		 // Templated
 	    .I				({wbs_cab4,wbs_cab3,wbs_cab2,wbs_cab1,wbs_cab0})); // Templated
 
-   mo4 o_sel(.O				(wbm_sel_o[3:0]),
-	     .gnt			(gnt[4:0]),		
-	     .I0			(wbs_sel0),
-	     .I1			(wbs_sel1),
-	     .I2			(wbs_sel2),
-	     .I3			(wbs_sel3),
-	     .I4                        (wbs_sel4));
-
+   /* we only support */
+   assign 	 wbm_sel_o = 4'h1111;
+   
    mo32 o_adr(
 	      // Outputs
 	      .O			(wbm_adr_o[31:0]),
@@ -202,13 +197,11 @@ module mixer(/*AUTOARG*/
    mi i_ack (.O({wbs_ack4,wbs_ack3,wbs_ack2,wbs_ack1,wbs_ack0}),
 	     .I(wbm_ack_i),
 	     .gnt(gnt));
-   mi i_err (.O({wbs_err4,wbs_err3,wbs_err2,wbs_err1,wbs_err0}),
-	     .I(wbm_err_i),
-	     .gnt(gnt));
-   mi i_rty (.O({wbs_rty4,wbs_rty3,wbs_rty2,wbs_rty1,wbs_rty0}),
-	     .I(wbm_rty_i),
-	     .gnt(gnt));
-
+   assign 	 
+     {wbs_err4,wbs_err3,wbs_err2,wbs_err1,wbs_err0} = {5{wbm_err_i}};
+   assign 	 
+     {wbs_rty4,wbs_rty3,wbs_rty2,wbs_rty1,wbs_rty0} = {5{wbm_rty_i}};
+   
    mi32 i_dat(.O0(wbs_dat_o0),
 	      .O1(wbs_dat_o1),
 	      .O2(wbs_dat_o2),
