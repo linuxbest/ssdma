@@ -13,38 +13,43 @@
  ***********************************************************************/
 `timescale 1ns/1ns
 
-module tb_sgr(/*AUTOARG*/);
+module tb_sgr(/*AUTOARG*/
+   // Inputs
+   wbs_dat_i, wbs_dat64_i
+   );
    /*AUTOINPUT*/
+   // Beginning of automatic inputs (from unused autoinst inputs)
+   input [31:0]		wbs_dat64_i;		// To ben of ben_sgr.v
+   input [31:0]		wbs_dat_i;		// To ben of ben_sgr.v
+   // End of automatics
    /*AUTOOUTPUT*/
    
    /*AUTOREG*/
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
-   wire [31:3]		sg_addr;		// From sgr of ss_sgr.v
-   wire [15:0]		sg_desc;		// From sgr of ss_sgr.v
-   wire [31:3]		sg_next;		// From sgr of ss_sgr.v
-   wire [7:0]		sg_state;		// From sgr of ss_sgr.v
+   wire [31:3]		sg_addr;		// From sgr of ss_sg.v
+   wire [15:0]		sg_desc;		// From sgr of ss_sg.v
+   wire [31:3]		sg_next;		// From sgr of ss_sg.v
+   wire [7:0]		sg_state;		// From sgr of ss_sg.v
    wire [1:0]		ss_adr;			// From ben of ben_sgr.v
    wire [31:0]		ss_dat;			// From ben of ben_sgr.v
    wire			ss_done;		// From ben of ben_sgr.v
    wire			ss_ready;		// From ben of ben_sgr.v
    wire			ss_we;			// From ben of ben_sgr.v
-   wire			ss_xfer;		// From sgr of ss_sgr.v
+   wire			ss_xfer;		// From sgr of ss_sg.v
    wire			wb_clk_i;		// From ben of ben_sgr.v
    wire			wb_rst_i;		// From ben of ben_sgr.v
    wire			wbs_ack;		// From ben of ben_sgr.v
-   wire [31:0]		wbs_adr;		// From sgr of ss_sgr.v
-   wire			wbs_cab;		// From sgr of ss_sgr.v
-   wire			wbs_cyc;		// From sgr of ss_sgr.v
-   wire [31:0]		wbs_dat64_i;		// From sgr of ss_sgr.v
+   wire [31:0]		wbs_adr;		// From sgr of ss_sg.v
+   wire			wbs_cab;		// From sgr of ss_sg.v
+   wire			wbs_cyc;		// From sgr of ss_sg.v
    wire [31:0]		wbs_dat64_o;		// From ben of ben_sgr.v
-   wire [31:0]		wbs_dat_i;		// From sgr of ss_sgr.v
    wire [31:0]		wbs_dat_o;		// From ben of ben_sgr.v
    wire			wbs_err;		// From ben of ben_sgr.v
    wire			wbs_rty;		// From ben of ben_sgr.v
-   wire [3:0]		wbs_sel;		// From sgr of ss_sgr.v
-   wire			wbs_stb;		// From sgr of ss_sgr.v
-   wire			wbs_we;			// From sgr of ss_sgr.v
+   wire [3:0]		wbs_sel;		// From sgr of ss_sg.v
+   wire			wbs_stb;		// From sgr of ss_sg.v
+   wire			wbs_we;			// From sgr of ss_sg.v
    // End of automatics
    
    ss_sg  sgr(/*AUTOINST*/
@@ -55,8 +60,6 @@ module tb_sgr(/*AUTOARG*/);
 	      .wbs_cab			(wbs_cab),
 	      .wbs_sel			(wbs_sel[3:0]),
 	      .wbs_adr			(wbs_adr[31:0]),
-	      .wbs_dat_i		(wbs_dat_i[31:0]),
-	      .wbs_dat64_i		(wbs_dat64_i[31:0]),
 	      .sg_state			(sg_state[7:0]),
 	      .sg_desc			(sg_desc[15:0]),
 	      .sg_addr			(sg_addr[31:3]),

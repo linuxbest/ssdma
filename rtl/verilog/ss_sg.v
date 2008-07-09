@@ -148,27 +148,37 @@ module ss_sg(/*AUTOARG*/
    always @(posedge wb_clk_i)
      begin
 	sg_last <= #1 sg_last_n;
-	sg_len  <= #1 sg_len_n;
-	sg_addr <= #1 sg_addr_n;
 	sg_next <= #1 sg_next_n;
      end
-   
+
+   reg sg_addr_start, sg_addr_inc;
+   always @(posedge wb_clk_i)
+     begin
+	if (sg_addr_start) begin
+	   sg_addr <= #1 wbs_dat_o[31:3];
+	   sg_len  <= #1 wbs_dat64_o[18:3];
+	end else if (sg_addr_inc) begin
+	   sg_addr <= #1 sg_addr + 1'b1;
+	   sg_len  <= #1 sg_len  - 1'b1;
+	end
+     end
+
    always @(/*AS*/cnt or dc_fc or err or io or sg_addr
 	    or sg_last or sg_len or sg_next or ss_adr
 	    or ss_dat or ss_done or ss_ready or ss_we
 	    or state or wbs_ack or wbs_adr or wbs_cab
-	    or wbs_cyc or wbs_dat64_o or wbs_dat_o
-	    or wbs_err or wbs_rty or wbs_sel or wbs_stb
-	    or wbs_we)
+	    or wbs_cyc or wbs_dat64_o or wbs_err or wbs_rty
+	    or wbs_sel or wbs_stb or wbs_we)
      begin
 	state_n   = state;
 
 	dc_fc_n   = dc_fc;
 	
 	sg_last_n = sg_last;
-	sg_len_n  = sg_len;
-	sg_addr_n = sg_addr;
 	sg_next_n = sg_next;
+
+	sg_addr_start = 0;
+	sg_addr_inc   = 0;
 	
 	/* wb */
 	wbs_adr_n = wbs_adr;
@@ -218,9 +228,8 @@ module ss_sg(/*AUTOARG*/
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
 		  if (cnt == 0) begin
-		     sg_len_n  = wbs_dat64_o[18:3];
 		     sg_last_n = wbs_dat64_o[20];
-		     sg_addr_n = wbs_dat_o[31:3];
+		     sg_addr_start = 1;
 		     cnt_n = cnt + 1;
 		  end else begin
 		     sg_next_n = wbs_dat64_o[31:3];
@@ -249,8 +258,7 @@ module ss_sg(/*AUTOARG*/
 
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
-		  sg_addr_n = sg_addr + 1;
-		  sg_len_n  = sg_len  - 1;
+		  sg_addr_inc = 1;
 		  io_n      = 1'b1;
 		  ss_xfer   = 1'b1;
 		  if (sg_len == 1) begin
