@@ -2,7 +2,7 @@ module mi(/*AUTOARG*/
    // Outputs
    O,
    // Inputs
-   I, gnt
+   I, gnt, wb_clk_i, wb_rst_i
    );
    input I;
    input [4:0] gnt;
