@@ -1,3 +1,16 @@
+/************************************************************************
+ *     File Name  : bridge.v
+ *        Version :
+ *           Date : 
+ *    Description : 
+ *   Dependencies :
+ *
+ *        Company : Beijing Soul Tech.
+ *
+ *   Copyright (C) 2008 Beijing Soul tech.
+ *
+ *
+ ***********************************************************************/
 module bridge(/*AUTOARG*/
    // Outputs
    PCI_SERRn, wbs_dat_i, wbs_adr_i, wbs_sel_i, wbs_we_i,

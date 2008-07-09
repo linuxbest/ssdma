@@ -1,4 +1,16 @@
-
+/************************************************************************
+ *     File Name  : top.v
+ *        Version :
+ *           Date : 
+ *    Description : 
+ *   Dependencies :
+ *
+ *        Company : Beijing Soul Tech.
+ *
+ *   Copyright (C) 2008 Beijing Soul tech.
+ *
+ *
+ ***********************************************************************/
 module top(/*AUTOARG*/
    // Outputs
    LED, FIFO_RD, PCI_SERRn,

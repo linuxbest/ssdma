@@ -1,3 +1,16 @@
+/************************************************************************
+ *     File Name  : spi_usb.v
+ *        Version :
+ *           Date : 
+ *    Description : 
+ *   Dependencies :
+ *
+ *        Company : Beijing Soul Tech.
+ *
+ *   Copyright (C) 2008 Beijing Soul tech.
+ *
+ *
+ ***********************************************************************/
 module spi_usb(/*AUTOARG*/
    // Outputs
    LED, FIFO_RD, spi_clk_i, spi_sel_i, spi_do_i, spi_di_i,
