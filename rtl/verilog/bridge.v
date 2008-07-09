@@ -101,8 +101,8 @@ module bridge(/*AUTOARG*/
    wire [3:0] 	 CBE64_in= PCI_CBE64;
 
    wire 	 RST_in = PCI_RSTn;
-   wire 	 RST_out;
-   wire 	 RST_en;
+   /*wire 	 RST_out,
+		 RST_en;*/
 
    wire 	 INTA_in = PCI_INTAn;
    wire 	 INTA_en;
@@ -116,12 +116,12 @@ module bridge(/*AUTOARG*/
 		 FRAME_en;
    
    wire 	 REQ64_in = PCI_REQ64n;
-   wire 	 REQ64_out,
-		 REQ64_en;
+   wire 	 REQ64_out;
+   wire 	 REQ64_en;
 
    wire 	 ACK64_in = PCI_ACK64n;
-   wire 	 ACK64_out,
-		 ACK64_en;
+   /*wire 	 ACK64_out,
+		 ACK64_en;*/
 
    wire 	 IRDY_in = PCI_IRDYn;
    wire 	 IRDY_out,
@@ -342,7 +342,7 @@ module bridge(/*AUTOARG*/
    bufif0 CBE_buf7 ( PCI_CBE64[3], CBE64_out[3], CBE64_en[3] ) ;
    
    bufif0 FRAME_buf    ( PCI_FRAMEn, FRAME_out, FRAME_en ) ;
-   bufif0 REQ64n_buf   ( PCI_REQ64n, FRAME_out, FRAME_en ) ;
+   bufif0 REQ64n_buf   ( PCI_REQ64n, REQ64_out, REQ64_en ) ;
    
    //bufif0 ACK64n_buf   ( ACK64n, ACK64n_out, ACK64n_en ) ;
    bufif0 IRDY_buf     ( PCI_IRDYn, IRDY_out, IRDY_en ) ;
