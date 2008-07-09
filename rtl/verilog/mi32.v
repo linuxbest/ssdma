@@ -1,3 +1,15 @@
+/************************************************************************
+ *     File Name  : mi32.v
+ *        Version :
+ *           Date : 
+ *    Description : 
+ *   Dependencies :
+ *
+ *        Company : Beijing Soul Tech.
+ *
+ *   Copyright (C) 2008 Beijing Soul tech.
+ *
+ ***********************************************************************/
 module mi32(/*AUTOARG*/
    // Outputs
    O0, O1, O2, O3, O4,
@@ -11,7 +23,6 @@ module mi32(/*AUTOARG*/
 		 O2,
 		 O3,
 		 O4;
-
    /*assign 	O4 = gnt[4] ? I : 32'hz;
    assign 	O3 = gnt[3] ? I : 32'hz;
    assign 	O2 = gnt[2] ? I : 32'hz;

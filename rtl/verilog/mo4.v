@@ -1,3 +1,15 @@
+/************************************************************************
+ *     File Name  : mo4.v
+ *        Version :
+ *           Date : 
+ *    Description : 
+ *   Dependencies :
+ *
+ *        Company : Beijing Soul Tech.
+ *
+ *   Copyright (C) 2008 Beijing Soul tech.
+ *
+ ***********************************************************************/
 module mo4(/*AUTOARG*/
    // Outputs
    O,

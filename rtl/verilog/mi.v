@@ -1,3 +1,15 @@
+/************************************************************************
+ *     File Name  : mi.v
+ *        Version : 1.0
+ *           Date : 2008 07 09
+ *    Description : 
+ *   Dependencies :
+ *
+ *        Company : Beijing Soul Tech.
+ *
+ *   Copyright (C) 2008 Beijing Soul tech.
+ *
+ ***********************************************************************/
 module mi(/*AUTOARG*/
    // Outputs
    O,

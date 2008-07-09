@@ -76,7 +76,7 @@ module ss_adma(/*AUTOARG*/
    
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
-   wire [4:0]		gnt;			// From gnt of gnt.v
+   wire [4:0]		gnt;			// From arbiter of arbiter.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
    wire [31:3]		sg_addr1;		// From r_1 of ss_sg.v
    wire [31:3]		sg_addr2;		// From r_2 of ss_sg.v
@@ -458,16 +458,16 @@ module ss_adma(/*AUTOARG*/
 
    /* gnt */
    arbiter arbiter(/*AUTOINST*/
-	   // Outputs
-	   .gnt				(gnt[4:0]),
-	   // Inputs
-	   .wb_clk_i			(wb_clk_i),
-	   .wb_rst_i			(wb_rst_i),
-	   .wbs_cyc0			(wbs_cyc0),
-	   .wbs_cyc1			(wbs_cyc1),
-	   .wbs_cyc2			(wbs_cyc2),
-	   .wbs_cyc3			(wbs_cyc3),
-	   .wbs_cyc4			(wbs_cyc4));
+		   // Outputs
+		   .gnt			(gnt[4:0]),
+		   // Inputs
+		   .wb_clk_i		(wb_clk_i),
+		   .wb_rst_i		(wb_rst_i),
+		   .wbs_cyc0		(wbs_cyc0),
+		   .wbs_cyc1		(wbs_cyc1),
+		   .wbs_cyc2		(wbs_cyc2),
+		   .wbs_cyc3		(wbs_cyc3),
+		   .wbs_cyc4		(wbs_cyc4));
 
    wbm wbm(/*AUTOINST*/
 	   // Outputs

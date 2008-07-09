@@ -9,6 +9,7 @@
  *
  *   Copyright (C) 2008 Beijing Soul tech.
  *
+ *         TODO   : 实现 spi 接口。
  *
  ***********************************************************************/
 module wbm(/*AUTOARG*/
