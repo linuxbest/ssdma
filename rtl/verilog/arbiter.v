@@ -1,5 +1,5 @@
 /************************************************************************
- *     File Name  : gnt.v
+ *     File Name  : arbiter.v
  *        Version : 0.1
  *           Date :
  *    Description : accept command from ss_adma
@@ -14,7 +14,7 @@
  *
  ***********************************************************************/
 
-module gnt(/*AUTOARG*/
+module arbiter(/*AUTOARG*/
    // Outputs
    gnt,
    // Inputs

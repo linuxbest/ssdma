@@ -457,7 +457,7 @@ module ss_adma(/*AUTOARG*/
 	     .ss_xfer3			(ss_xfer3));
 
    /* gnt */
-   gnt gnt(/*AUTOINST*/
+   arbiter arbiter(/*AUTOINST*/
 	   // Outputs
 	   .gnt				(gnt[4:0]),
 	   // Inputs
