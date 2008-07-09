@@ -120,8 +120,8 @@ module bridge(/*AUTOARG*/
    wire 	 REQ64_en;
 
    wire 	 ACK64_in = PCI_ACK64n;
-   /*wire 	 ACK64_out,
-		 ACK64_en;*/
+   wire 	 ACK64_out,
+		 ACK64_en;
 
    wire 	 IRDY_in = PCI_IRDYn;
    wire 	 IRDY_out,

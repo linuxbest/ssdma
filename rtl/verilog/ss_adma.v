@@ -28,13 +28,13 @@ module ss_adma(/*AUTOARG*/
    
    /*AUTOOUTPUT*/
    // Beginning of automatic outputs (from unused autoinst outputs)
-   output		spi_clk_o;		// From d_4 of dummy.v
-   output		spi_di_en;		// From d_4 of dummy.v
-   output		spi_di_o;		// From d_4 of dummy.v
-   output		spi_do_en;		// From d_4 of dummy.v
-   output		spi_do_o;		// From d_4 of dummy.v
-   output		spi_en;			// From d_4 of dummy.v
-   output		spi_sel_o;		// From d_4 of dummy.v
+   output		spi_clk_o;		// From wbm of wbm.v
+   output		spi_di_en;		// From wbm of wbm.v
+   output		spi_di_o;		// From wbm of wbm.v
+   output		spi_do_en;		// From wbm of wbm.v
+   output		spi_do_o;		// From wbm of wbm.v
+   output		spi_en;			// From wbm of wbm.v
+   output		spi_sel_o;		// From wbm of wbm.v
    output		wb_int_o;		// From d_4 of dummy.v
    output [31:0]	wbm_adr_o;		// From m0 of mixer.v
    output		wbm_cab_o;		// From m0 of mixer.v
@@ -44,18 +44,18 @@ module ss_adma(/*AUTOARG*/
    output [3:0]		wbm_sel_o;		// From m0 of mixer.v
    output		wbm_stb_o;		// From m0 of mixer.v
    output		wbm_we_o;		// From m0 of mixer.v
-   output		wbs_ack_o;		// From d_4 of dummy.v
-   output [31:0]	wbs_dat_o;		// From d_4 of dummy.v
-   output		wbs_err_o;		// From d_4 of dummy.v
-   output		wbs_rty_o;		// From d_4 of dummy.v
+   output		wbs_ack_o;		// From wbm of wbm.v
+   output [31:0]	wbs_dat_o;		// From wbm of wbm.v
+   output		wbs_err_o;		// From wbm of wbm.v
+   output		wbs_rty_o;		// From wbm of wbm.v
    // End of automatics
    
    /*AUTOINPUT*/
    // Beginning of automatic inputs (from unused autoinst inputs)
-   input		spi_clk_i;		// To d_4 of dummy.v
-   input		spi_di_i;		// To d_4 of dummy.v
-   input		spi_do_i;		// To d_4 of dummy.v
-   input		spi_sel_i;		// To d_4 of dummy.v
+   input		spi_clk_i;		// To wbm of wbm.v
+   input		spi_di_i;		// To wbm of wbm.v
+   input		spi_do_i;		// To wbm of wbm.v
+   input		spi_sel_i;		// To wbm of wbm.v
    input		wb_clk_i;		// To r_0 of ss_sg.v, ...
    input		wb_rst_i;		// To r_0 of ss_sg.v, ...
    input		wbm_ack_i;		// To m0 of mixer.v
@@ -63,20 +63,20 @@ module ss_adma(/*AUTOARG*/
    input [31:0]		wbm_dat_i;		// To m0 of mixer.v
    input		wbm_err_i;		// To m0 of mixer.v
    input		wbm_rty_i;		// To m0 of mixer.v
-   input [31:0]		wbs_adr_i;		// To d_4 of dummy.v
-   input		wbs_cab_i;		// To d_4 of dummy.v
-   input		wbs_cyc_i;		// To d_4 of dummy.v
-   input [31:0]		wbs_dat_i;		// To d_4 of dummy.v
-   input [3:0]		wbs_sel_i;		// To d_4 of dummy.v
-   input		wbs_stb_i;		// To d_4 of dummy.v
-   input		wbs_we_i;		// To d_4 of dummy.v
+   input [31:0]		wbs_adr_i;		// To wbm of wbm.v
+   input		wbs_cab_i;		// To wbm of wbm.v
+   input		wbs_cyc_i;		// To wbm of wbm.v
+   input [31:0]		wbs_dat_i;		// To wbm of wbm.v
+   input [3:0]		wbs_sel_i;		// To wbm of wbm.v
+   input		wbs_stb_i;		// To wbm of wbm.v
+   input		wbs_we_i;		// To wbm of wbm.v
    // End of automatics
 
    /*AUTOINOUT*/
    
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
-   wire [4:0]		gnt;			// From d_4 of dummy.v
+   wire [4:0]		gnt;			// From gnt of gnt.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
    wire [31:3]		sg_addr1;		// From r_1 of ss_sg.v
    wire [31:3]		sg_addr2;		// From r_2 of ss_sg.v
@@ -414,7 +414,6 @@ module ss_adma(/*AUTOARG*/
 	     .ss_adr1			(ss_adr1[1:0]),
 	     .ss_adr2			(ss_adr2[1:0]),
 	     .ss_adr3			(ss_adr3[1:0]),
-	     .gnt			(gnt[4:0]),
 	     .ss_ready0			(ss_ready0),
 	     .ss_ready1			(ss_ready1),
 	     .ss_ready2			(ss_ready2),
@@ -427,18 +426,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_dat64_i1		(wbs_dat64_i1[31:0]),
 	     .wbs_dat64_i2		(wbs_dat64_i2[31:0]),
 	     .wbs_dat64_i3		(wbs_dat64_i3[31:0]),
-	     .wbs_dat_o			(wbs_dat_o[31:0]),
-	     .wbs_ack_o			(wbs_ack_o),
-	     .wbs_err_o			(wbs_err_o),
-	     .wbs_rty_o			(wbs_rty_o),
 	     .wb_int_o			(wb_int_o),
-	     .spi_sel_o			(spi_sel_o),
-	     .spi_di_o			(spi_di_o),
-	     .spi_do_o			(spi_do_o),
-	     .spi_clk_o			(spi_clk_o),
-	     .spi_en			(spi_en),
-	     .spi_do_en			(spi_do_en),
-	     .spi_di_en			(spi_di_en),
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
@@ -466,18 +454,64 @@ module ss_adma(/*AUTOARG*/
 	     .ss_xfer0			(ss_xfer0),
 	     .ss_xfer1			(ss_xfer1),
 	     .ss_xfer2			(ss_xfer2),
-	     .ss_xfer3			(ss_xfer3),
-	     .wbs_sel_i			(wbs_sel_i[3:0]),
-	     .wbs_cyc_i			(wbs_cyc_i),
-	     .wbs_stb_i			(wbs_stb_i),
-	     .wbs_we_i			(wbs_we_i),
-	     .wbs_cab_i			(wbs_cab_i),
-	     .wbs_adr_i			(wbs_adr_i[31:0]),
-	     .wbs_dat_i			(wbs_dat_i[31:0]),
-	     .spi_sel_i			(spi_sel_i),
-	     .spi_di_i			(spi_di_i),
-	     .spi_do_i			(spi_do_i),
-	     .spi_clk_i			(spi_clk_i));
+	     .ss_xfer3			(ss_xfer3));
 
+   /* gnt */
+   gnt gnt(/*AUTOINST*/
+	   // Outputs
+	   .gnt				(gnt[4:0]),
+	   // Inputs
+	   .wb_clk_i			(wb_clk_i),
+	   .wb_rst_i			(wb_rst_i),
+	   .wbs_cyc0			(wbs_cyc0),
+	   .wbs_cyc1			(wbs_cyc1),
+	   .wbs_cyc2			(wbs_cyc2),
+	   .wbs_cyc3			(wbs_cyc3),
+	   .wbs_cyc4			(wbs_cyc4));
+
+   wbm wbm(/*AUTOINST*/
+	   // Outputs
+	   .wbs_dat_o			(wbs_dat_o[31:0]),
+	   .wbs_ack_o			(wbs_ack_o),
+	   .wbs_err_o			(wbs_err_o),
+	   .wbs_rty_o			(wbs_rty_o),
+	   .spi_sel_o			(spi_sel_o),
+	   .spi_di_o			(spi_di_o),
+	   .spi_do_o			(spi_do_o),
+	   .spi_clk_o			(spi_clk_o),
+	   .spi_en			(spi_en),
+	   .spi_do_en			(spi_do_en),
+	   .spi_di_en			(spi_di_en),
+	   // Inputs
+	   .wb_clk_i			(wb_clk_i),
+	   .wb_rst_i			(wb_rst_i),
+	   .sg_state0			(sg_state0[7:0]),
+	   .sg_state1			(sg_state1[7:0]),
+	   .sg_state2			(sg_state2[7:0]),
+	   .sg_state3			(sg_state3[7:0]),
+	   .sg_desc0			(sg_desc0[15:0]),
+	   .sg_desc1			(sg_desc1[15:0]),
+	   .sg_desc2			(sg_desc2[15:0]),
+	   .sg_desc3			(sg_desc3[15:0]),
+	   .sg_addr0			(sg_addr0[31:3]),
+	   .sg_addr1			(sg_addr1[31:3]),
+	   .sg_addr2			(sg_addr2[31:3]),
+	   .sg_addr3			(sg_addr3[31:3]),
+	   .sg_next0			(sg_next0[31:3]),
+	   .sg_next1			(sg_next1[31:3]),
+	   .sg_next2			(sg_next2[31:3]),
+	   .sg_next3			(sg_next3[31:3]),
+	   .wbs_sel_i			(wbs_sel_i[3:0]),
+	   .wbs_cyc_i			(wbs_cyc_i),
+	   .wbs_stb_i			(wbs_stb_i),
+	   .wbs_we_i			(wbs_we_i),
+	   .wbs_cab_i			(wbs_cab_i),
+	   .wbs_adr_i			(wbs_adr_i[31:0]),
+	   .wbs_dat_i			(wbs_dat_i[31:0]),
+	   .spi_sel_i			(spi_sel_i),
+	   .spi_di_i			(spi_di_i),
+	   .spi_do_i			(spi_do_i),
+	   .spi_clk_i			(spi_clk_i));
+   
    /* for fifo */
 endmodule // top
