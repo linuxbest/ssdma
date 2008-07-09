@@ -62,12 +62,14 @@ module bridge(/*AUTOARG*/
    output 	 wbs_we_i,
 		 wbs_stb_i,
 		 wbs_cyc_i,
-		 wbs_cab_i;
+		 wbs_cab_i;/*always 0 */
    
    /* WB */
    input 	 wb_int_o;
    output 	 wb_rst_i;
+   assign 	 wb_rst_i = ~PCI_RSTn;
    output 	 wb_clk_i;
+   assign 	 wb_clk_i = PCI_CLK;
    
    /* WB Master */
    input 	 wbm_we_o,
@@ -83,40 +85,6 @@ module bridge(/*AUTOARG*/
 		 wbm_ack_i;
    output [31:0] wbm_dat_i,
 		 wbm_dat64_i;
-
-   /* WB system signals */
-   wire 	 RST_I = 1'b0;
-   wire 	 RST_O;
-   wire 	 INT_I;
-   wire 	 INT_O;
-
-   /* WB slave interface */
-   wire [31:0] 	 ADR_I,
-		 SDAT_I,
-		 SDAT64_I,
-		 SDAT_O,
-		 SDAT64_O;
-   wire [3:0] 	 SEL_I;
-   wire 	 CYC_I,
-		 STB_I,
-		 WE_I,
-		 CAB_I,
-		 ACK_O,
-		 RTY_O,
-		 ERR_O;
-   
-   /* WB master interface */
-   wire [31:0] 	 ADR_O,
-		 MDAT_I,
-		 MDAT_O;
-   wire [3:0] 	 SEL_O;
-   wire 	 CYC_O,
-		 STB_O,
-		 WE_O,
-		 CAB_O,
-		 ACK_I,
-		 RTY_I,
-		 ERR_I;
 
    wire [31:0] 	 AD_out;
    wire [31:0] 	 AD64_out;
