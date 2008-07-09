@@ -140,28 +140,36 @@ module mixer(/*AUTOARG*/
 	    .O				(wbm_cyc_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_cyc4,wbs_cyc3,wbs_cyc2,wbs_cyc1,wbs_cyc0})); // Templated
+	    .I				({wbs_cyc4,wbs_cyc3,wbs_cyc2,wbs_cyc1,wbs_cyc0}), // Templated
+	    .wb_clk_i			(wb_clk_i),
+	    .wb_rst_i			(wb_rst_i));
    mo o_stb(/*AUTOINST*/
 	    // Outputs
 	    .O				(wbm_stb_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_stb4,wbs_stb3,wbs_stb2,wbs_stb1,wbs_stb0})); // Templated
+	    .I				({wbs_stb4,wbs_stb3,wbs_stb2,wbs_stb1,wbs_stb0}), // Templated
+	    .wb_clk_i			(wb_clk_i),
+	    .wb_rst_i			(wb_rst_i));
    mo o_we(/*AUTOINST*/
 	   // Outputs
 	   .O				(wbm_we_o),		 // Templated
 	   // Inputs
 	   .gnt				(gnt[4:0]),		 // Templated
-	   .I				({wbs_we4,wbs_we3,wbs_we2,wbs_we1,wbs_we0})); // Templated
+	   .I				({wbs_we4,wbs_we3,wbs_we2,wbs_we1,wbs_we0}), // Templated
+	   .wb_clk_i			(wb_clk_i),
+	   .wb_rst_i			(wb_rst_i));
    mo o_cab(/*AUTOINST*/
 	    // Outputs
 	    .O				(wbm_cab_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_cab4,wbs_cab3,wbs_cab2,wbs_cab1,wbs_cab0})); // Templated
+	    .I				({wbs_cab4,wbs_cab3,wbs_cab2,wbs_cab1,wbs_cab0}), // Templated
+	    .wb_clk_i			(wb_clk_i),
+	    .wb_rst_i			(wb_rst_i));
 
    /* we only support */
-   assign 	 wbm_sel_o = 4'h1111;
+   assign 	 wbm_sel_o = 4'b1111;
    
    mo32 o_adr(
 	      // Outputs
