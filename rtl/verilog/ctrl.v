@@ -52,7 +52,7 @@ module ctrl(/*AUTOARG*/
    ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0, ss_adr1,
    ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2, ss_dc3,
    wb_int_o, dar, csr, ndar_dirty_clear, busy, resume_clear,
-   dc0, dc1, ctrl_state,
+   dc0, dc1, ctl_adr0, ctl_adr1, next_desc, ctrl_state,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
@@ -116,7 +116,9 @@ module ctrl(/*AUTOARG*/
    
    output 	 resume_clear;
    output [23:0] dc0, dc1;
-   
+   output [31:3] ctl_adr0,
+		 ctl_adr1,
+		 next_desc;
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
    reg [7:0]		csr;
@@ -335,6 +337,7 @@ module ctrl(/*AUTOARG*/
 
 	dar_n      = dar_r;
 	wb_int_set = 0;
+	ndar_dirty_clear_n = 0;
 	
 	case (state)
 	  S_IDLE:   begin

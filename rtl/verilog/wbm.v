@@ -25,7 +25,8 @@ module wbm(/*AUTOARG*/
    sg_next1, sg_next2, sg_next3, wbs_sel_i, wbs_cyc_i,
    wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i,
    spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
-   ndar_dirty_clear, resume_clear, wb_int_o, busy
+   ndar_dirty_clear, resume_clear, wb_int_o, busy, ctl_adr0,
+   ctl_adr1, next_desc
    );
    
    input wb_clk_i,
@@ -85,6 +86,10 @@ module wbm(/*AUTOARG*/
    output 	 ndar_dirty;
    output [31:3] ndar;
    output 	 resume, enable, wb_int_clear;
+
+   input [31:3] ctl_adr0,
+		ctl_adr1,
+		next_desc;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -135,7 +140,8 @@ module wbm(/*AUTOARG*/
 
    wire [4:0] 	   adr = wbs_adr_i[6:2];
 
-   always @(/*AS*/busy or dar or enable or ndar or resume
+   always @(/*AS*/busy or ctl_adr0 or ctl_adr1 or dar
+	    or enable or ndar or next_desc or resume
 	    or sg_addr0 or sg_addr1 or sg_addr2 or sg_addr3
 	    or sg_desc0 or sg_desc1 or sg_desc2 or sg_desc3
 	    or sg_next0 or sg_next1 or sg_next2 or sg_next3
@@ -150,24 +156,27 @@ module wbm(/*AUTOARG*/
 
 	  5'h4: wbs_dat_o = sg_state0;
 	  5'h5: wbs_dat_o = sg_desc0;
-	  5'h6: wbs_dat_o = sg_addr0;
-	  5'h7: wbs_dat_o = sg_next0;
+	  5'h6: wbs_dat_o = {sg_addr0, 3'b000};
+	  5'h7: wbs_dat_o = {sg_next0, 3'b000};
 
 	  5'h8: wbs_dat_o = sg_state1;
 	  5'h9: wbs_dat_o = sg_desc1;
-	  5'ha: wbs_dat_o = sg_addr1;
-	  5'hb: wbs_dat_o = sg_next1;
+	  5'ha: wbs_dat_o = {sg_addr1, 3'b000};
+	  5'hb: wbs_dat_o = {sg_next1, 3'b000};
 
 	  5'hc: wbs_dat_o = sg_state2;
 	  5'hd: wbs_dat_o = sg_desc2;
-	  5'he: wbs_dat_o = sg_addr2;
-	  5'hf: wbs_dat_o = sg_next2;
+	  5'he: wbs_dat_o = {sg_addr2, 3'b000};
+	  5'hf: wbs_dat_o = {sg_next2, 3'b000};
 
 	  5'h10: wbs_dat_o = sg_state3;
 	  5'h11: wbs_dat_o = sg_desc3;
-	  5'h12: wbs_dat_o = sg_addr3;
-	  5'h13: wbs_dat_o = sg_next3;
-	  /*14-1f*/
+	  5'h12: wbs_dat_o = {sg_addr3, 3'b000};
+	  5'h13: wbs_dat_o = {sg_next3, 3'b000};
+
+	  5'h14: wbs_dat_o = {ctl_adr0, 3'b000};
+	  5'h15: wbs_dat_o = {ctl_adr1, 3'b000};
+	  5'h16: wbs_dat_o = {next_desc,3'b000};
 	  default:wbs_dat_o = 32'h0;
 	endcase
      end

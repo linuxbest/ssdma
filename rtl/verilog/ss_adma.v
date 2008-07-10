@@ -85,6 +85,8 @@ module ss_adma(/*AUTOARG*/
    wire			c_done2;		// From r_2 of ss_sg.v
    wire			c_done3;		// From r_3 of ss_sg.v
    wire [7:0]		csr;			// From ctrl of ctrl.v
+   wire [31:3]		ctl_adr0;		// From ctrl of ctrl.v
+   wire [31:3]		ctl_adr1;		// From ctrl of ctrl.v
    wire [31:0]		dar;			// From ctrl of ctrl.v
    wire [23:0]		dc0;			// From ctrl of ctrl.v
    wire [23:0]		dc1;			// From ctrl of ctrl.v
@@ -93,6 +95,7 @@ module ss_adma(/*AUTOARG*/
    wire [31:3]		ndar;			// From wbm of wbm.v
    wire			ndar_dirty;		// From wbm of wbm.v
    wire			ndar_dirty_clear;	// From ctrl of ctrl.v
+   wire [31:3]		next_desc;		// From ctrl of ctrl.v
    wire			resume;			// From wbm of wbm.v
    wire			resume_clear;		// From ctrl of ctrl.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
@@ -524,7 +527,10 @@ module ss_adma(/*AUTOARG*/
 	   .ndar_dirty_clear		(ndar_dirty_clear),
 	   .resume_clear		(resume_clear),
 	   .wb_int_o			(wb_int_o),
-	   .busy			(busy));
+	   .busy			(busy),
+	   .ctl_adr0			(ctl_adr0[31:3]),
+	   .ctl_adr1			(ctl_adr1[31:3]),
+	   .next_desc			(next_desc[31:3]));
 
    ctrl ctrl(/*AUTOINST*/
 	     // Outputs
@@ -564,6 +570,9 @@ module ss_adma(/*AUTOARG*/
 	     .resume_clear		(resume_clear),
 	     .dc0			(dc0[23:0]),
 	     .dc1			(dc1[23:0]),
+	     .ctl_adr0			(ctl_adr0[31:3]),
+	     .ctl_adr1			(ctl_adr1[31:3]),
+	     .next_desc			(next_desc[31:3]),
 	     .ctrl_state		(ctrl_state[7:0]),
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),

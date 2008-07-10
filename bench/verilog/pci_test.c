@@ -4,6 +4,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <byteswap.h>
+#include <assert.h>
 #include "pcisim.h"
 #include "lzf_chip.h"
 
@@ -97,7 +98,12 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 {
         int off = 0x10000;
         job_desc_t *j = (job_desc_t *)(system_mem + off);
+        uint32_t val;
 
+        /**************************************************
+         * first we must sure the datapath is ok 
+         **************************************************/
+        /* test null first */
         j->next_desc = 0;
         j->ctl_addr  = 0;
         j->dc_fc     = DC_NULL;
@@ -106,14 +112,36 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j->u1        = 0;
         j->dst_desc  = 0;
         j->u2        = 0;
-
         lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
         lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
 	
-        pcisim_wait(200, 0);
-        /*while (lzf_read(lzf_mem, OFS_CSR) & CSR_BUSY) {
-                break;
-        }*/
+        pcisim_wait(20, 0);
+        val = lzf_read(lzf_mem, OFS_CSR);
+        /* wait 200 clock, it must be done */
+        assert ((val & CSR_BUSY) == 0);
+        assert(lzf_read(lzf_mem, 0x14*4) == 0);
+        //assert(lzf_read(lzf_mem, 0x15*4) == 0);
+        assert(lzf_read(lzf_mem, 0x16*4) == 0);
+
+        /* check register */
+        lzf_write(lzf_mem, OFS_CCR,  0);
+        j->next_desc = 0x0fffffff;
+        j->ctl_addr  = 0x1fffffff;
+        j->src_desc  = 0x2fffffff;
+        j->dst_desc  = 0x3fffffff;
+        lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
+        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
+        
+        pcisim_wait(20, 0);
+        val = lzf_read(lzf_mem, OFS_CSR);
+        /* wait 200 clock, it must be done */
+        assert ((val & CSR_BUSY) == 0);
+        assert (lzf_read(lzf_mem, 0x14*4) == 0x0FFFFFF8);
+        assert (lzf_read(lzf_mem, 0x16*4) == 0x1FFFFFF8);
+       
+        /***********************************************
+         * datapath seem ok.
+         ***********************************************/
 
         return 0;
 }
