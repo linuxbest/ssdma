@@ -131,11 +131,9 @@ module ss_sg(/*AUTOARG*/
    reg cnt, cnt_n;
    reg io, io_n;
    reg [2:0] err, err_n;
-   reg [23:0] dc_fc ,dc_fc_n;
    always @(posedge wb_clk_i)
      begin
 	err   <= #1 err_n;
-	dc_fc <= #1 dc_fc_n;
 	cnt   <= #1 cnt_n;
 	io    <= #1 io_n;
      end
@@ -163,17 +161,15 @@ module ss_sg(/*AUTOARG*/
 	end
      end
 
-   always @(/*AS*/cnt or dc_fc or err or io or sg_addr
-	    or sg_last or sg_len or sg_next or ss_adr
-	    or ss_dat or ss_done or ss_ready or ss_we
-	    or state or wbs_ack or wbs_adr or wbs_cab
-	    or wbs_cyc or wbs_dat64_o or wbs_err or wbs_rty
-	    or wbs_sel or wbs_stb or wbs_we)
+   always @(/*AS*/cnt or err or io or sg_addr or sg_last
+	    or sg_len or sg_next or ss_adr or ss_dat
+	    or ss_done or ss_ready or ss_we or state
+	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
+	    or wbs_dat64_o or wbs_err or wbs_rty or wbs_sel
+	    or wbs_stb or wbs_we)
      begin
 	state_n   = state;
 
-	dc_fc_n   = dc_fc;
-	
 	sg_last_n = sg_last;
 	sg_next_n = sg_next;
 
@@ -205,7 +201,6 @@ module ss_sg(/*AUTOARG*/
 	       2'b00: begin
 	       end
 	       2'b01: begin 
-		  dc_fc_n = ss_dat[23:0];
 	       end
 	       2'b10: begin 
 		  sg_next_n = ss_dat[31:3];
@@ -330,6 +325,6 @@ module ss_sg(/*AUTOARG*/
      sg_desc = {sg_len};
 
    output c_done;
-   assign c_done = state == S_END;
+   assign c_done = (state == S_END || state == S_IDLE);
    
 endmodule // ss_copy

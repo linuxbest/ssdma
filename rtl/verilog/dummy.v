@@ -8,7 +8,7 @@ module dummy(/*AUTOARG*/
    sg_state3, sg_desc0, sg_desc1, sg_desc2, sg_desc3,
    sg_addr0, sg_addr1, sg_addr2, sg_addr3, sg_next0,
    sg_next1, sg_next2, sg_next3, ss_xfer0, ss_xfer1,
-   ss_xfer2, ss_xfer3
+   ss_xfer2, ss_xfer3, dc0, dc1
    );
    
    input wb_clk_i;		// clock signal
@@ -49,6 +49,6 @@ module dummy(/*AUTOARG*/
 		 wbs_dat64_i1,
 		 wbs_dat64_i2,
 		 wbs_dat64_i3;
-
+   input [23:0]  dc0, dc1;
    
 endmodule // dummy

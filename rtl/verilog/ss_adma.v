@@ -84,10 +84,10 @@ module ss_adma(/*AUTOARG*/
    wire			c_done3;		// From r_3 of ss_sg.v
    wire [7:0]		csr;			// From ctrl of ctrl.v
    wire [31:0]		dar;			// From ctrl of ctrl.v
+   wire [23:0]		dc0;			// From ctrl of ctrl.v
+   wire [23:0]		dc1;			// From ctrl of ctrl.v
    wire			enable;			// From wbm of wbm.v
    wire [4:0]		gnt;			// From arbiter of arbiter.v
-   wire			int_ack;		// From wbm of wbm.v
-   wire			int_ack_clear;		// From ctrl of ctrl.v
    wire [31:3]		ndar;			// From wbm of wbm.v
    wire			ndar_dirty;		// From wbm of wbm.v
    wire			ndar_dirty_clear;	// From ctrl of ctrl.v
@@ -133,6 +133,7 @@ module ss_adma(/*AUTOARG*/
    wire			ss_xfer1;		// From r_1 of ss_sg.v
    wire			ss_xfer2;		// From r_2 of ss_sg.v
    wire			ss_xfer3;		// From r_3 of ss_sg.v
+   wire			wb_int_clear;		// From wbm of wbm.v
    wire			wbs_ack0;		// From m0 of mixer.v
    wire			wbs_ack1;		// From m0 of mixer.v
    wire			wbs_ack2;		// From m0 of mixer.v
@@ -444,7 +445,9 @@ module ss_adma(/*AUTOARG*/
 	     .ss_xfer0			(ss_xfer0),
 	     .ss_xfer1			(ss_xfer1),
 	     .ss_xfer2			(ss_xfer2),
-	     .ss_xfer3			(ss_xfer3));
+	     .ss_xfer3			(ss_xfer3),
+	     .dc0			(dc0[23:0]),
+	     .dc1			(dc1[23:0]));
 
    /* gnt */
    arbiter arbiter(/*AUTOINST*/
@@ -476,7 +479,7 @@ module ss_adma(/*AUTOARG*/
 	   .ndar			(ndar[31:3]),
 	   .resume			(resume),
 	   .enable			(enable),
-	   .int_ack			(int_ack),
+	   .wb_int_clear		(wb_int_clear),
 	   // Inputs
 	   .wb_clk_i			(wb_clk_i),
 	   .wb_rst_i			(wb_rst_i),
@@ -510,7 +513,6 @@ module ss_adma(/*AUTOARG*/
 	   .dar				(dar[31:0]),
 	   .csr				(csr[7:0]),
 	   .ndar_dirty_clear		(ndar_dirty_clear),
-	   .int_ack_clear		(int_ack_clear),
 	   .resume_clear		(resume_clear),
 	   .wb_int_o			(wb_int_o),
 	   .busy			(busy));
@@ -545,9 +547,10 @@ module ss_adma(/*AUTOARG*/
 	     .dar			(dar[31:0]),
 	     .csr			(csr[7:0]),
 	     .ndar_dirty_clear		(ndar_dirty_clear),
-	     .int_ack_clear		(int_ack_clear),
 	     .busy			(busy),
 	     .resume_clear		(resume_clear),
+	     .dc0			(dc0[23:0]),
+	     .dc1			(dc1[23:0]),
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
@@ -562,7 +565,7 @@ module ss_adma(/*AUTOARG*/
 	     .c_done3			(c_done3),
 	     .ndar_dirty		(ndar_dirty),
 	     .ndar			(ndar[31:3]),
-	     .int_ack			(int_ack),
+	     .wb_int_clear		(wb_int_clear),
 	     .resume			(resume),
 	     .enable			(enable));
    
