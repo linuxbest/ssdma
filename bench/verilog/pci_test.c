@@ -79,20 +79,46 @@ typedef struct {
 } pcidev_t;
 static pcidev_t lzf_dev;
 static pcidev_t *dev = &lzf_dev;
-#if 0
+
 static void dump_reg(unsigned int lzf_mem) 
 {
-	printf("CCR %08X CSR %08X CDAR %08X NDAR %08X\n"
-	       "NAD %08X SAD %08X CDA  %08X DAD  %08X\n"
-               "SBC %08X DC  %08X FC   %08X DBC  %08X\n",
-               readl(DMA_CCR(dev)), readl(DMA_CSR(dev)),
-               readl(DMA_DAR(dev)), readl(DMA_NDAR(dev)),
-               readl(DMA_M_NAD(dev)), readl(DMA_M_SAD(dev)),
-               readl(DMA_M_CAD(dev)), readl(DMA_M_DAD(dev)),
-               readl(DMA_M_SBC(dev)), readl(DMA_M_DC(dev)),
-               readl(DMA_M_FC(dev)),  readl(DMA_M_DBC(dev)));
+        int i = 0, j = 0;
+        for (i = 0; i < 4; i ++) {
+                uint32_t u0, u1, u2, u3;
+                u0 = lzf_read(lzf_mem, j*4); j++;
+                u1 = lzf_read(lzf_mem, j*4); j++;
+                u2 = lzf_read(lzf_mem, j*4); j++;
+                u3 = lzf_read(lzf_mem, j*4); j++;
+                printf("%d: %08X %08X %08X %08X\n", i, u0, u1, u2, u3);
+        }
 }
 
+static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
+{
+        int off = 0x10000;
+        job_desc_t *j = (job_desc_t *)(system_mem + off);
+
+        j->next_desc = 0;
+        j->ctl_addr  = 0;
+        j->dc_fc     = DC_NULL;
+        j->u0        = 0;
+        j->src_desc  = 0;
+        j->u1        = 0;
+        j->dst_desc  = 0;
+        j->u2        = 0;
+
+        lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
+        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
+	
+        pcisim_wait(200, 0);
+        /*while (lzf_read(lzf_mem, OFS_CSR) & CSR_BUSY) {
+                break;
+        }*/
+
+        return 0;
+}
+
+#if 0
 static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem, 
                 int cnt, FILE *fp)
 {
@@ -615,8 +641,8 @@ main(int argc, char *argv[])
 	dev_scan(idx);
 	
 	lzf_dev.mmr_base = lzf_mem;
-	sum = lzf_read(lzf_mem, OFS_CSR);
-        printf("%d\n", sum);
+        /*dump_reg(lzf_mem);*/
+        test_0(phys_mem, lzf_mem);
 #if 0	
 	if (sum != DMA_MAGIC_NUM) {
 		printf("Magic %x\n", sum);

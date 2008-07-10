@@ -17,7 +17,8 @@ module ss_adma(/*AUTOARG*/
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
    wbm_stb_o, wbm_sel_o, wbm_dat_o, wbm_dat64_o, wbm_cyc_o,
    wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en, spi_do_o,
-   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, wb_int_o,
+   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, ctrl_state,
+   wb_int_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
@@ -28,6 +29,7 @@ module ss_adma(/*AUTOARG*/
    
    /*AUTOOUTPUT*/
    // Beginning of automatic outputs (from unused autoinst outputs)
+   output [7:0]		ctrl_state;		// From ctrl of ctrl.v
    output		spi_clk_o;		// From wbm of wbm.v
    output		spi_di_en;		// From wbm of wbm.v
    output		spi_di_o;		// From wbm of wbm.v
@@ -117,6 +119,10 @@ module ss_adma(/*AUTOARG*/
    wire [31:0]		ss_dat1;		// From ctrl of ctrl.v
    wire [31:0]		ss_dat2;		// From ctrl of ctrl.v
    wire [31:0]		ss_dat3;		// From ctrl of ctrl.v
+   wire [23:0]		ss_dc0;			// From ctrl of ctrl.v
+   wire [23:0]		ss_dc1;			// From ctrl of ctrl.v
+   wire [23:0]		ss_dc2;			// From ctrl of ctrl.v
+   wire [23:0]		ss_dc3;			// From ctrl of ctrl.v
    wire			ss_done0;		// From ctrl of ctrl.v
    wire			ss_done1;		// From ctrl of ctrl.v
    wire			ss_done2;		// From ctrl of ctrl.v
@@ -207,7 +213,8 @@ module ss_adma(/*AUTOARG*/
     .\(.*\)(\1@[]),
     );
     */
-   ss_sg r_0(/*AUTOINST*/
+   ss_sg r_0(.rw(1'b0),
+	     /*AUTOINST*/
 	     // Outputs
 	     .wbs_cyc			(wbs_cyc0),		 // Templated
 	     .wbs_stb			(wbs_stb0),		 // Templated
@@ -233,9 +240,11 @@ module ss_adma(/*AUTOARG*/
 	     .ss_we			(ss_we0),		 // Templated
 	     .ss_adr			(ss_adr0[1:0]),		 // Templated
 	     .ss_done			(ss_done0),		 // Templated
+	     .ss_dc			(ss_dc0[23:0]),		 // Templated
 	     .ss_ready			(ss_ready0));		 // Templated
 
-   ss_sg r_1 (/*AUTOINST*/
+   ss_sg r_1 (.rw(1'b1),
+	      /*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc1),		 // Templated
 	      .wbs_stb			(wbs_stb1),		 // Templated
@@ -261,9 +270,11 @@ module ss_adma(/*AUTOARG*/
 	      .ss_we			(ss_we1),		 // Templated
 	      .ss_adr			(ss_adr1[1:0]),		 // Templated
 	      .ss_done			(ss_done1),		 // Templated
+	      .ss_dc			(ss_dc1[23:0]),		 // Templated
 	      .ss_ready			(ss_ready1));		 // Templated
 
-   ss_sg r_2 (/*AUTOINST*/
+   ss_sg r_2 (.rw(1'b0),
+	      /*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc2),		 // Templated
 	      .wbs_stb			(wbs_stb2),		 // Templated
@@ -289,9 +300,11 @@ module ss_adma(/*AUTOARG*/
 	      .ss_we			(ss_we2),		 // Templated
 	      .ss_adr			(ss_adr2[1:0]),		 // Templated
 	      .ss_done			(ss_done2),		 // Templated
+	      .ss_dc			(ss_dc2[23:0]),		 // Templated
 	      .ss_ready			(ss_ready2));		 // Templated
 
-   ss_sg r_3 (/*AUTOINST*/
+   ss_sg r_3 (.rw(1'b1),
+	      /*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc3),		 // Templated
 	      .wbs_stb			(wbs_stb3),		 // Templated
@@ -317,12 +330,8 @@ module ss_adma(/*AUTOARG*/
 	      .ss_we			(ss_we3),		 // Templated
 	      .ss_adr			(ss_adr3[1:0]),		 // Templated
 	      .ss_done			(ss_done3),		 // Templated
+	      .ss_dc			(ss_dc3[23:0]),		 // Templated
 	      .ss_ready			(ss_ready3));		 // Templated
-   
-   defparam 	 r_0.RW = 0;
-   defparam 	 r_1.RW = 1;
-   defparam 	 r_2.RW = 0;
-   defparam 	 r_3.RW = 1;
    
    mixer m0 (/*AUTOINST*/
 	     // Outputs
@@ -543,6 +552,10 @@ module ss_adma(/*AUTOARG*/
 	     .ss_adr1			(ss_adr1[1:0]),
 	     .ss_adr2			(ss_adr2[1:0]),
 	     .ss_adr3			(ss_adr3[1:0]),
+	     .ss_dc0			(ss_dc0[23:0]),
+	     .ss_dc1			(ss_dc1[23:0]),
+	     .ss_dc2			(ss_dc2[23:0]),
+	     .ss_dc3			(ss_dc3[23:0]),
 	     .wb_int_o			(wb_int_o),
 	     .dar			(dar[31:0]),
 	     .csr			(csr[7:0]),
@@ -551,6 +564,7 @@ module ss_adma(/*AUTOARG*/
 	     .resume_clear		(resume_clear),
 	     .dc0			(dc0[23:0]),
 	     .dc1			(dc1[23:0]),
+	     .ctrl_state		(ctrl_state[7:0]),
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),

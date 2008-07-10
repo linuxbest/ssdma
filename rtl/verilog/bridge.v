@@ -342,7 +342,7 @@ module bridge(/*AUTOARG*/
    bufif0 CBE_buf7 ( PCI_CBE64[3], CBE64_out[3], CBE64_en[3] ) ;
    
    bufif0 FRAME_buf    ( PCI_FRAMEn, FRAME_out, FRAME_en ) ;
-   bufif0 REQ64n_buf   ( PCI_REQ64n, REQ64_out, REQ64_en ) ;
+   bufif0 REQ64n_buf   ( PCI_REQ64n, FRAME_out, FRAME_en ) ;
    
    //bufif0 ACK64n_buf   ( ACK64n, ACK64n_out, ACK64n_en ) ;
    bufif0 IRDY_buf     ( PCI_IRDYn, IRDY_out, IRDY_en ) ;

@@ -63,7 +63,13 @@ module main;
    assign spi_sel = 0;
    initial begin
       $dumpfile("pci.vcd");
-      $dumpvars(0, top);
+      //$dumpvars(0, top);
    end
-  
+   reg vcd = 0;
+   always @(posedge clk) begin
+     if (top.adma.enable && vcd == 0) begin
+      $dumpvars(0, top);
+      vcd = 1;
+     end
+   end
 endmodule

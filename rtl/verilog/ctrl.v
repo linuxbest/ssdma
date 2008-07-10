@@ -50,8 +50,9 @@ module ctrl(/*AUTOARG*/
    wbs_adr4, wbs_dat_i4, wbs_dat64_i4, ss_we0, ss_we1,
    ss_we2, ss_we3, ss_done0, ss_done1, ss_done2, ss_done3,
    ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0, ss_adr1,
-   ss_adr2, ss_adr3, wb_int_o, dar, csr, ndar_dirty_clear,
-   busy, resume_clear, dc0, dc1,
+   ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2, ss_dc3,
+   wb_int_o, dar, csr, ndar_dirty_clear, busy, resume_clear,
+   dc0, dc1, ctrl_state,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
@@ -96,7 +97,10 @@ module ctrl(/*AUTOARG*/
 		 c_done1,
 		 c_done2,
 		 c_done3;
-   
+   output [23:0] ss_dc0,
+		 ss_dc1,
+		 ss_dc2,
+		 ss_dc3;
    output 	 wb_int_o;
    
    output [31:0] dar;
@@ -282,7 +286,11 @@ module ctrl(/*AUTOARG*/
 	   endcase
 	end // if (state == CMD1 && wbs_ack4)
      end // always @ (posedge wb_clk_i)
-
+   assign ss_dc0 = dc0;
+   assign ss_dc1 = dc0;
+   assign ss_dc2 = dc1;
+   assign ss_dc3 = dc2;
+   
    reg wb_int_next, wb_int_set;
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
@@ -527,6 +535,10 @@ module ctrl(/*AUTOARG*/
 	  
 	endcase // case(state)
      end // always @ (...
+  
+   /* DEBUG */
+   output [7:0] ctrl_state;
+   assign 	ctrl_state = state;
    
 endmodule // ctrl
 
