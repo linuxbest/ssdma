@@ -106,6 +106,14 @@ State 9
 	{ Index "" }
 }
 
+State 44
+{
+	{ Name "S_NEXT1" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Index "" }
+}
+
 # GRAPH EDGES
 
 Transition 10
@@ -137,7 +145,7 @@ Transition 12
 	{ Parent 0 }
 	{ Subject1 6 }
 	{ Subject2 3 }
-	{ Event "dc0[14]" }
+	{ Event "dc0[14] == 1" }
 	{ Actions 0 }
 }
 
@@ -196,28 +204,6 @@ Transition 17
 	{ Actions 0 }
 }
 
-Transition 18
-{
-	{ Name "" }
-	{ Annotation "" }
-	{ Parent 0 }
-	{ Subject1 5 }
-	{ Subject2 1 }
-	{ Event "dc1[14] == 0" }
-	{ Actions 0 }
-}
-
-Transition 19
-{
-	{ Name "" }
-	{ Annotation "" }
-	{ Parent 0 }
-	{ Subject1 5 }
-	{ Subject2 2 }
-	{ Event "dc1[14] == 1" }
-	{ Actions 0 }
-}
-
 Transition 20
 {
 	{ Name "" }
@@ -240,6 +226,50 @@ Transition 21
 	{ Actions 0 }
 }
 
+Transition 45
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 5 }
+	{ Subject2 44 }
+	{ Event "" }
+	{ Actions 0 }
+}
+
+Transition 46
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 44 }
+	{ Subject2 2 }
+	{ Event "dc1[14] == 1" }
+	{ Actions 0 }
+}
+
+Transition 47
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 44 }
+	{ Subject2 1 }
+	{ Event "dc1[14] == 0" }
+	{ Actions 0 }
+}
+
+Transition 52
+{
+	{ Name "" }
+	{ Annotation "" }
+	{ Parent 0 }
+	{ Subject1 6 }
+	{ Subject2 8 }
+	{ Event "dc0[14] == 0" }
+	{ Actions 0 }
+}
+
 # VIEWS AND GRAPHICAL SHAPES
 
 View 22
@@ -252,7 +282,7 @@ ArrowBox 23
 {
 	{ View 22 }
 	{ Subject 1 }
-	{ Position 280 290 }
+	{ Position 280 350 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -270,7 +300,7 @@ Box 24
 {
 	{ View 22 }
 	{ Subject 2 }
-	{ Position 70 110 }
+	{ Position 70 170 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -288,7 +318,7 @@ Box 25
 {
 	{ View 22 }
 	{ Subject 3 }
-	{ Position 520 110 }
+	{ Position 520 170 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -306,7 +336,7 @@ Box 26
 {
 	{ View 22 }
 	{ Subject 4 }
-	{ Position 520 440 }
+	{ Position 520 500 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -324,7 +354,7 @@ Box 27
 {
 	{ View 22 }
 	{ Subject 5 }
-	{ Position 70 440 }
+	{ Position 70 500 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -348,9 +378,9 @@ TransitionArrow 28
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 257 270 }
-	{ Point 93 130 }
-	{ NamePosition 184 193 }
+	{ Point 257 330 }
+	{ Point 93 190 }
+	{ NamePosition 184 253 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -359,7 +389,7 @@ TransitionArrow 28
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 175 200 }
+	{ AnchorPoint 175 260 }
 	{ Separator Up }
 	{ LineNumber 1 }
 }
@@ -368,7 +398,7 @@ Box 29
 {
 	{ View 22 }
 	{ Subject 6 }
-	{ Position 280 50 }
+	{ Position 280 110 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -392,9 +422,9 @@ TransitionArrow 30
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 110 99 }
-	{ Point 240 61 }
-	{ NamePosition 172 71 }
+	{ Point 110 159 }
+	{ Point 240 121 }
+	{ NamePosition 172 131 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -403,7 +433,7 @@ TransitionArrow 30
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 175 80 }
+	{ AnchorPoint 175 140 }
 	{ Separator Up }
 	{ LineNumber 1 }
 }
@@ -418,9 +448,9 @@ TransitionArrow 31
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 320 60 }
-	{ Point 480 100 }
-	{ NamePosition 403 71 }
+	{ Point 320 120 }
+	{ Point 480 160 }
+	{ NamePosition 403 131 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -429,7 +459,7 @@ TransitionArrow 31
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 400 80 }
+	{ AnchorPoint 400 140 }
 	{ Separator Up }
 	{ LineNumber 1 }
 }
@@ -438,7 +468,7 @@ Hexagon 32
 {
 	{ View 22 }
 	{ Subject 7 }
-	{ Position 270 440 }
+	{ Position 270 500 }
 	{ Size 95 48 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -462,9 +492,9 @@ TransitionArrow 33
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 223 440 }
-	{ Point 110 440 }
-	{ NamePosition 166 430 }
+	{ Point 223 500 }
+	{ Point 110 500 }
+	{ NamePosition 166 490 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -473,7 +503,7 @@ TransitionArrow 33
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 166 440 }
+	{ AnchorPoint 166 500 }
 	{ Separator Up }
 	{ LineNumber 1 }
 }
@@ -482,7 +512,7 @@ Hexagon 34
 {
 	{ View 22 }
 	{ Subject 8 }
-	{ Position 520 290 }
+	{ Position 520 350 }
 	{ Size 86 43 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -506,9 +536,9 @@ TransitionArrow 35
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 520 312 }
-	{ Point 520 420 }
-	{ NamePosition 506 366 }
+	{ Point 520 372 }
+	{ Point 520 480 }
+	{ NamePosition 506 426 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -517,7 +547,7 @@ TransitionArrow 35
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 520 366 }
+	{ AnchorPoint 520 426 }
 	{ Separator Right }
 	{ LineNumber 1 }
 }
@@ -532,9 +562,9 @@ TransitionArrow 36
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 520 130 }
-	{ Point 520 269 }
-	{ NamePosition 506 199 }
+	{ Point 520 190 }
+	{ Point 520 329 }
+	{ NamePosition 506 259 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -543,7 +573,7 @@ TransitionArrow 36
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 520 199 }
+	{ AnchorPoint 520 259 }
 	{ Separator Right }
 	{ LineNumber 1 }
 }
@@ -558,9 +588,9 @@ TransitionArrow 37
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 480 440 }
-	{ Point 318 440 }
-	{ NamePosition 399 430 }
+	{ Point 480 500 }
+	{ Point 318 500 }
+	{ NamePosition 399 490 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -569,7 +599,7 @@ TransitionArrow 37
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 399 440 }
+	{ AnchorPoint 399 500 }
 	{ Separator Up }
 	{ LineNumber 1 }
 }
@@ -584,9 +614,9 @@ TransitionArrow 38
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 488 420 }
-	{ Point 312 310 }
-	{ NamePosition 407 357 }
+	{ Point 488 480 }
+	{ Point 312 370 }
+	{ NamePosition 407 417 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -595,60 +625,8 @@ TransitionArrow 38
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 400 365 }
+	{ AnchorPoint 400 425 }
 	{ Separator Up }
-	{ LineNumber 1 }
-}
-
-TransitionArrow 39
-{
-	{ View 22 }
-	{ Subject 18 }
-	{ FromShape 27 }
-	{ ToShape 23 }
-	{ Curved False }
-	{ End1 Empty }
-	{ End2 FilledArrow }
-	{ Points 2 }
-	{ Point 98 420 }
-	{ Point 252 310 }
-	{ NamePosition 167 357 }
-	{ Color "black" }
-	{ LineWidth 1 }
-	{ LineStyle Solid }
-	{ FixedName False }
-	{ Font "-*-courier-medium-r-normal--10*" }
-	{ TextAlignment Center }
-	{ TextColor "black" }
-	{ NameUnderlined False }
-	{ AnchorPoint 175 365 }
-	{ Separator Up }
-	{ LineNumber 1 }
-}
-
-TransitionArrow 40
-{
-	{ View 22 }
-	{ Subject 19 }
-	{ FromShape 27 }
-	{ ToShape 24 }
-	{ Curved False }
-	{ End1 Empty }
-	{ End2 FilledArrow }
-	{ Points 2 }
-	{ Point 70 420 }
-	{ Point 70 130 }
-	{ NamePosition 56 275 }
-	{ Color "black" }
-	{ LineWidth 1 }
-	{ LineStyle Solid }
-	{ FixedName False }
-	{ Font "-*-courier-medium-r-normal--10*" }
-	{ TextAlignment Center }
-	{ TextColor "black" }
-	{ NameUnderlined False }
-	{ AnchorPoint 70 275 }
-	{ Separator Right }
 	{ LineNumber 1 }
 }
 
@@ -656,7 +634,7 @@ Box 41
 {
 	{ View 22 }
 	{ Subject 9 }
-	{ Position 370 110 }
+	{ Position 370 170 }
 	{ Size 80 40 }
 	{ Color "black" }
 	{ LineWidth 1 }
@@ -680,9 +658,9 @@ TransitionArrow 42
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 330 110 }
-	{ Point 110 110 }
-	{ NamePosition 220 100 }
+	{ Point 330 170 }
+	{ Point 110 170 }
+	{ NamePosition 220 160 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -691,7 +669,7 @@ TransitionArrow 42
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 220 110 }
+	{ AnchorPoint 220 170 }
 	{ Separator Up }
 	{ LineNumber 1 }
 }
@@ -706,9 +684,9 @@ TransitionArrow 43
 	{ End1 Empty }
 	{ End2 FilledArrow }
 	{ Points 2 }
-	{ Point 290 270 }
-	{ Point 360 130 }
-	{ NamePosition 313 196 }
+	{ Point 290 330 }
+	{ Point 360 190 }
+	{ NamePosition 313 256 }
 	{ Color "black" }
 	{ LineWidth 1 }
 	{ LineStyle Solid }
@@ -717,8 +695,134 @@ TransitionArrow 43
 	{ TextAlignment Center }
 	{ TextColor "black" }
 	{ NameUnderlined False }
-	{ AnchorPoint 325 200 }
+	{ AnchorPoint 325 260 }
 	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+Box 48
+{
+	{ View 22 }
+	{ Subject 44 }
+	{ Position 70 350 }
+	{ Size 80 40 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FillStyle Unfilled }
+	{ FillColor "white" }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+}
+
+TransitionArrow 49
+{
+	{ View 22 }
+	{ Subject 45 }
+	{ FromShape 27 }
+	{ ToShape 48 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 70 480 }
+	{ Point 70 370 }
+	{ NamePosition 56 425 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 70 425 }
+	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 50
+{
+	{ View 22 }
+	{ Subject 46 }
+	{ FromShape 48 }
+	{ ToShape 24 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 70 330 }
+	{ Point 70 190 }
+	{ NamePosition 56 260 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 70 260 }
+	{ Separator Right }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 51
+{
+	{ View 22 }
+	{ Subject 47 }
+	{ FromShape 48 }
+	{ ToShape 23 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 2 }
+	{ Point 110 350 }
+	{ Point 240 350 }
+	{ NamePosition 175 340 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 175 350 }
+	{ Separator Up }
+	{ LineNumber 1 }
+}
+
+TransitionArrow 53
+{
+	{ View 22 }
+	{ Subject 52 }
+	{ FromShape 29 }
+	{ ToShape 34 }
+	{ Curved False }
+	{ End1 Empty }
+	{ End2 FilledArrow }
+	{ Points 6 }
+	{ Point 320 90 }
+	{ Point 600 90 }
+	{ Point 600 90 }
+	{ Point 600 350 }
+	{ Point 560 350 }
+	{ Point 563 350 }
+	{ NamePosition 460 80 }
+	{ Color "black" }
+	{ LineWidth 1 }
+	{ LineStyle Solid }
+	{ FixedName False }
+	{ Font "-*-courier-medium-r-normal--10*" }
+	{ TextAlignment Center }
+	{ TextColor "black" }
+	{ NameUnderlined False }
+	{ AnchorPoint 460 90 }
+	{ Separator Up }
 	{ LineNumber 1 }
 }
 
