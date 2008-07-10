@@ -17,7 +17,7 @@
 module ss_sg(/*AUTOARG*/
    // Outputs
    wbs_cyc, wbs_stb, wbs_we, wbs_cab, wbs_sel, wbs_adr,
-   sg_state, sg_desc, sg_addr, sg_next, ss_xfer,
+   sg_state, sg_desc, sg_addr, sg_next, ss_xfer, c_done,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o, wbs_dat64_o, wbs_ack,
    wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done,
@@ -223,7 +223,7 @@ module ss_sg(/*AUTOARG*/
 	     wbs_stb_n = 1'b1;
 	     wbs_we_n  = 1'b0;
 	     wbs_cab_n = 1'b1;
-	     wbs_sel_n = 4'h0;
+	     wbs_sel_n = 4'b1111;
 	     
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
@@ -328,5 +328,8 @@ module ss_sg(/*AUTOARG*/
 
    always @(/*AS*/sg_len)
      sg_desc = {sg_len};
+
+   output c_done;
+   assign c_done = state == S_END;
    
 endmodule // ss_copy

@@ -233,7 +233,7 @@ module wbm(/*AUTOARG*/
 	     2'b00: ccr_we = 1;
 	     2'b01:;
 	     2'b10:;
-	     2'b11: ndar_we = 1;
+	     2'b11: ndar_we = !enable;/* to write NDAR must disable enable */
 	   endcase // case(wbs_adr_i[3:2])
 	end
      end // always @ (...

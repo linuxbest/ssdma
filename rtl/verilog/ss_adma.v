@@ -77,18 +77,22 @@ module ss_adma(/*AUTOARG*/
    
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
-   wire			busy;			// From d_4 of dummy.v
-   wire [7:0]		csr;			// From d_4 of dummy.v
-   wire [31:0]		dar;			// From d_4 of dummy.v
+   wire			busy;			// From ctrl of ctrl.v
+   wire			c_done0;		// From r_0 of ss_sg.v
+   wire			c_done1;		// From r_1 of ss_sg.v
+   wire			c_done2;		// From r_2 of ss_sg.v
+   wire			c_done3;		// From r_3 of ss_sg.v
+   wire [7:0]		csr;			// From ctrl of ctrl.v
+   wire [31:0]		dar;			// From ctrl of ctrl.v
    wire			enable;			// From wbm of wbm.v
    wire [4:0]		gnt;			// From arbiter of arbiter.v
    wire			int_ack;		// From wbm of wbm.v
-   wire			int_ack_clear;		// From d_4 of dummy.v
+   wire			int_ack_clear;		// From ctrl of ctrl.v
    wire [31:3]		ndar;			// From wbm of wbm.v
    wire			ndar_dirty;		// From wbm of wbm.v
-   wire			ndar_dirty_clear;	// From d_4 of dummy.v
+   wire			ndar_dirty_clear;	// From ctrl of ctrl.v
    wire			resume;			// From wbm of wbm.v
-   wire			resume_clear;		// From d_4 of dummy.v
+   wire			resume_clear;		// From ctrl of ctrl.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
    wire [31:3]		sg_addr1;		// From r_1 of ss_sg.v
    wire [31:3]		sg_addr2;		// From r_2 of ss_sg.v
@@ -105,26 +109,26 @@ module ss_adma(/*AUTOARG*/
    wire [7:0]		sg_state1;		// From r_1 of ss_sg.v
    wire [7:0]		sg_state2;		// From r_2 of ss_sg.v
    wire [7:0]		sg_state3;		// From r_3 of ss_sg.v
-   wire [1:0]		ss_adr0;		// From d_4 of dummy.v
-   wire [1:0]		ss_adr1;		// From d_4 of dummy.v
-   wire [1:0]		ss_adr2;		// From d_4 of dummy.v
-   wire [1:0]		ss_adr3;		// From d_4 of dummy.v
-   wire [31:0]		ss_dat0;		// From d_4 of dummy.v
-   wire [31:0]		ss_dat1;		// From d_4 of dummy.v
-   wire [31:0]		ss_dat2;		// From d_4 of dummy.v
-   wire [31:0]		ss_dat3;		// From d_4 of dummy.v
-   wire			ss_done0;		// From d_4 of dummy.v
-   wire			ss_done1;		// From d_4 of dummy.v
-   wire			ss_done2;		// From d_4 of dummy.v
-   wire			ss_done3;		// From d_4 of dummy.v
+   wire [1:0]		ss_adr0;		// From ctrl of ctrl.v
+   wire [1:0]		ss_adr1;		// From ctrl of ctrl.v
+   wire [1:0]		ss_adr2;		// From ctrl of ctrl.v
+   wire [1:0]		ss_adr3;		// From ctrl of ctrl.v
+   wire [31:0]		ss_dat0;		// From ctrl of ctrl.v
+   wire [31:0]		ss_dat1;		// From ctrl of ctrl.v
+   wire [31:0]		ss_dat2;		// From ctrl of ctrl.v
+   wire [31:0]		ss_dat3;		// From ctrl of ctrl.v
+   wire			ss_done0;		// From ctrl of ctrl.v
+   wire			ss_done1;		// From ctrl of ctrl.v
+   wire			ss_done2;		// From ctrl of ctrl.v
+   wire			ss_done3;		// From ctrl of ctrl.v
    wire			ss_ready0;		// From d_4 of dummy.v
    wire			ss_ready1;		// From d_4 of dummy.v
    wire			ss_ready2;		// From d_4 of dummy.v
    wire			ss_ready3;		// From d_4 of dummy.v
-   wire			ss_we0;			// From d_4 of dummy.v
-   wire			ss_we1;			// From d_4 of dummy.v
-   wire			ss_we2;			// From d_4 of dummy.v
-   wire			ss_we3;			// From d_4 of dummy.v
+   wire			ss_we0;			// From ctrl of ctrl.v
+   wire			ss_we1;			// From ctrl of ctrl.v
+   wire			ss_we2;			// From ctrl of ctrl.v
+   wire			ss_we3;			// From ctrl of ctrl.v
    wire			ss_xfer0;		// From r_0 of ss_sg.v
    wire			ss_xfer1;		// From r_1 of ss_sg.v
    wire			ss_xfer2;		// From r_2 of ss_sg.v
@@ -138,22 +142,22 @@ module ss_adma(/*AUTOARG*/
    wire [31:0]		wbs_adr1;		// From r_1 of ss_sg.v
    wire [31:0]		wbs_adr2;		// From r_2 of ss_sg.v
    wire [31:0]		wbs_adr3;		// From r_3 of ss_sg.v
-   wire [31:0]		wbs_adr4;		// From d_4 of dummy.v
+   wire [31:0]		wbs_adr4;		// From ctrl of ctrl.v
    wire			wbs_cab0;		// From r_0 of ss_sg.v
    wire			wbs_cab1;		// From r_1 of ss_sg.v
    wire			wbs_cab2;		// From r_2 of ss_sg.v
    wire			wbs_cab3;		// From r_3 of ss_sg.v
-   wire			wbs_cab4;		// From d_4 of dummy.v
+   wire			wbs_cab4;		// From ctrl of ctrl.v
    wire			wbs_cyc0;		// From r_0 of ss_sg.v
    wire			wbs_cyc1;		// From r_1 of ss_sg.v
    wire			wbs_cyc2;		// From r_2 of ss_sg.v
    wire			wbs_cyc3;		// From r_3 of ss_sg.v
-   wire			wbs_cyc4;		// From d_4 of dummy.v
+   wire			wbs_cyc4;		// From ctrl of ctrl.v
    wire [31:0]		wbs_dat64_i0;		// From d_4 of dummy.v
    wire [31:0]		wbs_dat64_i1;		// From d_4 of dummy.v
    wire [31:0]		wbs_dat64_i2;		// From d_4 of dummy.v
    wire [31:0]		wbs_dat64_i3;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat64_i4;		// From d_4 of dummy.v
+   wire [31:0]		wbs_dat64_i4;		// From ctrl of ctrl.v
    wire [31:0]		wbs_dat64_o0;		// From m0 of mixer.v
    wire [31:0]		wbs_dat64_o1;		// From m0 of mixer.v
    wire [31:0]		wbs_dat64_o2;		// From m0 of mixer.v
@@ -163,7 +167,7 @@ module ss_adma(/*AUTOARG*/
    wire [31:0]		wbs_dat_i1;		// From d_4 of dummy.v
    wire [31:0]		wbs_dat_i2;		// From d_4 of dummy.v
    wire [31:0]		wbs_dat_i3;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat_i4;		// From d_4 of dummy.v
+   wire [31:0]		wbs_dat_i4;		// From ctrl of ctrl.v
    wire [31:0]		wbs_dat_o0;		// From m0 of mixer.v
    wire [31:0]		wbs_dat_o1;		// From m0 of mixer.v
    wire [31:0]		wbs_dat_o2;		// From m0 of mixer.v
@@ -183,17 +187,17 @@ module ss_adma(/*AUTOARG*/
    wire [3:0]		wbs_sel1;		// From r_1 of ss_sg.v
    wire [3:0]		wbs_sel2;		// From r_2 of ss_sg.v
    wire [3:0]		wbs_sel3;		// From r_3 of ss_sg.v
-   wire [3:0]		wbs_sel4;		// From d_4 of dummy.v
+   wire [3:0]		wbs_sel4;		// From ctrl of ctrl.v
    wire			wbs_stb0;		// From r_0 of ss_sg.v
    wire			wbs_stb1;		// From r_1 of ss_sg.v
    wire			wbs_stb2;		// From r_2 of ss_sg.v
    wire			wbs_stb3;		// From r_3 of ss_sg.v
-   wire			wbs_stb4;		// From d_4 of dummy.v
+   wire			wbs_stb4;		// From ctrl of ctrl.v
    wire			wbs_we0;		// From r_0 of ss_sg.v
    wire			wbs_we1;		// From r_1 of ss_sg.v
    wire			wbs_we2;		// From r_2 of ss_sg.v
    wire			wbs_we3;		// From r_3 of ss_sg.v
-   wire			wbs_we4;		// From d_4 of dummy.v
+   wire			wbs_we4;		// From ctrl of ctrl.v
    // End of automatics
    
    /* ss_sg AUTO_TEMPLATE "_\([0-9]+\)" (
@@ -215,6 +219,7 @@ module ss_adma(/*AUTOARG*/
 	     .sg_addr			(sg_addr0[31:3]),	 // Templated
 	     .sg_next			(sg_next0[31:3]),	 // Templated
 	     .ss_xfer			(ss_xfer0),		 // Templated
+	     .c_done			(c_done0),		 // Templated
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),		 // Templated
 	     .wb_rst_i			(wb_rst_i),		 // Templated
@@ -242,6 +247,7 @@ module ss_adma(/*AUTOARG*/
 	      .sg_addr			(sg_addr1[31:3]),	 // Templated
 	      .sg_next			(sg_next1[31:3]),	 // Templated
 	      .ss_xfer			(ss_xfer1),		 // Templated
+	      .c_done			(c_done1),		 // Templated
 	      // Inputs
 	      .wb_clk_i			(wb_clk_i),		 // Templated
 	      .wb_rst_i			(wb_rst_i),		 // Templated
@@ -269,6 +275,7 @@ module ss_adma(/*AUTOARG*/
 	      .sg_addr			(sg_addr2[31:3]),	 // Templated
 	      .sg_next			(sg_next2[31:3]),	 // Templated
 	      .ss_xfer			(ss_xfer2),		 // Templated
+	      .c_done			(c_done2),		 // Templated
 	      // Inputs
 	      .wb_clk_i			(wb_clk_i),		 // Templated
 	      .wb_rst_i			(wb_rst_i),		 // Templated
@@ -296,6 +303,7 @@ module ss_adma(/*AUTOARG*/
 	      .sg_addr			(sg_addr3[31:3]),	 // Templated
 	      .sg_next			(sg_next3[31:3]),	 // Templated
 	      .ss_xfer			(ss_xfer3),		 // Templated
+	      .c_done			(c_done3),		 // Templated
 	      // Inputs
 	      .wb_clk_i			(wb_clk_i),		 // Templated
 	      .wb_rst_i			(wb_rst_i),		 // Templated
@@ -402,30 +410,6 @@ module ss_adma(/*AUTOARG*/
 
    dummy d_4(/*AUTOINST*/
 	     // Outputs
-	     .wbs_cyc4			(wbs_cyc4),
-	     .wbs_stb4			(wbs_stb4),
-	     .wbs_we4			(wbs_we4),
-	     .wbs_cab4			(wbs_cab4),
-	     .wbs_sel4			(wbs_sel4[3:0]),
-	     .wbs_adr4			(wbs_adr4[31:0]),
-	     .wbs_dat_i4		(wbs_dat_i4[31:0]),
-	     .wbs_dat64_i4		(wbs_dat64_i4[31:0]),
-	     .ss_we0			(ss_we0),
-	     .ss_we1			(ss_we1),
-	     .ss_we2			(ss_we2),
-	     .ss_we3			(ss_we3),
-	     .ss_done0			(ss_done0),
-	     .ss_done1			(ss_done1),
-	     .ss_done2			(ss_done2),
-	     .ss_done3			(ss_done3),
-	     .ss_dat0			(ss_dat0[31:0]),
-	     .ss_dat1			(ss_dat1[31:0]),
-	     .ss_dat2			(ss_dat2[31:0]),
-	     .ss_dat3			(ss_dat3[31:0]),
-	     .ss_adr0			(ss_adr0[1:0]),
-	     .ss_adr1			(ss_adr1[1:0]),
-	     .ss_adr2			(ss_adr2[1:0]),
-	     .ss_adr3			(ss_adr3[1:0]),
 	     .ss_ready0			(ss_ready0),
 	     .ss_ready1			(ss_ready1),
 	     .ss_ready2			(ss_ready2),
@@ -438,21 +422,9 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_dat64_i1		(wbs_dat64_i1[31:0]),
 	     .wbs_dat64_i2		(wbs_dat64_i2[31:0]),
 	     .wbs_dat64_i3		(wbs_dat64_i3[31:0]),
-	     .wb_int_o			(wb_int_o),
-	     .dar			(dar[31:0]),
-	     .csr			(csr[7:0]),
-	     .ndar_dirty_clear		(ndar_dirty_clear),
-	     .int_ack_clear		(int_ack_clear),
-	     .busy			(busy),
-	     .resume_clear		(resume_clear),
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
-	     .wbs_dat_o4		(wbs_dat_o4[31:0]),
-	     .wbs_dat64_o4		(wbs_dat64_o4[31:0]),
-	     .wbs_ack4			(wbs_ack4),
-	     .wbs_err4			(wbs_err4),
-	     .wbs_rty4			(wbs_rty4),
 	     .sg_state0			(sg_state0[7:0]),
 	     .sg_state1			(sg_state1[7:0]),
 	     .sg_state2			(sg_state2[7:0]),
@@ -472,12 +444,7 @@ module ss_adma(/*AUTOARG*/
 	     .ss_xfer0			(ss_xfer0),
 	     .ss_xfer1			(ss_xfer1),
 	     .ss_xfer2			(ss_xfer2),
-	     .ss_xfer3			(ss_xfer3),
-	     .ndar_dirty		(ndar_dirty),
-	     .ndar			(ndar[31:3]),
-	     .int_ack			(int_ack),
-	     .resume			(resume),
-	     .enable			(enable));
+	     .ss_xfer3			(ss_xfer3));
 
    /* gnt */
    arbiter arbiter(/*AUTOINST*/
@@ -547,6 +514,57 @@ module ss_adma(/*AUTOARG*/
 	   .resume_clear		(resume_clear),
 	   .wb_int_o			(wb_int_o),
 	   .busy			(busy));
+
+   ctrl ctrl(/*AUTOINST*/
+	     // Outputs
+	     .wbs_cyc4			(wbs_cyc4),
+	     .wbs_stb4			(wbs_stb4),
+	     .wbs_we4			(wbs_we4),
+	     .wbs_cab4			(wbs_cab4),
+	     .wbs_sel4			(wbs_sel4[3:0]),
+	     .wbs_adr4			(wbs_adr4[31:0]),
+	     .wbs_dat_i4		(wbs_dat_i4[31:0]),
+	     .wbs_dat64_i4		(wbs_dat64_i4[31:0]),
+	     .ss_we0			(ss_we0),
+	     .ss_we1			(ss_we1),
+	     .ss_we2			(ss_we2),
+	     .ss_we3			(ss_we3),
+	     .ss_done0			(ss_done0),
+	     .ss_done1			(ss_done1),
+	     .ss_done2			(ss_done2),
+	     .ss_done3			(ss_done3),
+	     .ss_dat0			(ss_dat0[31:0]),
+	     .ss_dat1			(ss_dat1[31:0]),
+	     .ss_dat2			(ss_dat2[31:0]),
+	     .ss_dat3			(ss_dat3[31:0]),
+	     .ss_adr0			(ss_adr0[1:0]),
+	     .ss_adr1			(ss_adr1[1:0]),
+	     .ss_adr2			(ss_adr2[1:0]),
+	     .ss_adr3			(ss_adr3[1:0]),
+	     .wb_int_o			(wb_int_o),
+	     .dar			(dar[31:0]),
+	     .csr			(csr[7:0]),
+	     .ndar_dirty_clear		(ndar_dirty_clear),
+	     .int_ack_clear		(int_ack_clear),
+	     .busy			(busy),
+	     .resume_clear		(resume_clear),
+	     // Inputs
+	     .wb_clk_i			(wb_clk_i),
+	     .wb_rst_i			(wb_rst_i),
+	     .wbs_dat_o4		(wbs_dat_o4[31:0]),
+	     .wbs_dat64_o4		(wbs_dat64_o4[31:0]),
+	     .wbs_ack4			(wbs_ack4),
+	     .wbs_err4			(wbs_err4),
+	     .wbs_rty4			(wbs_rty4),
+	     .c_done0			(c_done0),
+	     .c_done1			(c_done1),
+	     .c_done2			(c_done2),
+	     .c_done3			(c_done3),
+	     .ndar_dirty		(ndar_dirty),
+	     .ndar			(ndar[31:3]),
+	     .int_ack			(int_ack),
+	     .resume			(resume),
+	     .enable			(enable));
    
    /* for fifo */
 endmodule // top
