@@ -291,7 +291,7 @@ module ctrl(/*AUTOARG*/
    assign ss_dc0 = dc0;
    assign ss_dc1 = dc0;
    assign ss_dc2 = dc1;
-   assign ss_dc3 = dc2;
+   assign ss_dc3 = dc1;
    
    reg wb_int_next, wb_int_set;
    always @(posedge wb_clk_i or posedge wb_rst_i)
