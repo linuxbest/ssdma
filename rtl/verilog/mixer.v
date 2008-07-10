@@ -180,7 +180,11 @@ module mixer(/*AUTOARG*/
 	      .I1			(wbs_adr1),
 	      .I2			(wbs_adr2),
 	      .I3			(wbs_adr3),
-	      .I4			(wbs_adr4));
+	      .I4			(wbs_adr4),
+	      /*AUTOINST*/
+	      // Inputs
+	      .wb_clk_i			(wb_clk_i),
+	      .wb_rst_i			(wb_rst_i));
    mo32 o_dat(
 		// Outputs
 		.O			(wbm_dat_o[31:0]),
@@ -190,7 +194,11 @@ module mixer(/*AUTOARG*/
 		.I1			(wbs_dat_i1),
 		.I2			(wbs_dat_i2),
 		.I3			(wbs_dat_i3),
-		.I4			(wbs_dat_i4));
+		.I4			(wbs_dat_i4),
+	      /*AUTOINST*/
+	      // Inputs
+	      .wb_clk_i			(wb_clk_i),
+	      .wb_rst_i			(wb_rst_i));
    mo32 o_dat64(
 		// Outputs
 		.O			(wbm_dat64_o[31:0]),
@@ -200,11 +208,19 @@ module mixer(/*AUTOARG*/
 		.I1			(wbs_dat64_i1),
 		.I2			(wbs_dat64_i2),
 		.I3			(wbs_dat64_i3),
-		.I4			(wbs_dat64_i4));
+		.I4			(wbs_dat64_i4),
+		/*AUTOINST*/
+		// Inputs
+		.wb_clk_i		(wb_clk_i),
+		.wb_rst_i		(wb_rst_i));
 
    mi i_ack (.O({wbs_ack4,wbs_ack3,wbs_ack2,wbs_ack1,wbs_ack0}),
 	     .I(wbm_ack_i),
-	     .gnt(gnt));
+	     .gnt(gnt),
+	     /*AUTOINST*/
+	     // Inputs
+	     .wb_clk_i			(wb_clk_i),
+	     .wb_rst_i			(wb_rst_i));
    assign 	 
      {wbs_err4,wbs_err3,wbs_err2,wbs_err1,wbs_err0} = {5{wbm_err_i}};
    assign 	 
