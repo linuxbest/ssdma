@@ -94,6 +94,20 @@ module ben_adma(/*AUTOARG*/
 	 @(negedge wb_clk_i);
       end
    endtask // do_reset
+
+   task check_val ;
+      input [255:0] s;
+      input [31:0] v;
+      input [31:0] c;
+      begin
+	 $write("%s         ", s);
+	 if (v == c) begin
+	    $write("passed\n");
+	 end else begin
+	    $write("failed\n");
+	 end
+      end
+   endtask // check_val
    
    reg [31:0] 	 wbmH[1048575:0];
    reg [31:0] 	 wbmL[1048575:0];
@@ -118,7 +132,7 @@ module ben_adma(/*AUTOARG*/
      end
 
    integer i;
-   task pre_job;
+   task pre_job_0;
       begin
 	 /* [31:0] next_desc
 	  * [31:0] ctl_addr
@@ -130,10 +144,10 @@ module ben_adma(/*AUTOARG*/
 	  * [31:0] u2
 	  */
 	 i = 'h0;
-	 wbmH[i] = 32'h300;
-	 wbmL[i] = 32'h200;
+	 wbmH[i] = 32'h300; /* next desc */
+	 wbmL[i] = 32'h200; /* ctrl addr */
 	 i = i + 1;
-	 wbmH[i] = 32'h1;/* DC_NULL */
+	 wbmH[i] = 32'h1;   /* DC_NULL */
 	 wbmL[i] = 32'h0;
 	 i = i + 1;
 	 wbmH[i] = 32'h400; /* src */
@@ -143,6 +157,55 @@ module ben_adma(/*AUTOARG*/
 	 wbmL[i] = 32'h0;
       end
    endtask // do_ssadma
+
+   task check_job_0;
+      begin
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
+	 wbs_we_i  = 1'b0;
+	 @(posedge wbs_ack_o);
+	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h200);
+	 wbs_cyc_i = 1'b0;
+	 @(posedge wb_clk_i);
+
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
+	 wbs_we_i  = 1'b0;
+	 @(posedge wbs_ack_o);
+	 check_val("check next_desc ", wbs_dat_o, 32'h300);
+	 wbs_cyc_i = 1'b0;
+	 @(posedge wb_clk_i);
+	 @(posedge wb_clk_i);
+      end
+   endtask // check_job_0
+   
+   task wait_job;
+      begin
+	 @(negedge wb_clk_i);
+	 @(negedge wb_clk_i);
+	 @(negedge wb_clk_i);
+	 
+	 @(posedge ctrl_state == 0);/* wait it idle */
+	 
+	 @(negedge wb_clk_i);
+	 @(negedge wb_clk_i);
+	 @(negedge wb_clk_i);
+
+	 /* disable DMA */
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = 4'h0; /* ccr */
+	 wbs_we_i  = 1'b1;
+	 wbs_dat_i = 32'h0;
+	 @(posedge wbs_ack_o);
+	 wbs_cyc_i = 1'b0;
+	 @(negedge wb_clk_i);
+	 @(negedge wbs_ack_o);
+	 
+	 @(negedge wb_clk_i);
+	 @(negedge wb_clk_i);
+	 @(negedge wb_clk_i);
+      end
+   endtask // wait_job
 
    task queue_job;
       begin
@@ -160,10 +223,6 @@ module ben_adma(/*AUTOARG*/
 	 
 	 wbs_cyc_i = 1'b1;
 	 wbs_adr_i = 4'h0; /* ccr */
-	 wbs_we_i  = 1'b1;
-	 wbs_stb_i = 1'b1;
-	 wbs_sel_i = 4'b1111;
-	 wbs_cab_i = 1'b0;
 	 wbs_dat_i = 2'b10;
 	 @(posedge wbs_ack_o);
 	 wbs_cyc_i = 1'b0;
@@ -178,12 +237,11 @@ module ben_adma(/*AUTOARG*/
       inc      = 0;
 
       do_reset;
-      pre_job;
+      pre_job_0;
       queue_job;
-
-      for (i = 0; i < 50; i = i + 1) begin
-	 @(negedge wb_clk_i);
-      end
+      wait_job;
+      check_job_0;
+      
       $finish;
    end
    
