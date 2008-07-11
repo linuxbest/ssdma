@@ -178,6 +178,28 @@ module ben_adma(/*AUTOARG*/
 	 @(posedge wb_clk_i);
       end
    endtask // check_job_0
+
+   task pre_job_1;
+      begin
+	 i = 'h0;
+	 wbmH[i] = 32'h0;
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {8'ha, 16'b1100}; /* FILL */
+	 wbmL[i] = 32'h0;   /* u0 */
+	 i = i + 1;
+	 wbmH[i] = 32'h0;   /* src */
+	 wbmL[i] = 32'h0;   /* u1  */
+	 i = i + 1;
+	 wbmH[i] = 32'h100; /* dst */
+	 wbmL[i] = 32'h0;   /* u2  */
+      end
+   endtask // pre_job_1
+
+   task check_job_1;
+      begin
+      end
+   endtask
    
    task wait_job;
       begin
@@ -237,10 +259,21 @@ module ben_adma(/*AUTOARG*/
       inc      = 0;
 
       do_reset;
+
+      /* making the register are right 
+       * check the base adma works 
+       */
       pre_job_0;
       queue_job;
       wait_job;
       check_job_0;
+
+      /* doing memory fill 
+       */
+      pre_job_1;
+      queue_job;
+      wait_job;
+      check_job_1;
       
       $finish;
    end
