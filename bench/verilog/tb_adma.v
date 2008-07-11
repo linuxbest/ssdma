@@ -13,18 +13,13 @@
  ***********************************************************************/
 `timescale 1ns/1ns
 
-module tb_adma(/*AUTOARG*/
-   // Outputs
-   ctrl_state
-   );
+module tb_adma(/*AUTOARG*/);
    /*AUTOINPUT*/
    /*AUTOOUTPUT*/
-   // Beginning of automatic outputs (from unused autoinst outputs)
-   output [7:0]		ctrl_state;		// From adma of ss_adma.v
-   // End of automatics
    /*AUTOREG*/
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   wire [7:0]		ctrl_state;		// From adma of ss_adma.v
    wire			spi_clk_i;		// From spi of dummy_spi.v
    wire			spi_clk_o;		// From adma of ss_adma.v
    wire			spi_di_en;		// From adma of ss_adma.v
@@ -152,7 +147,13 @@ module tb_adma(/*AUTOARG*/
 		  .wbm_dat_o		(wbm_dat_o[31:0]),
 		  .wbm_dat64_o		(wbm_dat64_o[31:0]),
 		  .wbm_adr_o		(wbm_adr_o[31:0]),
-		  .wbm_sel_o		(wbm_sel_o[3:0]));
+		  .wbm_sel_o		(wbm_sel_o[3:0]),
+		  .ctrl_state		(ctrl_state[7:0]));
+
+   initial begin
+      $dumpfile("tb_adma.vcd");
+      $dumpvars(0, adma);
+   end
    
 endmodule // tb_adma
 
