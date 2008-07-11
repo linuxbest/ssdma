@@ -16,15 +16,14 @@ module ss_adma(/*AUTOARG*/
    // Outputs
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
    wbm_stb_o, wbm_sel_o, wbm_dat_o, wbm_dat64_o, wbm_cyc_o,
-   wbm_cab_o, wbm_adr_o, ss_stop3, ss_stop2, ss_stop1,
-   ss_stop0, spi_sel_o, spi_en, spi_do_o, spi_do_en,
-   spi_di_o, spi_di_en, spi_clk_o, ctrl_state, wb_int_o,
+   wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en, spi_do_o,
+   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, ctrl_state,
+   wb_int_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
-   wbm_dat64_i, wbm_ack_i, wb_rst_i, wb_clk_i, ss_end3,
-   ss_end2, ss_end1, ss_end0, spi_sel_i, spi_do_i, spi_di_i,
-   spi_clk_i
+   wbm_dat64_i, wbm_ack_i, wb_rst_i, wb_clk_i, spi_sel_i,
+   spi_do_i, spi_di_i, spi_clk_i
    );
    /*parameter*/
    
@@ -38,10 +37,6 @@ module ss_adma(/*AUTOARG*/
    output		spi_do_o;		// From wbm of wbm.v
    output		spi_en;			// From wbm of wbm.v
    output		spi_sel_o;		// From wbm of wbm.v
-   output		ss_stop0;		// From d_4 of dummy.v
-   output		ss_stop1;		// From d_4 of dummy.v
-   output		ss_stop2;		// From d_4 of dummy.v
-   output		ss_stop3;		// From d_4 of dummy.v
    output [31:0]	wbm_adr_o;		// From m0 of mixer.v
    output		wbm_cab_o;		// From m0 of mixer.v
    output		wbm_cyc_o;		// From m0 of mixer.v
@@ -62,10 +57,6 @@ module ss_adma(/*AUTOARG*/
    input		spi_di_i;		// To wbm of wbm.v
    input		spi_do_i;		// To wbm of wbm.v
    input		spi_sel_i;		// To wbm of wbm.v
-   input		ss_end0;		// To r_0 of ss_sg.v
-   input		ss_end1;		// To r_1 of ss_sg.v
-   input		ss_end2;		// To r_2 of ss_sg.v
-   input		ss_end3;		// To r_3 of ss_sg.v
    input		wb_clk_i;		// To r_0 of ss_sg.v, ...
    input		wb_rst_i;		// To r_0 of ss_sg.v, ...
    input		wbm_ack_i;		// To m0 of mixer.v
@@ -101,6 +92,13 @@ module ss_adma(/*AUTOARG*/
    wire [23:0]		dc1;			// From ctrl of ctrl.v
    wire			enable;			// From wbm of wbm.v
    wire [4:0]		gnt;			// From arbiter of arbiter.v
+   wire [63:0]		m_dst;			// From dummy of dummy.v
+   wire			m_dst_full;		// From ch0 of ch0.v
+   wire			m_dst_putn;		// From dummy of dummy.v
+   wire			m_last;			// From ch0 of ch0.v
+   wire [63:0]		m_src;			// From ch0 of ch0.v
+   wire			m_src_empty;		// From ch0 of ch0.v
+   wire			m_src_getn;		// From dummy of dummy.v
    wire [31:3]		ndar;			// From wbm of wbm.v
    wire			ndar_dirty;		// From wbm of wbm.v
    wire			ndar_dirty_clear;	// From ctrl of ctrl.v
@@ -139,10 +137,14 @@ module ss_adma(/*AUTOARG*/
    wire			ss_done1;		// From ctrl of ctrl.v
    wire			ss_done2;		// From ctrl of ctrl.v
    wire			ss_done3;		// From ctrl of ctrl.v
-   wire			ss_start0;		// From d_4 of dummy.v
-   wire			ss_start1;		// From d_4 of dummy.v
-   wire			ss_start2;		// From d_4 of dummy.v
-   wire			ss_start3;		// From d_4 of dummy.v
+   wire			ss_end0;		// From ch0 of ch0.v
+   wire			ss_end1;		// From ch0 of ch0.v
+   wire			ss_end2;		// From dummy of dummy.v
+   wire			ss_end3;		// From dummy of dummy.v
+   wire			ss_start0;		// From ch0 of ch0.v
+   wire			ss_start1;		// From ch0 of ch0.v
+   wire			ss_start2;		// From dummy of dummy.v
+   wire			ss_start3;		// From dummy of dummy.v
    wire			ss_we0;			// From ctrl of ctrl.v
    wire			ss_we1;			// From ctrl of ctrl.v
    wire			ss_we2;			// From ctrl of ctrl.v
@@ -172,20 +174,20 @@ module ss_adma(/*AUTOARG*/
    wire			wbs_cyc2;		// From r_2 of ss_sg.v
    wire			wbs_cyc3;		// From r_3 of ss_sg.v
    wire			wbs_cyc4;		// From ctrl of ctrl.v
-   wire [31:0]		wbs_dat64_i0;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat64_i1;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat64_i2;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat64_i3;		// From d_4 of dummy.v
+   wire [31:0]		wbs_dat64_i0;		// From ch0 of ch0.v
+   wire [31:0]		wbs_dat64_i1;		// From ch0 of ch0.v
+   wire [31:0]		wbs_dat64_i2;		// From dummy of dummy.v
+   wire [31:0]		wbs_dat64_i3;		// From dummy of dummy.v
    wire [31:0]		wbs_dat64_i4;		// From ctrl of ctrl.v
    wire [31:0]		wbs_dat64_o0;		// From m0 of mixer.v
    wire [31:0]		wbs_dat64_o1;		// From m0 of mixer.v
    wire [31:0]		wbs_dat64_o2;		// From m0 of mixer.v
    wire [31:0]		wbs_dat64_o3;		// From m0 of mixer.v
    wire [31:0]		wbs_dat64_o4;		// From m0 of mixer.v
-   wire [31:0]		wbs_dat_i0;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat_i1;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat_i2;		// From d_4 of dummy.v
-   wire [31:0]		wbs_dat_i3;		// From d_4 of dummy.v
+   wire [31:0]		wbs_dat_i0;		// From ch0 of ch0.v
+   wire [31:0]		wbs_dat_i1;		// From ch0 of ch0.v
+   wire [31:0]		wbs_dat_i2;		// From dummy of dummy.v
+   wire [31:0]		wbs_dat_i3;		// From dummy of dummy.v
    wire [31:0]		wbs_dat_i4;		// From ctrl of ctrl.v
    wire [31:0]		wbs_dat_o0;		// From m0 of mixer.v
    wire [31:0]		wbs_dat_o1;		// From m0 of mixer.v
@@ -434,41 +436,33 @@ module ss_adma(/*AUTOARG*/
 	     .wbm_dat_i			(wbm_dat_i[31:0]),
 	     .wbm_dat64_i		(wbm_dat64_i[31:0]));
 
-   dummy d_4(/*AUTOINST*/
-	     // Outputs
-	     .ss_start0			(ss_start0),
-	     .ss_start1			(ss_start1),
-	     .ss_start2			(ss_start2),
-	     .ss_start3			(ss_start3),
-	     .ss_stop0			(ss_stop0),
-	     .ss_stop1			(ss_stop1),
-	     .ss_stop2			(ss_stop2),
-	     .ss_stop3			(ss_stop3),
-	     .wbs_dat_i0		(wbs_dat_i0[31:0]),
-	     .wbs_dat_i1		(wbs_dat_i1[31:0]),
-	     .wbs_dat_i2		(wbs_dat_i2[31:0]),
-	     .wbs_dat_i3		(wbs_dat_i3[31:0]),
-	     .wbs_dat64_i0		(wbs_dat64_i0[31:0]),
-	     .wbs_dat64_i1		(wbs_dat64_i1[31:0]),
-	     .wbs_dat64_i2		(wbs_dat64_i2[31:0]),
-	     .wbs_dat64_i3		(wbs_dat64_i3[31:0]),
-	     // Inputs
-	     .wb_clk_i			(wb_clk_i),
-	     .wb_rst_i			(wb_rst_i),
-	     .ss_xfer0			(ss_xfer0),
-	     .ss_xfer1			(ss_xfer1),
-	     .ss_xfer2			(ss_xfer2),
-	     .ss_xfer3			(ss_xfer3),
-	     .wbs_dat_o0		(wbs_dat_o0[31:0]),
-	     .wbs_dat_o1		(wbs_dat_o1[31:0]),
-	     .wbs_dat_o2		(wbs_dat_o2[31:0]),
-	     .wbs_dat_o3		(wbs_dat_o3[31:0]),
-	     .wbs_dat64_o0		(wbs_dat64_o0[31:0]),
-	     .wbs_dat64_o1		(wbs_dat64_o1[31:0]),
-	     .wbs_dat64_o2		(wbs_dat64_o2[31:0]),
-	     .wbs_dat64_o3		(wbs_dat64_o3[31:0]),
-	     .dc0			(dc0[23:0]),
-	     .dc1			(dc1[23:0]));
+   dummy dummy(/*AUTOINST*/
+	       // Outputs
+	       .ss_start2		(ss_start2),
+	       .ss_start3		(ss_start3),
+	       .ss_end2			(ss_end2),
+	       .ss_end3			(ss_end3),
+	       .wbs_dat_i2		(wbs_dat_i2[31:0]),
+	       .wbs_dat_i3		(wbs_dat_i3[31:0]),
+	       .wbs_dat64_i2		(wbs_dat64_i2[31:0]),
+	       .wbs_dat64_i3		(wbs_dat64_i3[31:0]),
+	       .m_src_getn		(m_src_getn),
+	       .m_dst_putn		(m_dst_putn),
+	       .m_dst			(m_dst[63:0]),
+	       // Inputs
+	       .wb_clk_i		(wb_clk_i),
+	       .wb_rst_i		(wb_rst_i),
+	       .ss_xfer2		(ss_xfer2),
+	       .ss_xfer3		(ss_xfer3),
+	       .wbs_dat_o2		(wbs_dat_o2[31:0]),
+	       .wbs_dat_o3		(wbs_dat_o3[31:0]),
+	       .wbs_dat64_o2		(wbs_dat64_o2[31:0]),
+	       .wbs_dat64_o3		(wbs_dat64_o3[31:0]),
+	       .dc1			(dc1[23:0]),
+	       .m_src			(m_src[63:0]),
+	       .m_last			(m_last),
+	       .m_src_empty		(m_src_empty),
+	       .m_dst_full		(m_dst_full));
 
    /* gnt */
    arbiter arbiter(/*AUTOINST*/
@@ -601,5 +595,32 @@ module ss_adma(/*AUTOARG*/
 	     .resume			(resume),
 	     .enable			(enable));
    
-   /* for fifo */
+   ch0 ch0(/*AUTOINST*/
+	   // Outputs
+	   .ss_start0			(ss_start0),
+	   .ss_start1			(ss_start1),
+	   .ss_end0			(ss_end0),
+	   .ss_end1			(ss_end1),
+	   .wbs_dat_i0			(wbs_dat_i0[31:0]),
+	   .wbs_dat_i1			(wbs_dat_i1[31:0]),
+	   .wbs_dat64_i0		(wbs_dat64_i0[31:0]),
+	   .wbs_dat64_i1		(wbs_dat64_i1[31:0]),
+	   .m_src			(m_src[63:0]),
+	   .m_last			(m_last),
+	   .m_src_empty			(m_src_empty),
+	   .m_dst_full			(m_dst_full),
+	   // Inputs
+	   .wb_clk_i			(wb_clk_i),
+	   .wb_rst_i			(wb_rst_i),
+	   .ss_xfer0			(ss_xfer0),
+	   .ss_xfer1			(ss_xfer1),
+	   .wbs_dat_o0			(wbs_dat_o0[31:0]),
+	   .wbs_dat_o1			(wbs_dat_o1[31:0]),
+	   .wbs_dat64_o0		(wbs_dat64_o0[31:0]),
+	   .wbs_dat64_o1		(wbs_dat64_o1[31:0]),
+	   .dc0				(dc0[23:0]),
+	   .m_src_getn			(m_src_getn),
+	   .m_dst_putn			(m_dst_putn),
+	   .m_dst			(m_dst[63:0]));
+   
 endmodule // top

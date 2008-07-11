@@ -13,7 +13,7 @@
  ***********************************************************************/
 module top(/*AUTOARG*/
    // Outputs
-   LED, FIFO_RD, PCI_SERRn,
+   ctrl_state, LED, FIFO_RD, PCI_SERRn,
    // Inouts
    USB_FWRn, USB_D, SPI_SEL, PCI_AD, PCI_AD64, PCI_CBE,
    PCI_CBE64, PCI_FRAMEn, PCI_IRDYn, PCI_TRDYn, PCI_DEVSELn,
@@ -61,6 +61,7 @@ module top(/*AUTOARG*/
    // Beginning of automatic outputs (from unused autoinst outputs)
    output		FIFO_RD;		// From usb of spi_usb.v
    output		LED;			// From usb of spi_usb.v
+   output [7:0]		ctrl_state;		// From adma of ss_adma.v
    // End of automatics
    /*AUTOINOUT*/
    // Beginning of automatic inouts (from unused autoinst inouts)
@@ -138,6 +139,7 @@ module top(/*AUTOARG*/
 
    ss_adma adma(/*AUTOINST*/
 		// Outputs
+		.ctrl_state		(ctrl_state[7:0]),
 		.spi_clk_o		(spi_clk_o),
 		.spi_di_en		(spi_di_en),
 		.spi_di_o		(spi_di_o),
@@ -145,7 +147,6 @@ module top(/*AUTOARG*/
 		.spi_do_o		(spi_do_o),
 		.spi_en			(spi_en),
 		.spi_sel_o		(spi_sel_o),
-		.wb_int_o		(wb_int_o),
 		.wbm_adr_o		(wbm_adr_o[31:0]),
 		.wbm_cab_o		(wbm_cab_o),
 		.wbm_cyc_o		(wbm_cyc_o),
@@ -158,6 +159,7 @@ module top(/*AUTOARG*/
 		.wbs_dat_o		(wbs_dat_o[31:0]),
 		.wbs_err_o		(wbs_err_o),
 		.wbs_rty_o		(wbs_rty_o),
+		.wb_int_o		(wb_int_o),
 		// Inputs
 		.spi_clk_i		(spi_clk_i),
 		.spi_di_i		(spi_di_i),
