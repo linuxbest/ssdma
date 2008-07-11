@@ -141,6 +141,8 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
        
         /***********************************************
          * datapath seem ok.
+         *
+         * testing 1 chain.
          ***********************************************/
 
         return 0;
