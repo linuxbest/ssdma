@@ -14,7 +14,7 @@
 module ben_sgr(/*AUTOARG*/
    // Outputs
    wb_clk_i, wb_rst_i, wbs_dat_o, wbs_dat64_o, wbs_rty,
-   wbs_err, wbs_ack, ss_ready, ss_we, ss_done, ss_adr,
+   wbs_err, wbs_ack, ss_start, ss_we, ss_done, ss_adr,
    ss_dat,
    // Inputs
    wbs_we, wbs_stb, wbs_cyc, wbs_cab, wbs_sel, wbs_dat_i,
@@ -49,7 +49,7 @@ module ben_sgr(/*AUTOARG*/
    output 	 wbs_rty,
 		 wbs_err,
 		 wbs_ack;
-   output 	 ss_ready,
+   output 	 ss_start,
 		 ss_we,
 		 ss_done;
    output [1:0]  ss_adr;
@@ -60,7 +60,7 @@ module ben_sgr(/*AUTOARG*/
    reg [1:0]		ss_adr;
    reg [31:0]		ss_dat;
    reg			ss_done;
-   reg			ss_ready;
+   reg			ss_start;
    reg			ss_we;
    reg			wb_clk_i;
    reg			wb_rst_i;
@@ -103,7 +103,7 @@ module ben_sgr(/*AUTOARG*/
 	wbs_dat64_o = wbmH[wbs_adr+inc];
      end
    
-   always @(/*AS*/wbs_adr or wbs_cyc)
+   always @(/*AS*/inc or wbs_adr or wbs_cyc)
      begin
 	if (wbs_adr[8] && wbs_cyc)      /* 0x100 */
 	  wbs_ack = 1;
@@ -197,7 +197,7 @@ module ben_sgr(/*AUTOARG*/
 	 $finish;
       end
       
-      ss_ready = 1;
+      ss_start = 1;
       for (i = 0; i < 50; i = i + 1) begin
 	 @(negedge wb_clk_i);
       end

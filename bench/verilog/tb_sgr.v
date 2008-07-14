@@ -14,15 +14,25 @@
 `timescale 1ns/1ns
 
 module tb_sgr(/*AUTOARG*/
+   // Outputs
+   ss_last, c_done,
    // Inputs
-   wbs_dat_i, wbs_dat64_i
+   wbs_dat_i, wbs_dat64_i, ss_stop, ss_end, ss_dc, rw
    );
    /*AUTOINPUT*/
    // Beginning of automatic inputs (from unused autoinst inputs)
+   input		rw;			// To sgr of ss_sg.v
+   input [23:0]		ss_dc;			// To sgr of ss_sg.v
+   input		ss_end;			// To sgr of ss_sg.v
+   input		ss_stop;		// To sgr of ss_sg.v
    input [31:0]		wbs_dat64_i;		// To ben of ben_sgr.v
    input [31:0]		wbs_dat_i;		// To ben of ben_sgr.v
    // End of automatics
    /*AUTOOUTPUT*/
+   // Beginning of automatic outputs (from unused autoinst outputs)
+   output		c_done;			// From sgr of ss_sg.v
+   output		ss_last;		// From sgr of ss_sg.v
+   // End of automatics
    
    /*AUTOREG*/
    /*AUTOWIRE*/
@@ -34,7 +44,7 @@ module tb_sgr(/*AUTOARG*/
    wire [1:0]		ss_adr;			// From ben of ben_sgr.v
    wire [31:0]		ss_dat;			// From ben of ben_sgr.v
    wire			ss_done;		// From ben of ben_sgr.v
-   wire			ss_ready;		// From ben of ben_sgr.v
+   wire			ss_start;		// From ben of ben_sgr.v
    wire			ss_we;			// From ben of ben_sgr.v
    wire			ss_xfer;		// From sgr of ss_sg.v
    wire			wb_clk_i;		// From ben of ben_sgr.v
@@ -65,9 +75,12 @@ module tb_sgr(/*AUTOARG*/
 	      .sg_addr			(sg_addr[31:3]),
 	      .sg_next			(sg_next[31:3]),
 	      .ss_xfer			(ss_xfer),
+	      .ss_last			(ss_last),
+	      .c_done			(c_done),
 	      // Inputs
 	      .wb_clk_i			(wb_clk_i),
 	      .wb_rst_i			(wb_rst_i),
+	      .rw			(rw),
 	      .wbs_dat_o		(wbs_dat_o[31:0]),
 	      .wbs_dat64_o		(wbs_dat64_o[31:0]),
 	      .wbs_ack			(wbs_ack),
@@ -77,7 +90,10 @@ module tb_sgr(/*AUTOARG*/
 	      .ss_we			(ss_we),
 	      .ss_adr			(ss_adr[1:0]),
 	      .ss_done			(ss_done),
-	      .ss_ready			(ss_ready));
+	      .ss_dc			(ss_dc[23:0]),
+	      .ss_start			(ss_start),
+	      .ss_end			(ss_end),
+	      .ss_stop			(ss_stop));
 
    ben_sgr ben(/*AUTOINST*/
 	       // Outputs
@@ -88,7 +104,7 @@ module tb_sgr(/*AUTOARG*/
 	       .wbs_rty			(wbs_rty),
 	       .wbs_err			(wbs_err),
 	       .wbs_ack			(wbs_ack),
-	       .ss_ready		(ss_ready),
+	       .ss_start		(ss_start),
 	       .ss_we			(ss_we),
 	       .ss_done			(ss_done),
 	       .ss_adr			(ss_adr[1:0]),

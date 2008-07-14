@@ -17,11 +17,12 @@
 module ss_sg(/*AUTOARG*/
    // Outputs
    wbs_cyc, wbs_stb, wbs_we, wbs_cab, wbs_sel, wbs_adr,
-   sg_state, sg_desc, sg_addr, sg_next, ss_xfer, c_done,
+   sg_state, sg_desc, sg_addr, sg_next, ss_xfer, ss_last,
+   c_done,
    // Inputs
    wb_clk_i, wb_rst_i, rw, wbs_dat_o, wbs_dat64_o, wbs_ack,
    wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done, ss_dc,
-   ss_start, ss_end
+   ss_start, ss_end, ss_stop
    );
    /*AUTOOUTPUT*/
    /*AUTOINPUT*/
@@ -76,13 +77,16 @@ module ss_sg(/*AUTOARG*/
     * reg [31:3] next
     */
    input 	 ss_start; /* ready to start data */
-   input 	 ss_end;  /* need stop data */
+   input 	 ss_end;   /* job end  */
+   input 	 ss_stop;  /* stop io transcation */
    output 	 ss_xfer;  /* acknowledge data */
+   output 	 ss_last;  /* last */
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
    reg [15:0]		sg_desc;
    reg [7:0]		sg_state;
+   reg			ss_last;
    reg			ss_xfer;
    // End of automatics
    
@@ -165,10 +169,10 @@ module ss_sg(/*AUTOARG*/
    always @(/*AS*/cnt or err or io or rw or sg_addr
 	    or sg_last or sg_len or sg_next or ss_adr
 	    or ss_dat or ss_dc or ss_done or ss_end
-	    or ss_start or ss_we or state or wbs_ack
-	    or wbs_adr or wbs_cab or wbs_cyc or wbs_dat64_o
-	    or wbs_err or wbs_rty or wbs_sel or wbs_stb
-	    or wbs_we)
+	    or ss_start or ss_stop or ss_we or state
+	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
+	    or wbs_dat64_o or wbs_err or wbs_rty or wbs_sel
+	    or wbs_stb or wbs_we)
      begin
 	state_n   = state;
 
@@ -191,6 +195,7 @@ module ss_sg(/*AUTOARG*/
 	cnt_n = cnt;
 	io_n  = io;
 	ss_xfer = 1'b0;
+	ss_last = 1'b0;
 	
 	case (state)
 	  S_IDLE: begin 
@@ -266,8 +271,8 @@ module ss_sg(/*AUTOARG*/
 		  if (sg_len == 1) begin
 		     wbs_cyc_n = 1'b0;
 		     state_n   = S_NEXT;
-		  end
-		  if (ss_end) begin
+		     ss_last   = 1'b1;
+		  end else if (ss_stop) begin
 		     wbs_cyc_n = 1'b0;
 		     state_n   = S_B_WAIT;
 		  end
@@ -286,7 +291,9 @@ module ss_sg(/*AUTOARG*/
 	  end
 
 	  S_B_WAIT: begin
-	     if (ss_start) begin
+	     if (ss_end) begin
+		state_n = S_END;
+	     end else if (ss_start) begin
 		wbs_adr_n = {sg_addr, 3'b000};
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
@@ -299,7 +306,9 @@ module ss_sg(/*AUTOARG*/
 	  end
 
 	  S_NEXT: begin
-	     if (sg_last) begin
+	     if (ss_end) begin
+		state_n = S_END;
+	     end if (sg_last) begin
 		state_n = S_END;
 	     end else begin
 		state_n = S_D_REQ;
