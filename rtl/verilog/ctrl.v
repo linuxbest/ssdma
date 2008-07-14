@@ -546,8 +546,24 @@ module ctrl(/*AUTOARG*/
 
    output 	m_reset0;
    output 	m_reset1;
-   assign 	m_reset0 = state == S_TR0;
-   assign 	m_reset1 = state == S_TR1;
+   reg 		m_reset0;
+   reg 		m_reset1;
+
+   always @(posedge wb_clk_i or posedge wb_rst_i)
+     if (wb_rst_i) 
+       m_reset0 <= #1 1;
+     else if (state == S_TR0)
+       m_reset0 <= #1 1;
+     else
+       m_reset0 <= #1 0;
+
+   always @(posedge wb_clk_i or posedge wb_rst_i)
+     if (wb_rst_i) 
+       m_reset1 <= #1 1;
+     else if (state == S_TR1)
+       m_reset1 <= #1 1;
+     else
+       m_reset1 <= #1 0;
    
 endmodule // ctrl
 

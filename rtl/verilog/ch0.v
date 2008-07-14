@@ -40,7 +40,7 @@ module ch0(/*AUTOARG*/
 		wbs_dat_o1,
 		wbs_dat64_o0,
 		wbs_dat64_o1;
-   output [31:0] wbs_dat_i0,
+   output [31:0] wbs_dat_i0, 
 		 wbs_dat_i1,
 		 wbs_dat64_i0,
 		 wbs_dat64_i1;
@@ -75,7 +75,9 @@ module ch0(/*AUTOARG*/
    wire 		 src_almost_empty, 
 			 src_empty,
 			 src_half_full,
-			 src_almost_full;
+			 src_almost_full,
+			 dst_half_full,
+			 dst_empty;
    
    fifo_control
      src_control (.rclock_in(wb_clk_i),
@@ -85,7 +87,7 @@ module ch0(/*AUTOARG*/
 		  .reset_in(wb_rst_i),
 		  .clear_in(m_reset0),
 		  .almost_empty_out(m_src_almost_empty0),
-		  .almost_full_out(src_almost_full0),
+		  .almost_full_out(src_almost_full),
 		  .empty_out(m_src_empty0),
 		  .waddr_out(src_waddr),
 		  .raddr_out(src_raddr),
@@ -116,7 +118,6 @@ module ch0(/*AUTOARG*/
    defparam 		 src_ram.aw = FIFO_WIDTH;
    defparam 		 src_ram.dw = DATA_WIDTH;
 
-   wire 		 dst_half_full;
    
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
@@ -176,7 +177,7 @@ module ch0(/*AUTOARG*/
     * end  : 指示该任务结束
     * 
     */
-   assign 		 ss_stop0     = src_almost_full0;
+   assign 		 ss_stop0     = src_almost_full;
    assign 		 ss_stop1     = m_dst_almost_full0;
    
    assign                ss_end0      = 1'b0;
