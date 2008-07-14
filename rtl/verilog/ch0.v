@@ -116,6 +116,8 @@ module ch0(/*AUTOARG*/
    defparam 		 src_ram.aw = FIFO_WIDTH;
    defparam 		 src_ram.dw = DATA_WIDTH;
 
+   wire 		 dst_half_full;
+   
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
@@ -131,7 +133,7 @@ module ch0(/*AUTOARG*/
 		  .rallow_out(),
 		  .wallow_out(),
 		  .full_out(m_dst_full0),
-		  .half_full_out());
+		  .half_full_out(dst_half_full));
    tpram
      dst_ram (.clk_a(wb_clk_i),
 	      .rst_a(wb_rst_i),
@@ -155,7 +157,7 @@ module ch0(/*AUTOARG*/
    defparam 		 dst_ram.dw = DATA_WIDTH;
 
    /* DATA path */
-   assign 		 src_di[62:31]= wbs_dat64_o0;
+   assign 		 src_di[62:32]= wbs_dat64_o0;
    assign 		 src_di[31:00]= wbs_dat_o0;
    assign 		 src_di[71]   = ss_last0;
    
@@ -181,6 +183,6 @@ module ch0(/*AUTOARG*/
    assign 		 ss_end1      = dst_do[71];
 
    assign 		 ss_start0    = !src_half_full;
-   assign 		 ss_start1    = dst_half_full || 
+   assign 		 ss_start1    = dst_half_full ||
 					(ss_end1 && (!dst_empty));
 endmodule // ch
