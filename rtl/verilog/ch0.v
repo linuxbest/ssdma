@@ -169,9 +169,10 @@ module ch0(/*AUTOARG*/
    assign 		 wbs_dat_i1   = dst_do[31:00];
 
    /*
-    * start: 表示可以启动读取或者写入 
+    * start: 表示可以启动读取或者写入
     * stop : 指示需要停止读取或者写入
     * end  : 指示该任务结束
+    * 
     */
    assign 		 ss_stop0     = src_almost_full;
    assign 		 ss_stop1     = m_dst_almost_full;
