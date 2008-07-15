@@ -97,6 +97,7 @@ module ss_adma(/*AUTOARG*/
    wire			m_dst_full0;		// From ch0 of ch0.v
    wire			m_dst_last0;		// From mod_0 of mod.v
    wire			m_dst_putn0;		// From mod_0 of mod.v
+   wire			m_endn0;		// From mod_0 of mod.v
    wire			m_reset0;		// From ctrl of ctrl.v
    wire			m_reset1;		// From ctrl of ctrl.v
    wire [63:0]		m_src0;			// From ch0 of ch0.v
@@ -650,7 +651,8 @@ module ss_adma(/*AUTOARG*/
 	   .m_src_getn0			(m_src_getn0),
 	   .m_dst_putn0			(m_dst_putn0),
 	   .m_dst0			(m_dst0[63:0]),
-	   .m_dst_last0			(m_dst_last0));
+	   .m_dst_last0			(m_dst_last0),
+	   .m_endn0			(m_endn0));
 
    /* mod AUTO_TEMPLATE "_\([0-9]+\)" (
     .wb_clk_i(wb_clk_i),
@@ -664,6 +666,7 @@ module ss_adma(/*AUTOARG*/
 	     .m_dst_putn		(m_dst_putn0),		 // Templated
 	     .m_dst			(m_dst0[63:0]),		 // Templated
 	     .m_dst_last		(m_dst_last0),		 // Templated
+	     .m_endn			(m_endn0),		 // Templated
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),		 // Templated
 	     .m_reset			(m_reset0),		 // Templated

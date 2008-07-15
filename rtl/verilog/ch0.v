@@ -21,7 +21,7 @@ module ch0(/*AUTOARG*/
    wb_clk_i, wb_rst_i, ss_xfer0, ss_xfer1, ss_last0,
    ss_last1, wbs_dat_o0, wbs_dat_o1, wbs_dat64_o0,
    wbs_dat64_o1, dc0, m_reset0, m_src_getn0, m_dst_putn0,
-   m_dst0, m_dst_last0
+   m_dst0, m_dst_last0, m_endn0
    );
    input wb_clk_i;
    input wb_rst_i;
@@ -60,6 +60,7 @@ module ch0(/*AUTOARG*/
    input 	 m_dst_last0;
    output 	 m_dst_almost_full0;
    output        m_dst_full0;
+   input 	 m_endn0;
    
    parameter 	 FIFO_WIDTH = 9;
    wire [FIFO_WIDTH-1:0] src_waddr,
@@ -185,5 +186,5 @@ module ch0(/*AUTOARG*/
 
    assign 		 ss_start0    = !src_half_full;
    assign 		 ss_start1    = dst_half_full ||
-					(ss_end1 && (!dst_empty));
+					((!m_endn0) && (!dst_empty));
 endmodule // ch
