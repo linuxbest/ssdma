@@ -40,12 +40,12 @@ module copy(/*AUTOARG*/
    wire 	 get;
    wire 	 endn;
    
-   assign 	 m_src_getn = dc[5] ? (!get) :  1'bz;
-   assign 	 m_dst_putn = dc[5] ? (!get) :  1'bz;
-   assign 	 m_dst      = dc[5] ? m_src  : 64'hz;
+   assign 	 m_src_getn = dc[4] ? (!get) :  1'bz;
+   assign 	 m_dst_putn = dc[4] ? (!get) :  1'bz;
+   assign 	 m_dst      = dc[4] ? m_src  : 64'hz;
    
-   assign 	 m_endn     = dc[5] ? (!endn)    :  1'bz;
-   assign 	 m_dst_last = dc[5] ? m_dst_last :  1'bz;
+   assign 	 m_endn     = dc[4] ? (!endn)    :  1'bz;
+   assign 	 m_dst_last = dc[4] ? m_dst_last :  1'bz;
    
    parameter [1:0] 
 		S_IDLE = 2'b00,
@@ -67,7 +67,7 @@ module copy(/*AUTOARG*/
 	state_n = state;
 	case (state)
 	  S_IDLE: begin
-	     if (dc[3] && (!m_dst_full) && (!m_src_empty)) begin
+	     if (dc[4] && (!m_dst_full) && (!m_src_empty)) begin
 		state_n = S_RUN;
 	     end
 	  end

@@ -318,6 +318,53 @@ module ben_adma(/*AUTOARG*/
       begin
       end
    endtask // check_job_10
+
+   integer t;
+   task pre_job_20;
+      begin
+	 i = 'h0;
+	 wbmH[i] = 32'h100;  /* next */
+	 wbmL[i] = 32'h200;  /* ctl */
+	 i = i + 1;
+	 wbmH[i] = {8'ha, 16'h16}; /* copy */
+	 wbmL[i] = 32'h0;   /* u0 */
+	 i = i + 1;
+	 wbmH[i] = {16'h40, 3'b000}; /* src */
+	 wbmL[i] = 32'h0;   /* u1  */
+	 i = i + 1;
+	 wbmH[i] = {16'h20, 3'b000}; /* dst */
+	 wbmL[i] = 32'h0;   /* u2  */
+	 
+	 i = 'h40;
+	 wbmH[i] = 'h100040;             /* LAST with 0x40 */
+	 wbmL[i] = {16'h500,  3'b000};    /* address */
+	 i = i + 1;
+	 wbmH[i] = 0;                   
+	 wbmL[i] = 0;
+
+	 i = 'h20;
+	 wbmH[i] = 'h100040;
+	 wbmL[i] = {16'h600,  3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+	 
+	 /* fake data */
+	 i = 'h500;
+	 t = 0;
+	 for (j = i; j < i + 100; j = j + 1) begin
+	    wbmH[j] = t;
+	    t = t + 1;
+	    wbmL[j] = t;
+	    t = t + 1;
+	 end
+      end
+   endtask // pre_job_2
+
+   task check_job_20;
+      begin
+      end
+   endtask // check_job_10
    
    task wait_job;
       begin
@@ -334,7 +381,9 @@ module ben_adma(/*AUTOARG*/
 	       i = i - 1;
 	    end		
 	 end
-	 
+	 if (ctrl_state != 0) begin
+	    $write("job failed\n");
+	 end
 	 @(negedge wb_clk_i);
 	 @(negedge wb_clk_i);
 	 @(negedge wb_clk_i);
@@ -416,6 +465,14 @@ module ben_adma(/*AUTOARG*/
       queue_job;
       wait_job;
       check_job_10;
+
+      /*
+       * doing memory copy with chain.
+       */
+      pre_job_20;
+      queue_job;
+      wait_job;
+      check_job_20;
       
       $finish;
    end
