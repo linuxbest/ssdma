@@ -1,0 +1,110 @@
+signal_delete *.*
+
+signal_add tb_adma.adma.wb_clk_i
+signal_add tb_adma.adma.wb_rst_i
+
+#signal_add tb_adma.PCI_AD
+#signal_add tb_adma.PCI_AD64
+
+# wb signal
+signal_add tb_adma.adma.wbs_cyc_i
+signal_add tb_adma.adma.wbs_we_i
+signal_add tb_adma.adma.wbs_adr_i
+signal_add tb_adma.adma.wbs_dat_i
+signal_add tb_adma.adma.wbs_sel_i
+signal_add tb_adma.adma.wbs_stb_i
+signal_add tb_adma.adma.wbs_dat_o
+signal_add tb_adma.adma.wbs_rty_o
+signal_add tb_adma.adma.wbs_err_o
+signal_add tb_adma.adma.wbs_ack_o
+signal_highlight tb_adma.adma.wbs_ack_o 8
+
+# wb master signal
+signal_add tb_adma.adma.wbm_cyc_o
+signal_add tb_adma.adma.wbm_we_o
+signal_add tb_adma.adma.wbm_adr_o
+signal_add tb_adma.adma.wbm_dat_o
+signal_add tb_adma.adma.wbm_dat64_o
+signal_add tb_adma.adma.wbm_dat_i
+signal_add tb_adma.adma.wbm_dat64_i
+signal_add tb_adma.adma.wbm_ack_i
+signal_add tb_adma.adma.wbm_rty_i
+signal_add tb_adma.adma.wbm_err_i
+signal_highlight tb_adma.adma.wbm_err_i 8
+
+# s4
+signal_add tb_adma.adma.ctrl_state
+signal_add tb_adma.adma.enable
+signal_add tb_adma.adma.resume
+signal_add tb_adma.adma.ndar_dirty
+signal_add tb_adma.adma.dc0
+signal_add tb_adma.adma.dc1
+signal_add tb_adma.adma.ctrl.inc
+signal_add tb_adma.adma.ctrl.wbs_dat_o4
+signal_add tb_adma.adma.ctrl.wbs_dat64_o4
+signal_add tb_adma.adma.ctrl.next_desc
+signal_highlight tb_adma.adma.ndar_dirty 8
+
+signal_add tb_adma.adma.wbs_cyc4
+signal_add tb_adma.adma.wbs_we4
+signal_add tb_adma.adma.wbs_rty4
+signal_add tb_adma.adma.wbs_ack4
+signal_highlight tb_adma.adma.wbs_ack4 8
+
+# s0
+signal_add tb_adma.adma.sg_state0
+signal_add tb_adma.adma.wbs_cyc0
+signal_add tb_adma.adma.wbs_we0
+signal_add tb_adma.adma.wbs_rty0
+signal_add tb_adma.adma.wbs_ack0
+signal_highlight tb_adma.adma.wbs_ack0 8
+
+# s1 
+signal_add tb_adma.adma.sg_state1
+signal_add tb_adma.adma.wbs_cyc1
+signal_add tb_adma.adma.wbs_we1
+signal_add tb_adma.adma.wbs_rty1
+signal_add tb_adma.adma.wbs_ack1
+signal_highlight tb_adma.adma.wbs_ack1 8
+
+# s2
+signal_add tb_adma.adma.sg_state2
+signal_add tb_adma.adma.wbs_cyc2
+signal_add tb_adma.adma.wbs_we2
+signal_add tb_adma.adma.wbs_rty2
+signal_add tb_adma.adma.wbs_ack2
+signal_highlight tb_adma.adma.wbs_ack2 8
+
+# s3
+signal_add tb_adma.adma.sg_state3
+signal_add tb_adma.adma.wbs_cyc3
+signal_add tb_adma.adma.wbs_we3
+signal_add tb_adma.adma.wbs_rty3
+signal_add tb_adma.adma.wbs_ack3
+signal_highlight tb_adma.adma.wbs_ack3 8
+
+signal_add tb_adma.adma.mod_0.m_src_getn
+signal_add tb_adma.adma.mod_0.m_src
+signal_add tb_adma.adma.mod_0.m_src_last
+signal_add tb_adma.adma.mod_0.m_src_almost_empty
+signal_add tb_adma.adma.mod_0.m_src_empty
+signal_highlight tb_adma.adma.mod_0.m_src_emtpy 8
+
+signal_add tb_adma.adma.mod_0.m_endn
+signal_add tb_adma.adma.mod_0.m_reset
+signal_add tb_adma.adma.mod_0.m_dst_putn
+signal_add tb_adma.adma.mod_0.m_dst
+signal_add tb_adma.adma.mod_0.m_dst_last
+signal_add tb_adma.adma.mod_0.m_dst_almost_full
+signal_add tb_adma.adma.mod_0.m_dst_full
+signal_highlight tb_adma.adma.mod_0.m_dst_full 8
+
+signal_add tb_adma.adma.mod_0.copy.state
+signal_add tb_adma.adma.ch0.dst_empty
+
+signal_states tb_sgr.sgr.sg_state = {
+        0/IDLE, 1/CMD, 2/D_REQ, 3/B_REQ, 4/B_WAIT, 5/NEXT, 6/END, 7/PANIC
+}
+
+grid_signal 0   *
+grid_color  0   4
