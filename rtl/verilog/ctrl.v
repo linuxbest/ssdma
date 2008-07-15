@@ -409,6 +409,7 @@ module ctrl(/*AUTOARG*/
 		wbs_sel4_n = 4'b1111;
 
 		state_n    = resume_mode ? S_CMD0 : S_CMD1;
+		inc_reset  = 1;
 	     end else begin
 		state_n    = S_WAIT0;
 	     end // else: !if(dc0[14])
