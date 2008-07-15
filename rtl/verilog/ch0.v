@@ -161,13 +161,13 @@ module ch0(/*AUTOARG*/
    /* DATA path */
    assign 		 src_di[62:32]= wbs_dat64_o0;
    assign 		 src_di[31:00]= wbs_dat_o0;
-   assign 		 src_di[71]   = ss_last0;
+   assign 		 src_di[71:63]= {ss_last0, 7'b0};
    
    assign 		 m_src0       = src_do[63:0];
    assign 		 m_src_last0  = src_do[71];
    
    assign 		 dst_di[63:0] = m_dst0;
-   assign 		 dst_di[71]   = m_dst_last0;
+   assign 		 dst_di[71:63]= {m_dst_last0, 7'b0};
    
    assign 		 wbs_dat64_i1 = dst_do[63:32];
    assign 		 wbs_dat_i1   = dst_do[31:00];

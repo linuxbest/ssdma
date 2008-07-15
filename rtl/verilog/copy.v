@@ -45,7 +45,7 @@ module copy(/*AUTOARG*/
    assign 	 m_dst      = dc[4] ? m_src  : 64'hz;
    
    assign 	 m_endn     = dc[4] ? (!endn)    :  1'bz;
-   assign 	 m_dst_last = dc[4] ? m_dst_last :  1'bz;
+   assign 	 m_dst_last = dc[4] ? m_src_last :  1'bz;
    
    parameter [1:0] 
 		S_IDLE = 2'b00,
@@ -77,6 +77,8 @@ module copy(/*AUTOARG*/
 		state_n = S_WAIT;
 	     end else if (m_src_empty) begin
 		state_n = S_WAIT;
+	     end else if (m_src_last) begin
+		state_n = S_END;
 	     end
 	  end
 	  
