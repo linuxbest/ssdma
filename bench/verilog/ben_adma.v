@@ -252,7 +252,10 @@ module ben_adma(/*AUTOARG*/
 
 	 i = 'h100;
 	 wbmH[i] = 'h100040;
-	 wbmL[i] = {16'h50,  3'b000};
+	 wbmL[i] = {16'h60,  3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
 	 
 	 /* fake data */
 	 i = 'h50;
