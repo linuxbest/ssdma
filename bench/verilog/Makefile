@@ -1,4 +1,4 @@
-TBS = tb_sg tpci tc
+TBS = tb_sg tb_adma tpci tc
 PCISIM?=/p/hw/pcisim/
 OC_DIR?=/p/hw/oc-pci/rtl/verilog
 LZFDMA?=/p/hw/lzs/kernel

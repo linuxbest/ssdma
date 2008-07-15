@@ -92,17 +92,17 @@ module ss_adma(/*AUTOARG*/
    wire [23:0]		dc1;			// From ctrl of ctrl.v
    wire			enable;			// From wbm of wbm.v
    wire [4:0]		gnt;			// From arbiter of arbiter.v
-   wire [63:0]		m_dst0;			// From dummy of dummy.v
+   wire [63:0]		m_dst0;			// From mod_0 of mod.v
    wire			m_dst_almost_full0;	// From ch0 of ch0.v
    wire			m_dst_full0;		// From ch0 of ch0.v
-   wire			m_dst_last0;		// From dummy of dummy.v
-   wire			m_dst_putn0;		// From dummy of dummy.v
+   wire			m_dst_last0;		// From mod_0 of mod.v
+   wire			m_dst_putn0;		// From mod_0 of mod.v
    wire			m_reset0;		// From ctrl of ctrl.v
    wire			m_reset1;		// From ctrl of ctrl.v
    wire [63:0]		m_src0;			// From ch0 of ch0.v
    wire			m_src_almost_empty0;	// From ch0 of ch0.v
    wire			m_src_empty0;		// From ch0 of ch0.v
-   wire			m_src_getn0;		// From dummy of dummy.v
+   wire			m_src_getn0;		// From mod_0 of mod.v
    wire			m_src_last0;		// From ch0 of ch0.v
    wire [31:3]		ndar;			// From wbm of wbm.v
    wire			ndar_dirty;		// From wbm of wbm.v
@@ -469,10 +469,6 @@ module ss_adma(/*AUTOARG*/
 	       .wbs_dat_i3		(wbs_dat_i3[31:0]),
 	       .wbs_dat64_i2		(wbs_dat64_i2[31:0]),
 	       .wbs_dat64_i3		(wbs_dat64_i3[31:0]),
-	       .m_src_getn0		(m_src_getn0),
-	       .m_dst_putn0		(m_dst_putn0),
-	       .m_dst0			(m_dst0[63:0]),
-	       .m_dst_last0		(m_dst_last0),
 	       // Inputs
 	       .wb_clk_i		(wb_clk_i),
 	       .wb_rst_i		(wb_rst_i),
@@ -485,12 +481,6 @@ module ss_adma(/*AUTOARG*/
 	       .wbs_dat64_o2		(wbs_dat64_o2[31:0]),
 	       .wbs_dat64_o3		(wbs_dat64_o3[31:0]),
 	       .dc1			(dc1[23:0]),
-	       .m_src0			(m_src0[63:0]),
-	       .m_src_last0		(m_src_last0),
-	       .m_src_almost_empty0	(m_src_almost_empty0),
-	       .m_src_empty0		(m_src_empty0),
-	       .m_dst_almost_full0	(m_dst_almost_full0),
-	       .m_dst_full0		(m_dst_full0),
 	       .m_reset1		(m_reset1));
 
    /* gnt */
@@ -661,5 +651,28 @@ module ss_adma(/*AUTOARG*/
 	   .m_dst_putn0			(m_dst_putn0),
 	   .m_dst0			(m_dst0[63:0]),
 	   .m_dst_last0			(m_dst_last0));
-   
+
+   /* mod AUTO_TEMPLATE "_\([0-9]+\)" (
+    .wb_clk_i(wb_clk_i),
+    .wb_rst_i(wb_rst_i),
+    .\(.*\)(\1@[]),
+    );
+    */
+   mod mod_0(/*AUTOINST*/
+	     // Outputs
+	     .m_src_getn		(m_src_getn0),		 // Templated
+	     .m_dst_putn		(m_dst_putn0),		 // Templated
+	     .m_dst			(m_dst0[63:0]),		 // Templated
+	     .m_dst_last		(m_dst_last0),		 // Templated
+	     // Inputs
+	     .wb_clk_i			(wb_clk_i),		 // Templated
+	     .m_reset			(m_reset0),		 // Templated
+	     .dc			(dc0[23:0]),		 // Templated
+	     .m_src			(m_src0[63:0]),		 // Templated
+	     .m_src_last		(m_src_last0),		 // Templated
+	     .m_src_almost_empty	(m_src_almost_empty0),	 // Templated
+	     .m_src_empty		(m_src_empty0),		 // Templated
+	     .m_dst_almost_full		(m_dst_almost_full0),	 // Templated
+	     .m_dst_full		(m_dst_full0));		 // Templated
+
 endmodule // top

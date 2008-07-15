@@ -235,10 +235,10 @@ module ctrl(/*AUTOARG*/
    assign ss_we2  = state == S_CMD1 && wbs_ack4;
    assign ss_we3  = state == S_CMD1 && wbs_ack4;
 
-   assign ss_dat0 = wbs_dat_o4;
-   assign ss_dat1 = wbs_dat_o4;
-   assign ss_dat2 = wbs_dat_o4;
-   assign ss_dat3 = wbs_dat_o4;
+   assign ss_dat0 = wbs_dat64_o4;
+   assign ss_dat1 = wbs_dat64_o4;
+   assign ss_dat2 = wbs_dat64_o4;
+   assign ss_dat3 = wbs_dat64_o4;
 
    assign ss_done0= state == S_TR0;
    assign ss_done1= state == S_TR0;
