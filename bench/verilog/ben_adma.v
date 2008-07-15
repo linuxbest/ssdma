@@ -474,9 +474,18 @@ module ben_adma(/*AUTOARG*/
 	 wbs_adr_i = {5'h15, 2'b00}; /* ctl */
 	 wbs_we_i  = 1'b0;
 	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h2000);
+	 check_val("check ctl_adr1 ", wbs_dat_o, 32'h2000);
 	 wbs_cyc_i = 1'b0;
 	 @(posedge wb_clk_i);
+
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
+	 wbs_we_i  = 1'b0;
+	 @(posedge wbs_ack_o);
+	 check_val("check next_desc ", wbs_dat_o, 32'h100);
+	 wbs_cyc_i = 1'b0;
+	 @(posedge wb_clk_i);
+	 
 	 @(posedge wb_clk_i);
       end
    endtask // check_job_100
