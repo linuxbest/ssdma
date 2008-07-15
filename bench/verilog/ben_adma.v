@@ -861,7 +861,7 @@ module ben_adma(/*AUTOARG*/
 
 	 i = 'h20;
 	 wbmH[i] = {16'h30, 3'b000}; /* next desc */
-	 wbmL[i] = 32'h1000;          /* ctrl addr */
+	 wbmL[i] = 32'h3000;          /* ctrl addr */
 	 i = i + 1;
 	 wbmH[i] = {8'h40, 8'h16};   /* memcpy with CONT */
 	 wbmL[i] = 32'h0;
@@ -882,7 +882,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = {16'h40, 3'b000};
 	 wbmL[i] = 32'h0;
 	 i = i + 1;
-	 wbmH[i] = {16'h1400, 3'b000}; /* src */
+	 wbmH[i] = {16'h1400, 3'b000}; /* dst */
 	 wbmL[i] = 32'h0;
 
 	 i = 'h40;
@@ -894,7 +894,7 @@ module ben_adma(/*AUTOARG*/
 
 	 i = 'h100;
 	 wbmH[i] = 'h100040;
-	 wbmL[i] = {16'h520,  3'b000};
+	 wbmL[i] = {16'h540,  3'b000};
 	 i = i + 1;
 	 wbmH[i] = 0;
 	 wbmL[i] = 0;
@@ -923,20 +923,19 @@ module ben_adma(/*AUTOARG*/
 	 wbmL[i] = 0;
 
 	 
-	 i = 'h1200;
+	 i = 'h1300;
 	 wbmH[i] = 'h100080;
 	 wbmL[i] = {16'h2300, 3'b000};
 	 i = i + 1;
 	 wbmH[i] = 0;
 	 wbmL[i] = 0;
 
-	 i = 'h1300;
+	 i = 'h1400;
 	 wbmH[i] = 'h100080;
 	 wbmL[i] = {16'h2400, 3'b000};
 	 i = i + 1;
 	 wbmH[i] = 0;
 	 wbmL[i] = 0;
-	 $write("time %d\n", $time);
       end
    endtask // do_ssadma
 
@@ -946,7 +945,7 @@ module ben_adma(/*AUTOARG*/
 	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
 	 wbs_we_i  = 1'b0;
 	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h1000);
+	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h3000);
 	 wbs_cyc_i = 1'b0;
 	 @(posedge wb_clk_i);
 
