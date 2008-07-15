@@ -114,12 +114,11 @@ module ch0(/*AUTOARG*/
 	      .oe_b(1'b1),
 	      .addr_b(src_raddr),
 	      .do_b(src_do),
-	      .di_b());
+	      .di_b(0));
    defparam 		 src_control.ADDR_LENGTH = FIFO_WIDTH;   
    defparam 		 src_ram.aw = FIFO_WIDTH;
    defparam 		 src_ram.dw = DATA_WIDTH;
 
-   
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
@@ -153,21 +152,21 @@ module ch0(/*AUTOARG*/
 	      .oe_b(1'b1),
 	      .addr_b(dst_raddr),
 	      .do_b(dst_do),
-	      .di_b());
+	      .di_b(0));
    defparam 		 dst_control.ADDR_LENGTH = FIFO_WIDTH;   
    defparam 		 dst_ram.aw = FIFO_WIDTH;
    defparam 		 dst_ram.dw = DATA_WIDTH;
 
    /* DATA path */
-   assign 		 src_di[62:32]= wbs_dat64_o0;
+   assign 		 src_di[63:32]= wbs_dat64_o0;
    assign 		 src_di[31:00]= wbs_dat_o0;
-   assign 		 src_di[71:63]= {ss_last0, 7'b0};
+   assign 		 src_di[71:64]= {ss_last0, 7'b0};
    
    assign 		 m_src0       = src_do[63:0];
    assign 		 m_src_last0  = src_do[71];
    
    assign 		 dst_di[63:0] = m_dst0;
-   assign 		 dst_di[71:63]= {m_dst_last0, 7'b0};
+   assign 		 dst_di[71:62]= {m_dst_last0, 7'b0};
    
    assign 		 wbs_dat64_i1 = dst_do[63:32];
    assign 		 wbs_dat_i1   = dst_do[31:00];
