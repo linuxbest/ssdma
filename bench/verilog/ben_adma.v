@@ -227,6 +227,46 @@ module ben_adma(/*AUTOARG*/
 	 @(posedge wb_clk_i);
       end
    endtask
+
+   task pre_job_2;
+      begin
+	 i = 'h0;
+	 wbmH[i] = 32'h100;
+	 wbmL[i] = 32'h200;
+	 i = i + 1;
+	 wbmH[i] = {8'ha, 16'b100000010}; /* READ */
+	 wbmL[i] = 32'h0;   /* u0 */
+	 i = i + 1;
+	 wbmH[i] = {16'h40, 3'b000}; /* src */
+	 wbmL[i] = 32'h0;   /* u1  */
+	 i = i + 1;
+	 wbmH[i] = 32'h0;   /* dst */
+	 wbmL[i] = 32'h0;   /* u2  */
+	 
+	 i = 'h40;
+	 wbmH[i] = 'h000040;             /* LAST with 0x80 */
+	 wbmL[i] = {16'h50,  3'b000};    /* address */
+	 i = i + 1;
+	 wbmH[i] = {16'h100, 3'b000};    /* Next */
+	 wbmL[i] = 0;
+
+	 i = 'h100;
+	 wbmH[i] = 'h100040;
+	 wbmL[i] = {16'h50,  3'b000};
+	 
+	 /* fake data */
+	 i = 'h50;
+	 for (j = i; j < i + 100; j = j + 1) begin
+	    wbmH[j] = j;
+	    wbmL[j] = j;
+	 end
+      end
+   endtask // pre_job_2
+
+   task check_job_2;
+      begin
+      end
+   endtask
    
    task wait_job;
       begin
@@ -303,12 +343,20 @@ module ben_adma(/*AUTOARG*/
       wait_job;
       check_job_0;
 
-      /* doing memory fill 
+      /* doing memory read
        */
       pre_job_1;
       queue_job;
       wait_job;
       check_job_1;
+
+      /*
+       * doing memory read with chain.
+       */
+      pre_job_2;
+      queue_job;
+      wait_job;
+      check_job_2;
       
       $finish;
    end

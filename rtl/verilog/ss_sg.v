@@ -99,7 +99,6 @@ module ss_sg(/*AUTOARG*/
    reg [3:0] 	 wbs_sel, wbs_sel_n;
    always @(posedge wb_clk_i)
      begin
-	wbs_adr <= #1 wbs_adr_n;
 	wbs_stb <= #1 wbs_stb_n;
 	wbs_we  <= #1 wbs_we_n;
 	wbs_cab <= #1 wbs_cab_n;
@@ -112,6 +111,17 @@ module ss_sg(/*AUTOARG*/
 	else
 	  wbs_cyc <= #1 wbs_cyc_n;
      end
+   reg [31:3] wbs_adr_r;
+   reg wbs_adr_start, wbs_adr_inc;
+   always @(posedge wb_clk_i)
+     begin
+	if (wbs_adr_start)
+	  wbs_adr_r <= #1 wbs_adr_n;
+	else if (wbs_adr_inc)
+	  wbs_adr_r <= #1 wbs_adr_r + 1'b1;
+     end
+   always @(/*AS*/wbs_adr_r)
+     wbs_adr = {wbs_adr_r, 3'b000};
    
    parameter [2:0] 
 		S_IDLE   = 3'h0,
@@ -181,6 +191,9 @@ module ss_sg(/*AUTOARG*/
 
 	sg_addr_start = 0;
 	sg_addr_inc   = 0;
+
+	wbs_adr_start = 0;
+	wbs_adr_inc   = 0;
 	
 	/* wb */
 	wbs_adr_n = wbs_adr;
@@ -225,7 +238,6 @@ module ss_sg(/*AUTOARG*/
 	  end // case: S_CMD
 	  
 	  S_D_REQ: begin
-	     wbs_adr_n = {sg_next, 3'b000};
 	     wbs_cyc_n = 1'b1;
 	     wbs_stb_n = 1'b1;
 	     wbs_we_n  = 1'b0;
@@ -234,6 +246,7 @@ module ss_sg(/*AUTOARG*/
 	     
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
+		  wbs_adr_inc = 1;
 		  if (cnt == 0) begin
 		     sg_last_n = wbs_dat64_o[20];
 		     sg_addr_start = 1;
@@ -256,7 +269,6 @@ module ss_sg(/*AUTOARG*/
 	  end
 	  
 	  S_B_REQ: begin
-	     wbs_adr_n = {sg_addr, 3'b000};
 	     wbs_cyc_n = 1'b1;
 	     wbs_stb_n = 1'b1;
 	     wbs_we_n  = rw;
@@ -265,6 +277,7 @@ module ss_sg(/*AUTOARG*/
 
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
+		  wbs_adr_inc = 1;
 		  sg_addr_inc = 1;
 		  io_n      = 1'b1;
 		  ss_xfer   = 1'b1;
@@ -294,7 +307,8 @@ module ss_sg(/*AUTOARG*/
 	     if (ss_end) begin
 		state_n = S_END;
 	     end else if (ss_start) begin
-		wbs_adr_n = {sg_addr, 3'b000};
+		wbs_adr_start = 1;
+		wbs_adr_n = sg_addr;
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
 		wbs_we_n  = rw;
@@ -312,8 +326,8 @@ module ss_sg(/*AUTOARG*/
 		state_n = S_END;
 	     end else begin
 		state_n = S_D_REQ;
-		
-		wbs_adr_n = {sg_next, 3'b000};
+		wbs_adr_start = 1;
+		wbs_adr_n = sg_next;
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
 		wbs_we_n  = 1'b0;
