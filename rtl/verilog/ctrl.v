@@ -287,7 +287,11 @@ module ctrl(/*AUTOARG*/
 		dc1       <= #1 wbs_dat64_o4[23:0];
 	     end 
 	   endcase
-	end // if (state == CMD1 && wbs_ack4)
+	end else if (m_reset0) begin // if (state == S_CMD1 && wbs_ack4)
+	   dc0 <= #1 0;
+	end else if (m_reset1) begin
+	   dc1 <= #1 0;
+	end
      end // always @ (posedge wb_clk_i)
    assign ss_dc0 = dc0;
    assign ss_dc1 = dc0;
