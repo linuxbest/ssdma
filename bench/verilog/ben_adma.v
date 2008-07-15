@@ -112,8 +112,13 @@ module ben_adma(/*AUTOARG*/
    reg [31:0] 	 wbmH[1048575:0];
    reg [31:0] 	 wbmL[1048575:0];
    reg [31:0] 	 inc;
-   always @(/*AS*/ /*memory or*/ wbm_adr_o)
+   always @(/*AS*/wbm_adr_o or wbm_dat64_o or wbm_dat_o
+	    or wbm_we_o)
      begin
+	if (wbm_we_o) begin
+	   wbmL[wbm_adr_o[31:3]] = wbm_dat_o;
+	   wbmH[wbm_adr_o[31:3]] = wbm_dat64_o;
+	end
 	wbm_dat_i   = wbmL[wbm_adr_o[31:3]];
 	wbm_dat64_i = wbmH[wbm_adr_o[31:3]];
      end
@@ -186,7 +191,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = 32'h100;
 	 wbmL[i] = 32'h200;
 	 i = i + 1;
-	 wbmH[i] = {8'ha, 16'b100000010}; /* READ */
+	 wbmH[i] = {8'ha, 16'b000000010}; /* READ */
 	 wbmL[i] = 32'h0;   /* u0 */
 	 i = i + 1;
 	 wbmH[i] = {16'h40, 3'b000}; /* src */
@@ -234,7 +239,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = 32'h100;
 	 wbmL[i] = 32'h200;
 	 i = i + 1;
-	 wbmH[i] = {8'ha, 16'b100000010}; /* READ */
+	 wbmH[i] = {8'ha, 16'b000000010}; /* READ */
 	 wbmL[i] = 32'h0;   /* u0 */
 	 i = i + 1;
 	 wbmH[i] = {16'h40, 3'b000}; /* src */
@@ -270,6 +275,49 @@ module ben_adma(/*AUTOARG*/
       begin
       end
    endtask
+
+   task pre_job_10;
+      begin
+	 i = 'h0;
+	 wbmH[i] = 32'h100;  /* next */
+	 wbmL[i] = 32'h200;  /* ctl */
+	 i = i + 1;
+	 wbmH[i] = {8'ha, 16'b00001101}; /* FILL */
+	 wbmL[i] = 32'h0;   /* u0 */
+	 i = i + 1;
+	 wbmH[i] = {16'h40, 3'b000}; /* src */
+	 wbmL[i] = 32'h0;   /* u1  */
+	 i = i + 1;
+	 wbmH[i] = 32'h0;   /* dst */
+	 wbmL[i] = 32'h0;   /* u2  */
+	 
+	 i = 'h40;
+	 wbmH[i] = 'h000040;             /* LAST with 0x80 */
+	 wbmL[i] = {16'h50,  3'b000};    /* address */
+	 i = i + 1;
+	 wbmH[i] = {16'h100, 3'b000};    /* Next */
+	 wbmL[i] = 0;
+
+	 i = 'h100;
+	 wbmH[i] = 'h100040;
+	 wbmL[i] = {16'h60,  3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+	 
+	 /* fake data */
+	 i = 'h50;
+	 for (j = i; j < i + 100; j = j + 1) begin
+	    wbmH[j] = j;
+	    wbmL[j] = j;
+	 end
+      end
+   endtask // pre_job_2
+
+   task check_job_10;
+      begin
+      end
+   endtask // check_job_10
    
    task wait_job;
       begin
@@ -360,6 +408,14 @@ module ben_adma(/*AUTOARG*/
       queue_job;
       wait_job;
       check_job_2;
+
+      /*
+       * doing memory fill with chain.
+       */
+      pre_job_10;
+      queue_job;
+      wait_job;
+      check_job_10;
       
       $finish;
    end

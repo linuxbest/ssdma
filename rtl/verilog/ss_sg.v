@@ -253,7 +253,8 @@ module ss_sg(/*AUTOARG*/
 		     cnt_n = cnt + 1;
 		  end else begin
 		     sg_next_n = wbs_dat64_o[31:3];
-		     wbs_cyc_n = 0;
+		     wbs_cyc_n = 1'b0;
+		     wbs_we_n  = 1'b0;
 		     state_n   = S_B_WAIT;
 		  end
 	       end // case: 3'b100
@@ -283,16 +284,19 @@ module ss_sg(/*AUTOARG*/
 		  ss_xfer   = 1'b1;
 		  if (sg_len == 1) begin
 		     wbs_cyc_n = 1'b0;
+		     wbs_we_n  = 1'b0;
 		     state_n   = S_NEXT;
 		     ss_last   = 1'b1;
 		  end else if (ss_stop) begin
 		     wbs_cyc_n = 1'b0;
+		     wbs_we_n  = 1'b0;
 		     state_n   = S_B_WAIT;
 		  end
 	       end
 	       3'b010: begin
 		  if (io) begin
 		     wbs_cyc_n = 1'b0;
+		     wbs_we_n  = 1'b0;
 		     state_n   = S_B_WAIT;
 		  end
 	       end
