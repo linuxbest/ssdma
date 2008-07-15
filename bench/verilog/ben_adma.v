@@ -336,15 +336,22 @@ module ben_adma(/*AUTOARG*/
 	 wbmL[i] = 32'h0;   /* u2  */
 	 
 	 i = 'h40;
-	 wbmH[i] = 'h100040;             /* LAST with 0x40 */
+	 wbmH[i] = 'h100080;             /* LAST with 0x40 */
 	 wbmL[i] = {16'h500,  3'b000};    /* address */
 	 i = i + 1;
 	 wbmH[i] = 0;                   
 	 wbmL[i] = 0;
 
 	 i = 'h20;
-	 wbmH[i] = 'h100040;
+	 wbmH[i] = 'h000040;
 	 wbmL[i] = {16'h600,  3'b000};
+	 i = i + 1;
+	 wbmH[i] = {16'h70,   3'b000};
+	 wbmL[i] = 0;
+
+	 i = 'h70;
+	 wbmH[i] = 'h100040;
+	 wbmL[i] = {16'h700,  3'b000};
 	 i = i + 1;
 	 wbmH[i] = 0;
 	 wbmL[i] = 0;
