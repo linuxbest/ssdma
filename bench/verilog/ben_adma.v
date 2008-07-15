@@ -285,10 +285,10 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = {8'ha, 16'b00001101}; /* FILL */
 	 wbmL[i] = 32'h0;   /* u0 */
 	 i = i + 1;
-	 wbmH[i] = {16'h40, 3'b000}; /* src */
+	 wbmH[i] = 32'h0;   /* src */
 	 wbmL[i] = 32'h0;   /* u1  */
 	 i = i + 1;
-	 wbmH[i] = 32'h0;   /* dst */
+	 wbmH[i] = {16'h40, 3'b000};   /* dst */
 	 wbmL[i] = 32'h0;   /* u2  */
 	 
 	 i = 'h40;

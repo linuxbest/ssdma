@@ -39,6 +39,7 @@ module fill(/*AUTOARG*/
    
    wire [7:0] 	 o = dc[23:16];
    wire 	 get;
+   assign 	 m_src_getn = dc[3] ? 1'b0 : 1'bz;
    assign 	 m_dst_putn = dc[3] ? (!get) :1'bz;
    assign 	 m_dst_last = dc[3] ? 1'b0 : 1'bz;
    assign 	 m_dst      = dc[3] ? {64{o}} : 64'hz;

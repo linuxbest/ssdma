@@ -218,14 +218,17 @@ module ss_sg(/*AUTOARG*/
 	  
 	  S_CMD: begin
 	     case (ss_adr[1:0]) 
-	       2'b00: begin
+	       2'b00: begin /* next_desc, ctrl_addr */
 	       end
-	       2'b01: begin 
+	       2'b01: begin /* dc_fc, u0 */
 	       end
-	       2'b10: begin 
-		  sg_next_n = ss_dat[31:3];
+	       2'b10: begin /* src_desc, u1 */
+		  if (rw == 1'b0)
+		    sg_next_n = ss_dat[31:3];
 	       end
-	       2'b11: begin
+	       2'b11: begin /* dst_desc, u2 */
+		  if (rw == 1'b1)
+		    sg_next_n = ss_dat[31:3];
 		  sg_last_n = 1'b0;
 		  if (rw == 1'b1 && ss_dc[2] == 0)
 		    state_n = S_IDLE;

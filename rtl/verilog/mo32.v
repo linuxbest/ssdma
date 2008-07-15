@@ -30,10 +30,10 @@ module mo32(/*AUTOARG*/
    always @(posedge wb_clk_i)
      gnt_r <= #1 gnt;
    
-   assign O = gnt_r[4] ? I4 :
-	      gnt_r[3] ? I3 :
-	      gnt_r[2] ? I2 :
-	      gnt_r[1] ? I1 :
-	      gnt_r[0] ? I0 : 32'hz;
+   assign O = gnt[4] ? I4 :
+	      gnt[3] ? I3 :
+	      gnt[2] ? I2 :
+	      gnt[1] ? I1 :
+	      gnt[0] ? I0 : 32'hz;
    
 endmodule // mixer0

@@ -39,6 +39,9 @@ module read(/*AUTOARG*/
    wire 	 get;
    assign 	 m_src_getn = dc[8] ? (!get) : 1'bz;
    assign 	 m_endn     = dc[8] ? 1'b0   : 1'bz;
+   assign 	 m_dst      = dc[8] ? 64'h0  : 64'hz;
+   assign 	 m_dst_last = dc[8] ? 1'b0   : 1'bz;
+   assign 	 m_dst_putn = dc[9] ? 1'b0   : 1'bz;
    
    parameter [1:0] 
 		S_IDLE = 2'b00,
