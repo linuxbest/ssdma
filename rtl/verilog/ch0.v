@@ -166,7 +166,7 @@ module ch0(/*AUTOARG*/
    assign 		 m_src_last0  = src_do[71];
    
    assign 		 dst_di[63:0] = m_dst0;
-   assign 		 dst_di[71:62]= {m_dst_last0, 7'b0};
+   assign 		 dst_di[71:64]= {m_dst_last0, 7'b0};
    
    assign 		 wbs_dat64_i1 = dst_do[63:32];
    assign 		 wbs_dat_i1   = dst_do[31:00];
