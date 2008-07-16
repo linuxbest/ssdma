@@ -70,7 +70,8 @@ module bridge(/*AUTOARG*/
    assign 	 wb_rst_i = ~PCI_RSTn;
    output 	 wb_clk_i;
    assign 	 wb_clk_i = PCI_CLK;
-   
+   assign        PCI_INTBn= 1'b1; /* must wire to GND */
+
    /* WB Master */
    input 	 wbm_we_o,
 		 wbm_stb_o,
