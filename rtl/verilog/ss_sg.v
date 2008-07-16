@@ -214,6 +214,7 @@ module ss_sg(/*AUTOARG*/
 	  S_IDLE: begin 
 	     if (ss_we)
 	       state_n = S_CMD;
+	     io_n      = 1'b0;
 	  end
 	  
 	  S_CMD: begin
@@ -285,11 +286,10 @@ module ss_sg(/*AUTOARG*/
 		  sg_addr_inc = 1;
 		  io_n      = 1'b1;
 		  ss_xfer   = 1'b1;
-		  if (sg_len == 1) begin
+		  if (sg_len == 1) begin /* == 0 ? */
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
 		     state_n   = S_NEXT;
-		     ss_last   = sg_last;
 		  end else if (ss_stop) begin
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
@@ -311,7 +311,7 @@ module ss_sg(/*AUTOARG*/
 	  end
 
 	  S_B_WAIT: begin
-	     if (ss_end) begin
+	     if (ss_end && io) begin /* if no io xfer, end is not correct */
 		state_n = S_END;
 	     end else if (ss_start) begin
 		wbs_adr_start = 1;
@@ -330,6 +330,10 @@ module ss_sg(/*AUTOARG*/
 	     if (ss_end) begin
 		state_n = S_END;
 	     end if (sg_last) begin
+		if (rw == 0) begin
+		   ss_xfer = 1'b1;
+		   ss_last = 1'b1;
+		end
 		state_n = S_END;
 	     end else begin
 		state_n = S_D_REQ;

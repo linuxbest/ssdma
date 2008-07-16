@@ -649,7 +649,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = 32'h0;
 	 wbmL[i] = 32'h0;
 	 i = i + 1;
-	 wbmH[i] = {16'h40, 3'b000}; /* dst */
+	 wbmH[i] = {16'h140, 3'b000}; /* dst */
 	 wbmL[i] = 32'h0;
 
 	 i = 'h20;
@@ -675,7 +675,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = 32'h0;
 	 wbmL[i] = 32'h0;
 	 i = i + 1;
-	 wbmH[i] = {16'h40, 3'b000}; /* src */
+	 wbmH[i] = {16'h140, 3'b000}; /* dst */
 	 wbmL[i] = 32'h0;
 
 	 i = 'h40;
@@ -692,6 +692,20 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = 0;
 	 wbmL[i] = 0;
 
+	 i = 'h140;
+	 wbmH[i] = 'h000040;             /* LAST with 0x80 */
+	 wbmL[i] = {16'h600,  3'b000};    /* address */
+	 i = i + 1;
+	 wbmH[i] = {16'h200, 3'b000};    /* Next */
+	 wbmL[i] = 0;
+
+	 i = 'h200;
+	 wbmH[i] = 'h100040;
+	 wbmL[i] = {16'h620,  3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+
 	 i = 'h500;
 	 t = 0;
 	 for (j = i; j < i + 100; j = j + 1) begin
@@ -704,15 +718,28 @@ module ben_adma(/*AUTOARG*/
    endtask // do_ssadma
 
    task check_job_103;
+      integer d1, d2;
       begin
 	 check_reg("ctl_adr0 ", 5'h14, 32'h1000);
 	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
 	 check_reg("next_desc", 5'h16, 32'h1100);
-	 for (i = 'h500; i < 'h508; i = i + 1) begin
+	 d1 = 'h500;
+	 d2 = 'h520;
+	 for (i = d1; i < d1 + 'h8; i = i + 1) begin
+	    check_val("memory", 32'h03030303, wbmH[i]);
+	    check_val("memory", 32'h03030303, wbmL[i]);
+	 end
+	 for (i = d2; i < d2 + 'h8; i = i + 1) begin
+	    check_val("memory", 32'h03030303, wbmH[i]);
+	    check_val("memory", 32'h03030303, wbmL[i]);
+	 end
+	 d1 = 'h600;
+	 d2 = 'h620;
+	 for (i = d1; i < d1 + 'h8; i = i + 1) begin
 	    check_val("memory", 32'h04040404, wbmH[i]);
 	    check_val("memory", 32'h04040404, wbmL[i]);
 	 end
-	 for (i = 'h520; i < 'h528; i = i + 1) begin
+	 for (i = d2; i < d2 + 'h8; i = i + 1) begin
 	    check_val("memory", 32'h04040404, wbmH[i]);
 	    check_val("memory", 32'h04040404, wbmL[i]);
 	 end
@@ -798,7 +825,7 @@ module ben_adma(/*AUTOARG*/
 
 	 i = 'h500;
 	 t = 0;
-	 for (j = i; j < i + 100; j = j + 1) begin
+	 for (j = i; j < i + 200; j = j + 1) begin
 	    wbmH[j] = t;
 	    t = t + 1;
 	    wbmL[j] = t;
@@ -845,6 +872,7 @@ module ben_adma(/*AUTOARG*/
 	 s1 = 'h500;
 	 s2 = 'h540;
 	 d1 = 'h2100;
+	 $display("      addr %x -- ", d1);
 	 for (i = 'h0; i < 'h8; i = i + 1) begin
 	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
 	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
@@ -854,6 +882,7 @@ module ben_adma(/*AUTOARG*/
 	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
 	 end
 	 d1 = 'h2200;
+	 $display("      addr %x -- ", d1);
 	 for (i = 'h0; i < 'h8; i = i + 1) begin
 	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
 	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
@@ -863,6 +892,7 @@ module ben_adma(/*AUTOARG*/
 	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
 	 end
 	 d1 = 'h2300;
+	 $display("      addr %x -- ", d1);
 	 for (i = 'h0; i < 'h8; i = i + 1) begin
 	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
 	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
@@ -872,6 +902,7 @@ module ben_adma(/*AUTOARG*/
 	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
 	 end
 	 d1 = 'h2400;
+	 $display("      addr %x -- ", d1);
 	 for (i = 'h0; i < 'h8; i = i + 1) begin
 	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
 	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
@@ -1115,7 +1146,7 @@ module ben_adma(/*AUTOARG*/
 	    end		
 	 end
 	 if (ctrl_state != 0) begin
-	    $write("job failed\n");
+	    $write("********** job failed *************\n");
 	 end
 	 @(negedge wb_clk_i);
 	 @(negedge wb_clk_i);
@@ -1291,7 +1322,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing large memory copy 
        */
-      $display("job 105, %d", $time);
+      //$display("job 105, %d", $time);
       //pre_job_105;
       //queue_job;
       //wait_job(500000);

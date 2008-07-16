@@ -78,7 +78,8 @@ module ch1(/*AUTOARG*/
 			 src_half_full,
 			 src_almost_full,
 			 dst_half_full,
-			 dst_empty;
+			 dst_empty,
+			 dst_almost_empty;
    
    fifo_control
      src_control (.rclock_in(wb_clk_i),
@@ -126,7 +127,7 @@ module ch1(/*AUTOARG*/
 		  .wenable_in(!m_dst_putn1),
 		  .reset_in(wb_rst_i),
 		  .clear_in(m_reset1),
-		  .almost_empty_out(),
+		  .almost_empty_out(dst_almost_empty),
 		  .almost_full_out(m_dst_almost_full1),
 		  .empty_out(dst_empty),
 		  .waddr_out(dst_waddr),
@@ -178,7 +179,7 @@ module ch1(/*AUTOARG*/
     * 
     */
    assign 		 ss_stop2     = src_almost_full;
-   assign 		 ss_stop3     = m_dst_almost_full1;
+   assign 		 ss_stop3     = dst_almost_empty /*|| dst_empty*/;
    
    assign                ss_end2      = 1'b0;
    assign 		 ss_end3      = dst_do[71];

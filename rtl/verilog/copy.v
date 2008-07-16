@@ -62,8 +62,9 @@ module copy(/*AUTOARG*/
 	  state <= #1 state_n;
      end
    
-   always @(/*AS*/dc or m_dst_full or m_src_almost_empty
-	    or m_src_empty or m_src_last or state)
+   always @(/*AS*/dc or m_dst_almost_full or m_dst_full
+	    or m_src_almost_empty or m_src_empty
+	    or m_src_last or state)
      begin
 	state_n = state;
 	case (state)
@@ -76,7 +77,7 @@ module copy(/*AUTOARG*/
 	  S_RUN:  begin
 	     if (m_src_last) begin
 		state_n = S_END;		
-	     end else if (m_dst_full) begin
+	     end else if (m_dst_full || m_dst_almost_full) begin
 		state_n = S_WAIT;
 	     end else if (m_src_empty || m_src_almost_empty) begin
 		state_n = S_WAIT;
