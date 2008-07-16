@@ -289,7 +289,7 @@ module ss_sg(/*AUTOARG*/
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
 		     state_n   = S_NEXT;
-		     ss_last   = 1'b1;
+		     ss_last   = sg_last;
 		  end else if (ss_stop) begin
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
