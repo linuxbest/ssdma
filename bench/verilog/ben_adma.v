@@ -99,14 +99,17 @@ module ben_adma(/*AUTOARG*/
    
    task check_val ;
       input [255:0] s;
+      input [31:0] e;
       input [31:0] v;
-      input [31:0] c;
       begin
-	 $write("%s         ", s);
-	 if (v == c) begin
-	    $write("passed\n");
+	 $display("      except  value :%x", e);
+	 $display("      current value :%x", v);
+	 if (e !== v) begin
+	    err = err + 1;
+	    $display("      FAILED ( total failed %d) %d", err, $time);
 	 end else begin
-	    $write("failed\n");
+	    $display("      PASSED ( total passed %d) ", cor);
+	    cor = cor + 1;
 	 end
       end
    endtask // check_val
@@ -121,15 +124,7 @@ module ben_adma(/*AUTOARG*/
 	 wbs_adr_i = {o, 2'b00}; /* ctl_adr0 */
 	 wbs_we_i  = 1'b0;
 	 @(posedge wbs_ack_o);
-	 $display("      except  value :%x", e);
-	 $display("      current value :%x", wbs_dat_o);
-	 if (e !== wbs_dat_o) begin
-	    err = err + 1;
-	    $display("      FAILED ( total failed %d) %d", err, $time);
-	 end else begin
-	    $display("      PASSED ( total passed %d) ", cor);
-	    cor = cor + 1;
-	 end
+	 check_val(s, e, wbs_dat_o);
 	 wbs_cyc_i = 1'b0;
 	 @(posedge wb_clk_i);
       end
@@ -138,15 +133,18 @@ module ben_adma(/*AUTOARG*/
    reg [31:0] 	 wbmH[1048575:0];
    reg [31:0] 	 wbmL[1048575:0];
    reg [31:0] 	 inc;
-   always @(/*AS*/wbm_adr_o or wbm_dat64_o or wbm_dat_o
-	    or wbm_we_o)
+   wire [31:3] 	 adr = wbm_adr_o[31:3];
+   
+   always @(negedge wb_clk_i)
      begin
 	if (wbm_we_o) begin
-	   wbmL[wbm_adr_o[31:3]] = wbm_dat_o;
-	   wbmH[wbm_adr_o[31:3]] = wbm_dat64_o;
+	   wbmL[adr] = wbm_dat_o;
+	   wbmH[adr] = wbm_dat64_o;
+	   //$write("%x, %x, %x\n", wbm_dat_o, wbm_dat64_o, adr);
+	end else begin
+	   wbm_dat_i   = wbmL[adr];
+	   wbm_dat64_i = wbmH[adr];
 	end
-	wbm_dat_i   = wbmL[wbm_adr_o[31:3]];
-	wbm_dat64_i = wbmH[wbm_adr_o[31:3]];
      end
 
    always @(/*AS*/wbm_cyc_o)
@@ -292,7 +290,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmL[i] = 32'h0;   /* u2  */
 	 
 	 i = 'h40;
-	 wbmH[i] = 'h000040;             /* LAST with 0x80 */
+	 wbmH[i] = 'h000040;             /* LAST with 0x40 */
 	 wbmL[i] = {16'h50,  3'b000};    /* address */
 	 i = i + 1;
 	 wbmH[i] = {16'h100, 3'b000};    /* Next */
@@ -318,6 +316,14 @@ module ben_adma(/*AUTOARG*/
       begin
 	 check_reg("ctl_adr0 ", 5'h14, 32'h2000);
 	 check_reg("next_desc", 5'h16, 32'h1000);
+	 for (i = 'h50; i < 'h58; i = i + 1) begin
+	    check_val("memory", 32'h0a0a0a0a, wbmH[i]);
+	    check_val("memory", 32'h0a0a0a0a, wbmL[i]);
+	 end
+	 for (i = 'h60; i < 'h68; i = i + 1) begin
+	    check_val("memory", 32'h0a0a0a0a, wbmH[i]);
+	    check_val("memory", 32'h0a0a0a0a, wbmL[i]);
+	 end
       end
    endtask // check_job_10
 
@@ -336,7 +342,8 @@ module ben_adma(/*AUTOARG*/
 	 i = i + 1;
 	 wbmH[i] = {16'h40, 3'b000}; /* dst */
 	 wbmL[i] = 32'h0;   /* u2  */
-	 
+
+	 /* dst */
 	 i = 'h40;
 	 wbmH[i] = 'h100080;             /* LAST with 0x40 */
 	 wbmL[i] = {16'h500,  3'b000};    /* address */
@@ -344,6 +351,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[i] = 0;                   
 	 wbmL[i] = 0;
 
+	 /* src */
 	 i = 'h20;
 	 wbmH[i] = 'h000040;
 	 wbmL[i] = {16'h600,  3'b000};
@@ -361,7 +369,7 @@ module ben_adma(/*AUTOARG*/
 	 /* fake data */
 	 i = 'h600;
 	 t = 0;
-	 for (j = i; j < i + 200; j = j + 1) begin
+	 for (j = i; j < i + 'h200; j = j + 1) begin
 	    wbmH[j] = t;
 	    t = t + 1;
 	    wbmL[j] = t;
@@ -371,9 +379,22 @@ module ben_adma(/*AUTOARG*/
    endtask // pre_job_2
 
    task check_job_20;
+      integer s1, s2, d1;
       begin
 	 check_reg("ctl_adr0 ", 5'h14, 32'h200);
 	 check_reg("ctl_adr0 ", 5'h16, 32'h100);
+
+	 s1 = 'h600;
+	 s2 = 'h700;
+	 d1 = 'h500;
+	 for (i = 0; i < 8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 0; i < 8; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
       end
    endtask // check_job_10
 
@@ -852,7 +873,6 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[0] = {8'h20, 3'b000};
 	 wbmH[1] = {8'h40, 8'h1};
 	 //queue_job;
-	 
 	 append_job;
 	 wait_job;
       end
@@ -860,6 +880,7 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_200;
       begin
+	 /* after resume the last job desc reading twice */
 	 check_reg("ctl_adr0 ", 5'h14, 32'h2100);
 	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
 	 check_reg("next_desc", 5'h16, 32'h1100);
@@ -1056,20 +1077,20 @@ module ben_adma(/*AUTOARG*/
       check_job_104;
 
       /*
-       * testing the resume operation 
+       * testing the append operation 
        */
       $display("job 200, %d", $time);
       pre_job_200(1);
       check_job_200;
-      
       pre_job_200(2);
       check_job_200;
-
       pre_job_200(3);
       check_job_200;
-
       pre_job_200(4);
       check_job_200;
+
+      $display("PASSED %d", cor);
+      $display("FAILED %d", err);
       
       $finish;
    end
