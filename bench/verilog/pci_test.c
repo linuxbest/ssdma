@@ -94,6 +94,18 @@ static void dump_reg(unsigned int lzf_mem)
         }
 }
 
+static int lzf_wait(unsigned int phys_mem, unsigned int lzf_mem)
+{
+        uint32_t val;
+
+        do {
+                pcisim_wait(200, 0);
+                val = lzf_read(lzf_mem, OFS_CSR);
+        } while (val & CSR_BUSY);
+
+        return 0;
+}
+
 static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 {
         int off = 0x10000;
@@ -114,21 +126,18 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j->u2        = 0;
         lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
         lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
-	
-        pcisim_wait(20, 0);
-        val = lzf_read(lzf_mem, OFS_CSR);
-        /* wait 200 clock, it must be done */
-        assert ((val & CSR_BUSY) == 0);
+
+        lzf_wait(phys_mem, lzf_mem);
         assert(lzf_read(lzf_mem, 0x14*4) == 0);
         //assert(lzf_read(lzf_mem, 0x15*4) == 0);
         assert(lzf_read(lzf_mem, 0x16*4) == 0);
 
         /* check register */
         lzf_write(lzf_mem, OFS_CCR,  0);
-        j->next_desc = 0x0fffffff;
-        j->ctl_addr  = 0x1fffffff;
-        j->src_desc  = 0x2fffffff;
-        j->dst_desc  = 0x3fffffff;
+        j->next_desc = 0x300;
+        j->ctl_addr  = 0x200;
+        j->src_desc  = 0;
+        j->dst_desc  = 0;
         lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
         lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
         
@@ -136,14 +145,34 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         val = lzf_read(lzf_mem, OFS_CSR);
         /* wait 200 clock, it must be done */
         assert ((val & CSR_BUSY) == 0);
-        assert (lzf_read(lzf_mem, 0x14*4) == 0x0FFFFFF8);
-        assert (lzf_read(lzf_mem, 0x16*4) == 0x1FFFFFF8);
-       
+        assert (lzf_read(lzf_mem, 0x14*4) == 0x200);
+        assert (lzf_read(lzf_mem, 0x16*4) == 0x300);
+        fprintf(stderr, "%04d: passed\n", __LINE__);
+
         /***********************************************
          * datapath seem ok.
          *
          * testing 1 chain.
          ***********************************************/
+        j->next_desc = 0x100;
+        j->ctl_addr  = 0;
+        j->dc_fc     = DC_FILL | ('a' << 16); /* memset '0a0a0a0a' */
+        j->u0        = 0;
+        j->src_desc  = 0;
+        j->u1        = 0;
+        j->dst_desc  = phys_mem + 0x500;
+
+        buf_desc_t *b = (buf_desc_t *)(system_mem + 0x500);
+        b->desc     = 0x80 | LZF_SG_LAST;
+        b->desc_adr = 0x2000;
+        b->desc_next= 0;
+
+        lzf_write(lzf_mem, OFS_CCR,  0);
+        lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
+        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
+
+        lzf_wait(phys_mem, lzf_mem);
+        HexDump(system_mem + 0x2000, 0x40);
 
         return 0;
 }

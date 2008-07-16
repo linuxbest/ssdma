@@ -138,12 +138,12 @@ module ben_adma(/*AUTOARG*/
    always @(negedge wb_clk_i)
      begin
 	if (wbm_we_o) begin
-	   wbmL[adr] = wbm_dat_o;
-	   wbmH[adr] = wbm_dat64_o;
+	   wbmH[adr] = wbm_dat_o;
+	   wbmL[adr] = wbm_dat64_o;
 	   //$write("%x, %x, %x\n", wbm_dat_o, wbm_dat64_o, adr);
 	end else begin
-	   wbm_dat_i   = wbmL[adr];
-	   wbm_dat64_i = wbmH[adr];
+	   wbm_dat_i   = wbmH[adr];
+	   wbm_dat64_i = wbmL[adr];
 	end
      end
 

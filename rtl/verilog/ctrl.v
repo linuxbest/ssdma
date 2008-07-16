@@ -241,10 +241,10 @@ module ctrl(/*AUTOARG*/
    assign ss_we2  = state == S_CMD1 && wbs_ack4;
    assign ss_we3  = state == S_CMD1 && wbs_ack4;
 
-   assign ss_dat0 = wbs_dat64_o4;
-   assign ss_dat1 = wbs_dat64_o4;
-   assign ss_dat2 = wbs_dat64_o4;
-   assign ss_dat3 = wbs_dat64_o4;
+   assign ss_dat0 = wbs_dat_o4;
+   assign ss_dat1 = wbs_dat_o4;
+   assign ss_dat2 = wbs_dat_o4;
+   assign ss_dat3 = wbs_dat_o4;
 
    assign ss_done0= state == S_TR0;
    assign ss_done1= state == S_TR0;
@@ -274,23 +274,23 @@ module ctrl(/*AUTOARG*/
 	if (state == S_CMD0 && wbs_ack4) begin
 	   case (inc)
 	     2'b00: begin
-		next_desc <= #1 wbs_dat64_o4[31:3];
+		next_desc <= #1 wbs_dat_o4[31:3];
 		cdar      <= #1 wbs_adr4_r;
-		ctl_adr0  <= #1 wbs_dat_o4[31:3];
+		ctl_adr0  <= #1 wbs_dat64_o4[31:3];
 	     end
 	     2'b01: begin
-		dc0       <= #1 wbs_dat64_o4[23:0];
+		dc0       <= #1 wbs_dat_o4[23:0];
 	     end 
 	   endcase
 	end else if (state == S_CMD1 && wbs_ack4) begin
 	   case (inc)
 	     2'b00: begin
-		next_desc <= #1 wbs_dat64_o4[31:3];
+		next_desc <= #1 wbs_dat_o4[31:3];
 		cdar      <= #1 wbs_adr4_r;
-		ctl_adr1  <= #1 wbs_dat_o4[31:3];
+		ctl_adr1  <= #1 wbs_dat64_o4[31:3];
 	     end
 	     2'b01: begin
-		dc1       <= #1 wbs_dat64_o4[23:0];
+		dc1       <= #1 wbs_dat_o4[23:0];
 	     end 
 	   endcase
 	end else if (m_reset0) begin // if (state == S_CMD1 && wbs_ack4)

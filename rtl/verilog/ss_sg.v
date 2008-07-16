@@ -168,8 +168,8 @@ module ss_sg(/*AUTOARG*/
    always @(posedge wb_clk_i)
      begin
 	if (sg_addr_start) begin
-	   sg_addr <= #1 wbs_dat_o[31:3];
-	   sg_len  <= #1 wbs_dat64_o[18:3];
+	   sg_addr <= #1 wbs_dat64_o[31:3];
+	   sg_len  <= #1 wbs_dat_o[18:3];
 	end else if (sg_addr_inc) begin
 	   sg_addr <= #1 sg_addr + 1'b1;
 	   sg_len  <= #1 sg_len  - 1'b1;
@@ -252,11 +252,11 @@ module ss_sg(/*AUTOARG*/
 	       3'b100: begin
 		  wbs_adr_inc = 1;
 		  if (cnt == 0) begin
-		     sg_last_n = wbs_dat64_o[20];
+		     sg_last_n = wbs_dat_o[20];
 		     sg_addr_start = 1;
 		     cnt_n = cnt + 1;
 		  end else begin
-		     sg_next_n = wbs_dat64_o[31:3];
+		     sg_next_n = wbs_dat_o[31:3];
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
 		     state_n   = S_B_WAIT;
