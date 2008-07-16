@@ -188,9 +188,10 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j->next_desc =  phys_mem + off;
         j = (job_desc_t *)(system_mem + off);
         
-        j->next_desc = 0x100;
+        off = 0x10080;
+        j->next_desc = phys_mem + off;
         j->ctl_addr  = 0;
-        j->dc_fc     = DC_FILL | ('b' << 16); /* memset '0a0a0a0a' */
+        j->dc_fc     = DC_FILL | ('b' << 16) | DC_CONT; /* memset '0a0a0a0a' */
         j->u0        = 0;
         j->src_desc  = 0;
         j->u1        = 0;
@@ -200,10 +201,31 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         b->desc     = 0x80 | LZF_SG_LAST;
         b->desc_adr = phys_mem + 0x4000;
         b->desc_next= 0;
+        
+        j = (job_desc_t *)(system_mem + off);
+        j->next_desc = phys_mem + off;
+        j->ctl_addr  = 0;
+        j->dc_fc     = DC_FILL | ('c' << 16); /* memset '0a0a0a0a' */
+        j->u0        = 0;
+        j->src_desc  = 0;
+        j->u1        = 0;
+        j->dst_desc  = phys_mem + 0x700;
+        
+        b = (buf_desc_t *)(system_mem + 0x700);
+        b->desc     = 0x80 /*| LZF_SG_LAST*/;
+        b->desc_adr = phys_mem + 0x5000;
+        b->desc_next= phys_mem + 0x0800;
+        
+        b = (buf_desc_t *)(system_mem + 0x800);
+        b->desc     = 0x80 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x6000;
+        b->desc_next= phys_mem + 0x0800;
 
         lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
         lzf_wait(phys_mem, lzf_mem);
-        HexDump(system_mem + 0x4000, 0x100);
+        HexDump(system_mem + 0x4000, 0x90);
+        HexDump(system_mem + 0x5000, 0x90);
+        HexDump(system_mem + 0x6000, 0x90);
 
         return 0;
 }
