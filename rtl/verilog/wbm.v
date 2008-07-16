@@ -16,7 +16,7 @@ module wbm(/*AUTOARG*/
    // Outputs
    wbs_dat_o, wbs_ack_o, wbs_err_o, wbs_rty_o, spi_sel_o,
    spi_di_o, spi_do_o, spi_clk_o, spi_en, spi_do_en,
-   spi_di_en, ndar_dirty, ndar, resume, enable,
+   spi_di_en, ndar_dirty, ndar, append, enable,
    wb_int_clear,
    // Inputs
    wb_clk_i, wb_rst_i, sg_state0, sg_state1, sg_state2,
@@ -25,7 +25,7 @@ module wbm(/*AUTOARG*/
    sg_next1, sg_next2, sg_next3, wbs_sel_i, wbs_cyc_i,
    wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i,
    spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
-   ndar_dirty_clear, resume_clear, wb_int_o, busy, ctl_adr0,
+   ndar_dirty_clear, append_clear, wb_int_o, busy, ctl_adr0,
    ctl_adr1, next_desc
    );
    
@@ -79,13 +79,13 @@ module wbm(/*AUTOARG*/
    input [31:0]  dar;
    input [7:0] 	 csr;
    input 	 ndar_dirty_clear,
-		 resume_clear,
+		 append_clear,
 		 wb_int_o,
 		 busy;
    
    output 	 ndar_dirty;
    output [31:3] ndar;
-   output 	 resume, enable, wb_int_clear;
+   output 	 append, enable, wb_int_clear;
 
    input [31:3] ctl_adr0,
 		ctl_adr1,
@@ -93,10 +93,10 @@ module wbm(/*AUTOARG*/
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
+   reg			append;
    reg			enable;
    reg [31:3]		ndar;
    reg			ndar_dirty;
-   reg			resume;
    reg			spi_clk_o;
    reg			spi_di_en;
    reg			spi_di_o;
@@ -140,8 +140,8 @@ module wbm(/*AUTOARG*/
 
    wire [4:0] 	   adr = wbs_adr_i[6:2];
 
-   always @(/*AS*/busy or ctl_adr0 or ctl_adr1 or dar
-	    or enable or ndar or next_desc or resume
+   always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1
+	    or dar or enable or ndar or next_desc
 	    or sg_addr0 or sg_addr1 or sg_addr2 or sg_addr3
 	    or sg_desc0 or sg_desc1 or sg_desc2 or sg_desc3
 	    or sg_next0 or sg_next1 or sg_next2 or sg_next3
@@ -149,7 +149,7 @@ module wbm(/*AUTOARG*/
 	    or sg_state3 or wb_int_o or wbs_adr_i)
      begin
 	case (wbs_adr_i[6:2])
-	  5'h0: wbs_dat_o = {enable, resume};
+	  5'h0: wbs_dat_o = {enable, append};
 	  5'h1: wbs_dat_o = {busy, wb_int_o};
 	  5'h2: wbs_dat_o = dar;
 	  5'h3: wbs_dat_o = ndar;
@@ -221,11 +221,11 @@ module wbm(/*AUTOARG*/
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i) begin
-	   resume <= #1 0;
+	   append <= #1 0;
 	end else if (ccr_we) begin
-	   resume <= #1 wbs_dat_i[0];
-	end else if (resume_clear) begin
-	   resume <= #1 0;
+	   append <= #1 wbs_dat_i[0];
+	end else if (append_clear) begin
+	   append <= #1 0;
 	end
      end
    

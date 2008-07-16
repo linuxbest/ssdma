@@ -19,7 +19,7 @@
  * 
  * S_IDLE: 只能进入 S_CMD0 状态，有两种情况，
  *        1: ndar_dirty  
- *        2: resume      set resume mode to 1, into S_CMD0
+ *        2: append      set append mode to 1, into S_CMD0
  *         
  * S_CMD0: 读取 job desc，进入 S_NEXT0 状态
  * 
@@ -51,13 +51,13 @@ module ctrl(/*AUTOARG*/
    ss_we2, ss_we3, ss_done0, ss_done1, ss_done2, ss_done3,
    ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0, ss_adr1,
    ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2, ss_dc3,
-   wb_int_o, dar, csr, ndar_dirty_clear, busy, resume_clear,
+   wb_int_o, dar, csr, ndar_dirty_clear, busy, append_clear,
    dc0, dc1, ctl_adr0, ctl_adr1, next_desc, m_reset0,
    m_reset1, ctrl_state,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
-   ndar_dirty, ndar, wb_int_clear, resume, enable
+   ndar_dirty, ndar, wb_int_clear, append, enable
    );
 
    input wb_clk_i;
@@ -112,10 +112,10 @@ module ctrl(/*AUTOARG*/
    input [31:3]  ndar;
    
    input 	 wb_int_clear;
-   input 	 resume, enable;
+   input 	 append, enable;
    output 	 busy;
    
-   output 	 resume_clear;
+   output 	 append_clear;
    output [23:0] dc0, dc1;
    output [31:3] ctl_adr0,
 		 ctl_adr1,
@@ -126,12 +126,12 @@ module ctrl(/*AUTOARG*/
 
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
+   reg			append_clear;
    reg [7:0]		csr;
    reg [31:0]		dar;
    reg			m_reset0;
    reg			m_reset1;
    reg			ndar_dirty_clear;
-   reg			resume_clear;
    reg			wb_int_o;
    reg [31:0]		wbs_adr4;
    reg			wbs_cab4;
@@ -166,13 +166,13 @@ module ctrl(/*AUTOARG*/
 	  state <= #1 state_n;
      end
 
-   reg resume_clear_n;
+   reg append_clear_n;
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i) begin
-	   resume_clear <= #1 0;
+	   append_clear <= #1 0;
 	end else begin
-	   resume_clear <= #1 resume_clear_n;
+	   append_clear <= #1 append_clear_n;
 	end
      end
 
@@ -201,15 +201,15 @@ module ctrl(/*AUTOARG*/
    always @(/*AS*/wbs_adr4_r)
      wbs_adr4 = {wbs_adr4_r, 3'b000};
    
-   reg resume_mode, resume_mode_n;
+   reg append_mode, append_mode_n;
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i) begin
 	   wbs_cyc4    <= #1 0;
-	   resume_mode <= #1 0;
+	   append_mode <= #1 0;
 	end else begin
 	   wbs_cyc4    <= #1 wbs_cyc4_n;
-	   resume_mode <= #1 resume_mode_n;
+	   append_mode <= #1 append_mode_n;
 	end
      end
 
@@ -236,8 +236,8 @@ module ctrl(/*AUTOARG*/
    assign ss_adr2 = inc;
    assign ss_adr3 = inc;
 
-   assign ss_we0  = state == S_CMD0 && wbs_ack4 && resume_mode == 0;
-   assign ss_we1  = state == S_CMD0 && wbs_ack4 && resume_mode == 0;
+   assign ss_we0  = state == S_CMD0 && wbs_ack4 && append_mode == 0;
+   assign ss_we1  = state == S_CMD0 && wbs_ack4 && append_mode == 0;
    assign ss_we2  = state == S_CMD1 && wbs_ack4;
    assign ss_we3  = state == S_CMD1 && wbs_ack4;
 
@@ -323,17 +323,17 @@ module ctrl(/*AUTOARG*/
 	endcase
      end
    
-   always @(/*AS*/c_done0 or c_done1 or c_done2 or c_done3
-	    or cdar or ctl_adr0 or ctl_adr1 or dar or dar_r
-	    or dc0 or dc1 or enable or inc or ndar
-	    or ndar_dirty or next_desc or resume
-	    or resume_mode or state or wbs_ack4 or wbs_cab4
+   always @(/*AS*/append or append_mode or c_done0
+	    or c_done1 or c_done2 or c_done3 or cdar
+	    or ctl_adr0 or ctl_adr1 or dar or dar_r or dc0
+	    or dc1 or enable or inc or ndar or ndar_dirty
+	    or next_desc or state or wbs_ack4 or wbs_cab4
 	    or wbs_cyc4 or wbs_err4 or wbs_rty4 or wbs_sel4
 	    or wbs_stb4 or wbs_we4)
      begin
 	state_n = state;
-	resume_clear_n = 0;
-	resume_mode_n  = resume_mode;
+	append_clear_n = 0;
+	append_mode_n  = append_mode;
 
 	/* WB signal */
 	wbs_adr4_n = 0;
@@ -363,8 +363,8 @@ module ctrl(/*AUTOARG*/
 		wbs_sel4_n = 4'b1111;
 		state_n    = S_CMD0;
 		inc_reset  = 1;
-	     end if (enable && resume) begin
-		resume_mode_n = 1;
+	     end if (enable && append) begin
+		append_mode_n = 1;
 		wbs_adr4_n = dar;
 		
 		wbs_cyc4_n = 1'b1;
@@ -374,7 +374,7 @@ module ctrl(/*AUTOARG*/
 		wbs_sel4_n = 4'b1111;
 		state_n    = S_CMD0;
 		inc_reset  = 1;
-	     end // if (resume)
+	     end // if (append)
 	  end
 	  
 	  S_CMD0:   begin
@@ -408,12 +408,12 @@ module ctrl(/*AUTOARG*/
 		wbs_cab4_n = 1'b1;
 		wbs_sel4_n = 4'b1111;
 
-		state_n    = resume_mode ? S_CMD0 : S_CMD1;
+		state_n    = append_mode ? S_CMD0 : S_CMD1;
 		inc_reset  = 1;
 	     end else begin
 		state_n    = S_WAIT0;
 	     end // else: !if(dc0[14])
-	     resume_clear_n= resume_mode;
+	     append_clear_n= append_mode;
 	  end
 	  
 	  S_CMD1:   begin

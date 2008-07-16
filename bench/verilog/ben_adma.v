@@ -813,6 +813,55 @@ module ben_adma(/*AUTOARG*/
 	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // check_job_100
+
+   task pre_job_200;
+      begin
+	 i = 'h0;
+	 wbmH[i] = 0;
+	 wbmL[i] = 32'h1000;
+	 i = i + 1;
+	 wbmH[i] = {8'h0, 8'h1};
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = 32'h400;
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = 32'h300;
+	 wbmL[i] = 32'h0;
+
+	 queue_job;
+	 @(posedge wb_clk_i);
+	 //@(posedge wb_clk_i);
+	 //@(posedge wb_clk_i);
+	 
+	 wbmH[0] = {8'h30, 3'b000};
+	 wbmH[1] = {8'h40, 8'h1};
+
+	 i = 'h30;
+	 wbmH[i] = 32'h1100;        /* next desc */
+	 wbmL[i] = 32'h2100;        /* ctrl addr */
+	 i = i + 1;
+	 wbmH[i] = {8'h0, 8'h01};   /* memcpy without CONT */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h40, 3'b000};
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h1400, 3'b000}; /* dst */
+	 wbmL[i] = 32'h0;
+
+	 append_job;
+	 wait_job;
+      end
+   endtask // pre_job_200
+
+   task check_job_200;
+      begin
+	 check_reg("ctl_adr0 ", 5'h14, 32'h0000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h0000);
+	 check_reg("next_desc", 5'h16, 32'h0000);
+      end
+   endtask // pre_job_200
    
    task wait_job;
       begin
@@ -875,7 +924,24 @@ module ben_adma(/*AUTOARG*/
 	 @(negedge wbs_ack_o);
       end
    endtask // queue_job
-   
+
+   task append_job;
+      begin
+	 wbs_we_i  = 1'b1;
+	 wbs_stb_i = 1'b1;
+	 wbs_sel_i = 4'b1111;
+	 wbs_cab_i = 1'b0;
+	 
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = 4'h0; /* ccr */
+	 wbs_dat_i = 2'b11;/* append with resume */
+	 @(posedge wbs_ack_o);
+	 wbs_cyc_i = 1'b0;
+	 @(negedge wb_clk_i);
+	 @(negedge wbs_ack_o);
+      end
+   endtask // queue_job
+
    initial begin
       wb_clk_i = 1;
       wb_rst_i = 0;
@@ -887,7 +953,7 @@ module ben_adma(/*AUTOARG*/
       /* making the register are right 
        * check the base adma works 
        */
-      $display("job 0");
+      $display("job 0, %d", $time);
       pre_job_0;
       queue_job;
       wait_job;
@@ -895,7 +961,7 @@ module ben_adma(/*AUTOARG*/
 
       /* doing memory read
        */
-      $display("job 1");
+      $display("job 1, %d", $time);
       pre_job_1;
       queue_job;
       wait_job;
@@ -904,7 +970,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory read with chain.
        */
-      $display("job 2");
+      $display("job 2, %d", $time);
       pre_job_2;
       queue_job;
       wait_job;
@@ -913,7 +979,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory fill with chain.
        */
-      $display("job 10");
+      $display("job 10, %d", $time);
       pre_job_10;
       queue_job;
       wait_job;
@@ -922,7 +988,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory copy with chain.
        */
-      $display("job 20");
+      $display("job 20, %d", $time);
       pre_job_20;
       queue_job;
       wait_job;
@@ -932,7 +998,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing null with chain with 2 job 
        */
-      $display("job 100");
+      $display("job 100, %d", $time);
       pre_job_100;
       queue_job;
       wait_job;
@@ -941,7 +1007,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing null with chain with 4 job 
        */
-      $display("job 101");
+      $display("job 101, %d", $time);
       pre_job_101;
       queue_job;
       wait_job;
@@ -950,7 +1016,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing read with chain with 4 job 
        */
-      $display("job 102");
+      $display("job 102, %d", $time);
       pre_job_102;
       queue_job;
       wait_job;
@@ -959,7 +1025,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing fill with chain with 4 job 
        */
-      $display("job 103");
+      $display("job 103, %d", $time);
       pre_job_103;
       queue_job;
       wait_job;
@@ -968,11 +1034,18 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory copy with chain with 4 job
        */
-      $display("job 104");
+      $display("job 104, %d", $time);
       pre_job_104;
       queue_job;
       wait_job;
       check_job_104;
+
+      /*
+       * testing the resume operation 
+       */
+      $display("job 200, %d", $time);
+      pre_job_200;
+      check_job_200;
       
       $finish;
    end

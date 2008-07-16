@@ -79,6 +79,8 @@ module ss_adma(/*AUTOARG*/
    
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   wire			append;			// From wbm of wbm.v
+   wire			append_clear;		// From ctrl of ctrl.v
    wire			busy;			// From ctrl of ctrl.v
    wire			c_done0;		// From r_0 of ss_sg.v
    wire			c_done1;		// From r_1 of ss_sg.v
@@ -120,8 +122,6 @@ module ss_adma(/*AUTOARG*/
    wire			ndar_dirty;		// From wbm of wbm.v
    wire			ndar_dirty_clear;	// From ctrl of ctrl.v
    wire [31:3]		next_desc;		// From ctrl of ctrl.v
-   wire			resume;			// From wbm of wbm.v
-   wire			resume_clear;		// From ctrl of ctrl.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
    wire [31:3]		sg_addr1;		// From r_1 of ss_sg.v
    wire [31:3]		sg_addr2;		// From r_2 of ss_sg.v
@@ -497,7 +497,7 @@ module ss_adma(/*AUTOARG*/
 	   .spi_di_en			(spi_di_en),
 	   .ndar_dirty			(ndar_dirty),
 	   .ndar			(ndar[31:3]),
-	   .resume			(resume),
+	   .append			(append),
 	   .enable			(enable),
 	   .wb_int_clear		(wb_int_clear),
 	   // Inputs
@@ -533,7 +533,7 @@ module ss_adma(/*AUTOARG*/
 	   .dar				(dar[31:0]),
 	   .csr				(csr[7:0]),
 	   .ndar_dirty_clear		(ndar_dirty_clear),
-	   .resume_clear		(resume_clear),
+	   .append_clear		(append_clear),
 	   .wb_int_o			(wb_int_o),
 	   .busy			(busy),
 	   .ctl_adr0			(ctl_adr0[31:3]),
@@ -575,7 +575,7 @@ module ss_adma(/*AUTOARG*/
 	     .csr			(csr[7:0]),
 	     .ndar_dirty_clear		(ndar_dirty_clear),
 	     .busy			(busy),
-	     .resume_clear		(resume_clear),
+	     .append_clear		(append_clear),
 	     .dc0			(dc0[23:0]),
 	     .dc1			(dc1[23:0]),
 	     .ctl_adr0			(ctl_adr0[31:3]),
@@ -599,7 +599,7 @@ module ss_adma(/*AUTOARG*/
 	     .ndar_dirty		(ndar_dirty),
 	     .ndar			(ndar[31:3]),
 	     .wb_int_clear		(wb_int_clear),
-	     .resume			(resume),
+	     .append			(append),
 	     .enable			(enable));
    
    ch0 ch0(/*AUTOINST*/
