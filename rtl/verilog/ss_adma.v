@@ -17,8 +17,7 @@ module ss_adma(/*AUTOARG*/
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
    wbm_stb_o, wbm_sel_o, wbm_dat_o, wbm_dat64_o, wbm_cyc_o,
    wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en, spi_do_o,
-   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, ctrl_state,
-   wb_int_o,
+   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, wb_int_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
@@ -29,7 +28,6 @@ module ss_adma(/*AUTOARG*/
    
    /*AUTOOUTPUT*/
    // Beginning of automatic outputs (from unused autoinst outputs)
-   output [7:0]		ctrl_state;		// From ctrl of ctrl.v
    output		spi_clk_o;		// From wbm of wbm.v
    output		spi_di_en;		// From wbm of wbm.v
    output		spi_di_o;		// From wbm of wbm.v
@@ -89,6 +87,7 @@ module ss_adma(/*AUTOARG*/
    wire [7:0]		csr;			// From ctrl of ctrl.v
    wire [31:3]		ctl_adr0;		// From ctrl of ctrl.v
    wire [31:3]		ctl_adr1;		// From ctrl of ctrl.v
+   wire [7:0]		ctrl_state;		// From ctrl of ctrl.v
    wire [31:0]		dar;			// From ctrl of ctrl.v
    wire [23:0]		dc0;			// From ctrl of ctrl.v
    wire [23:0]		dc1;			// From ctrl of ctrl.v
@@ -538,7 +537,8 @@ module ss_adma(/*AUTOARG*/
 	   .busy			(busy),
 	   .ctl_adr0			(ctl_adr0[31:3]),
 	   .ctl_adr1			(ctl_adr1[31:3]),
-	   .next_desc			(next_desc[31:3]));
+	   .next_desc			(next_desc[31:3]),
+	   .ctrl_state			(ctrl_state[7:0]));
 
    ctrl ctrl(/*AUTOINST*/
 	     // Outputs

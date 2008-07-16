@@ -13,7 +13,7 @@
  ***********************************************************************/
 module top(/*AUTOARG*/
    // Outputs
-   ctrl_state, LED, FIFO_RD, PCI_SERRn,
+   LED, FIFO_RD, PCI_SERRn,
    // Inouts
    USB_FWRn, USB_D, SPI_SEL, PCI_AD, PCI_AD64, PCI_CBE,
    PCI_CBE64, PCI_FRAMEn, PCI_IRDYn, PCI_TRDYn, PCI_DEVSELn,
@@ -61,7 +61,6 @@ module top(/*AUTOARG*/
    // Beginning of automatic outputs (from unused autoinst outputs)
    output		FIFO_RD;		// From usb of spi_usb.v
    output		LED;			// From usb of spi_usb.v
-   output [7:0]		ctrl_state;		// From adma of ss_adma.v
    // End of automatics
    /*AUTOINOUT*/
    // Beginning of automatic inouts (from unused autoinst inouts)
@@ -139,7 +138,6 @@ module top(/*AUTOARG*/
 
    ss_adma adma(/*AUTOINST*/
 		// Outputs
-		.ctrl_state		(ctrl_state[7:0]),
 		.spi_clk_o		(spi_clk_o),
 		.spi_di_en		(spi_di_en),
 		.spi_di_o		(spi_di_o),

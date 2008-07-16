@@ -26,7 +26,7 @@ module wbm(/*AUTOARG*/
    wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i,
    spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
    ndar_dirty_clear, append_clear, wb_int_o, busy, ctl_adr0,
-   ctl_adr1, next_desc
+   ctl_adr1, next_desc, ctrl_state
    );
    
    input wb_clk_i,
@@ -90,6 +90,7 @@ module wbm(/*AUTOARG*/
    input [31:3] ctl_adr0,
 		ctl_adr1,
 		next_desc;
+   input [7:0] 	ctrl_state;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
