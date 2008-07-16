@@ -95,6 +95,8 @@ module ben_adma(/*AUTOARG*/
       end
    endtask // do_reset
 
+   integer err;
+   
    task check_val ;
       input [255:0] s;
       input [31:0] v;
@@ -108,6 +110,29 @@ module ben_adma(/*AUTOARG*/
 	 end
       end
    endtask // check_val
+
+   task check_reg ;
+      input [255:0] s;
+      input [4:0]   o;
+      input [31:0]  e;
+      begin
+	 //$display("%s", s);
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = {o, 2'b00}; /* ctl_adr0 */
+	 wbs_we_i  = 1'b0;
+	 @(posedge wbs_ack_o);
+	 $display("      except  value :%x", e);
+	 $display("      current value :%x", wbs_dat_o);
+	 if (e != wbs_dat_o) begin
+	    err = err + 1;
+	    $display("      FAILED (%d) ", err);
+	 end else begin
+	    $display("      PASSED (%d) ", err);
+	 end
+	 wbs_cyc_i = 1'b0;
+	 @(posedge wb_clk_i);
+      end
+   endtask // check_reg
    
    reg [31:0] 	 wbmH[1048575:0];
    reg [31:0] 	 wbmL[1048575:0];
@@ -165,22 +190,8 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_0;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h200);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h300);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h200);
+	 check_reg("next_desc", 5'h16, 32'h300);
       end
    endtask // check_job_0
 
@@ -214,22 +225,8 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_1;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h200);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h200);
+	 check_reg("next_desc", 5'h16, 32'h100);
       end
    endtask
 
@@ -273,22 +270,8 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_2;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h200);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h200);
+	 check_reg("next_desc", 5'h16, 32'h100);
       end
    endtask
 
@@ -332,22 +315,8 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_10;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h2000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h1000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h2000);
+	 check_reg("next_desc", 5'h16, 32'h1000);
       end
    endtask // check_job_10
 
@@ -402,22 +371,8 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_20;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h200);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h200);
+	 check_reg("ctl_adr0 ", 5'h16, 32'h100);
       end
    endtask // check_job_10
 
@@ -462,31 +417,9 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_100;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h1000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h15, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr1 ", wbs_dat_o, 32'h2000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h1000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2000);
+	 check_reg("ctl_adr1 ", 5'h16, 32'h0100);
       end
    endtask // check_job_100
 
@@ -558,31 +491,9 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_101;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h1000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h15, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr1 ", wbs_dat_o, 32'h2100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h1100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h1000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
+	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // check_job_100
 
@@ -676,31 +587,9 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_102;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h1000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h15, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr1 ", wbs_dat_o, 32'h2100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h1100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h1000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
+	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // check_job_100
    
@@ -794,31 +683,9 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_103;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h1000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h15, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr1 ", wbs_dat_o, 32'h2100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h1100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h1000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
+	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // check_job_100
 
@@ -941,31 +808,9 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_104;
       begin
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h14, 2'b00}; /* ctl_adr0 */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr0 ", wbs_dat_o, 32'h3000);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h15, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check ctl_adr1 ", wbs_dat_o, 32'h2100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-
-	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = {5'h16, 2'b00}; /* ctl */
-	 wbs_we_i  = 1'b0;
-	 @(posedge wbs_ack_o);
-	 check_val("check next_desc ", wbs_dat_o, 32'h1100);
-	 wbs_cyc_i = 1'b0;
-	 @(posedge wb_clk_i);
-	 
-	 @(posedge wb_clk_i);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h3000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
+	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // check_job_100
    
@@ -1035,12 +880,14 @@ module ben_adma(/*AUTOARG*/
       wb_clk_i = 1;
       wb_rst_i = 0;
       inc      = 0;
-
+      err      = 0;
+      
       do_reset;
 
       /* making the register are right 
        * check the base adma works 
        */
+      $display("job 0");
       pre_job_0;
       queue_job;
       wait_job;
@@ -1048,6 +895,7 @@ module ben_adma(/*AUTOARG*/
 
       /* doing memory read
        */
+      $display("job 1");
       pre_job_1;
       queue_job;
       wait_job;
@@ -1056,6 +904,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory read with chain.
        */
+      $display("job 2");
       pre_job_2;
       queue_job;
       wait_job;
@@ -1064,6 +913,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory fill with chain.
        */
+      $display("job 10");
       pre_job_10;
       queue_job;
       wait_job;
@@ -1072,6 +922,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory copy with chain.
        */
+      $display("job 20");
       pre_job_20;
       queue_job;
       wait_job;
@@ -1081,6 +932,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing null with chain with 2 job 
        */
+      $display("job 100");
       pre_job_100;
       queue_job;
       wait_job;
@@ -1089,6 +941,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing null with chain with 4 job 
        */
+      $display("job 101");
       pre_job_101;
       queue_job;
       wait_job;
@@ -1097,6 +950,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing read with chain with 4 job 
        */
+      $display("job 102");
       pre_job_102;
       queue_job;
       wait_job;
@@ -1105,6 +959,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing fill with chain with 4 job 
        */
+      $display("job 103");
       pre_job_103;
       queue_job;
       wait_job;
@@ -1113,6 +968,7 @@ module ben_adma(/*AUTOARG*/
       /*
        * doing memory copy with chain with 4 job
        */
+      $display("job 104");
       pre_job_104;
       queue_job;
       wait_job;
