@@ -53,7 +53,7 @@ module ctrl(/*AUTOARG*/
    ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2, ss_dc3,
    wb_int_o, dar, csr, ndar_dirty_clear, busy, append_clear,
    dc0, dc1, ctl_adr0, ctl_adr1, next_desc, m_reset0,
-   m_reset1, ctrl_state,
+   m_reset1, m_enable0, m_enable1, ctrl_state,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
@@ -124,11 +124,16 @@ module ctrl(/*AUTOARG*/
    output 	 m_reset0;
    output 	 m_reset1;
 
+   output 	 m_enable0;
+   output 	 m_enable1;
+   
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
    reg			append_clear;
    reg [7:0]		csr;
    reg [31:0]		dar;
+   reg			m_enable0;
+   reg			m_enable1;
    reg			m_reset0;
    reg			m_reset1;
    reg			ndar_dirty_clear;
@@ -324,14 +329,16 @@ module ctrl(/*AUTOARG*/
 	  2'b11: ;
 	endcase
      end
+
+   reg m_enable0_n, m_enable1_n;
    
    always @(/*AS*/append or append_mode or c_done0
 	    or c_done1 or c_done2 or c_done3 or cdar
 	    or ctl_adr0 or ctl_adr1 or dar_r or dc0 or dc1
-	    or enable or inc or ndar or ndar_dirty
-	    or next_desc or state or wbs_ack4 or wbs_cab4
-	    or wbs_cyc4 or wbs_err4 or wbs_rty4 or wbs_sel4
-	    or wbs_stb4 or wbs_we4)
+	    or enable or inc or m_enable0 or m_enable1
+	    or ndar or ndar_dirty or next_desc or state
+	    or wbs_ack4 or wbs_cab4 or wbs_cyc4 or wbs_err4
+	    or wbs_rty4 or wbs_sel4 or wbs_stb4 or wbs_we4)
      begin
 	state_n = state;
 	append_clear_n = 0;
@@ -351,6 +358,9 @@ module ctrl(/*AUTOARG*/
 	dar_n      = dar_r;
 	wb_int_set = 0;
 	ndar_dirty_clear_n = 0;
+
+	m_enable0_n = m_enable0;
+	m_enable1_n = m_enable1;
 	
 	case (state)
 	  S_IDLE:   begin
@@ -418,6 +428,8 @@ module ctrl(/*AUTOARG*/
 	     if (append_mode) begin
 		append_clear_n= 1'b1;
 		append_mode_n = 1'b0;
+	     end else begin
+		m_enable0_n   = 1'b1;
 	     end
 	  end
 	  
@@ -459,6 +471,7 @@ module ctrl(/*AUTOARG*/
 		   state_n    = S_TR0;
 		end
 	     end // if (c0_done && c1_done)
+	     m_enable1_n = 1'b1;
 	  end // case: S_WAIT0
 
 	  S_CTL0:  begin
@@ -490,6 +503,7 @@ module ctrl(/*AUTOARG*/
 	     end
 	     dar_n = cdar;
 	     wb_int_set = dc0[15];
+	     m_enable0_n = 1'b0;
 	  end
 	  
 	  S_WAIT1:  begin
@@ -539,6 +553,7 @@ module ctrl(/*AUTOARG*/
 	       state_n = S_IDLE;
 	     dar_n = cdar;
 	     wb_int_set = dc1[15];
+	     m_enable1_n = 1'b0;
 	  end
 	  
 	  S_NEXT1:  begin
@@ -575,6 +590,12 @@ module ctrl(/*AUTOARG*/
        m_reset1 <= #1 1;
      else
        m_reset1 <= #1 0;
+
+   always @(posedge wb_clk_i)
+     begin
+	m_enable0 <= #1 m_enable0_n;
+	m_enable1 <= #1 m_enable1_n;
+     end
    
 endmodule // ctrl
 

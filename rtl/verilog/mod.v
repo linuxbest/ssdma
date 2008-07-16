@@ -15,13 +15,14 @@ module mod(/*AUTOARG*/
    // Outputs
    m_src_getn, m_dst_putn, m_dst, m_dst_last, m_endn,
    // Inputs
-   wb_clk_i, m_reset, dc, m_src, m_src_last,
+   wb_clk_i, m_reset, m_enable, dc, m_src, m_src_last,
    m_src_almost_empty, m_src_empty, m_dst_almost_full,
    m_dst_full
    );
    input wb_clk_i;
    input m_reset;
-
+   input m_enable;
+   
    wire  wb_rst_i = m_reset;
    
    input [23:0] dc;   
@@ -55,6 +56,7 @@ module mod(/*AUTOARG*/
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
+	     .m_enable			(m_enable),
 	     .dc			(dc[23:0]),
 	     .m_src			(m_src[63:0]),
 	     .m_src_last		(m_src_last),
@@ -72,6 +74,7 @@ module mod(/*AUTOARG*/
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
+	     .m_enable			(m_enable),
 	     .dc			(dc[23:0]),
 	     .m_src			(m_src[63:0]),
 	     .m_src_last		(m_src_last),
@@ -89,6 +92,7 @@ module mod(/*AUTOARG*/
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),
 	     .wb_rst_i			(wb_rst_i),
+	     .m_enable			(m_enable),
 	     .dc			(dc[23:0]),
 	     .m_src			(m_src[63:0]),
 	     .m_src_last		(m_src_last),

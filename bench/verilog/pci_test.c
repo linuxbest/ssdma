@@ -172,7 +172,38 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
 
         lzf_wait(phys_mem, lzf_mem);
-        HexDump(system_mem + 0x2000, 0x40);
+        /*HexDump(system_mem + 0x2000, 0x100);*/
+        unsigned char *s = system_mem + 0x2000;
+        int i;
+        for (i = 0; i < 0x80; i++) {
+                assert(s[i] == 'a');
+        }
+        fprintf(stderr, "%04d: passed\n", __LINE__);
+
+        /* 
+         * fill with sg address and append mode 
+         */
+        off = 0x10040;
+        j->dc_fc    |= DC_CONT;
+        j->next_desc =  phys_mem + off;
+        j = (job_desc_t *)(system_mem + off);
+        
+        j->next_desc = 0x100;
+        j->ctl_addr  = 0;
+        j->dc_fc     = DC_FILL | ('b' << 16); /* memset '0a0a0a0a' */
+        j->u0        = 0;
+        j->src_desc  = 0;
+        j->u1        = 0;
+        j->dst_desc  = phys_mem + 0x600;
+
+        b = (buf_desc_t *)(system_mem + 0x600);
+        b->desc     = 0x80 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x4000;
+        b->desc_next= 0;
+
+        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
+        lzf_wait(phys_mem, lzf_mem);
+        HexDump(system_mem + 0x4000, 0x100);
 
         return 0;
 }

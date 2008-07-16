@@ -14,13 +14,14 @@ module read(/*AUTOARG*/
    // Outputs
    m_src_getn, m_dst_putn, m_dst, m_dst_last, m_endn,
    // Inputs
-   wb_clk_i, wb_rst_i, dc, m_src, m_src_last,
+   wb_clk_i, wb_rst_i, m_enable, dc, m_src, m_src_last,
    m_src_almost_empty, m_src_empty, m_dst_almost_full,
    m_dst_full
    );
    input wb_clk_i;
    input wb_rst_i;
-
+   input m_enable;
+   
    input [23:0] dc;
    
    output 	m_src_getn;
@@ -58,12 +59,13 @@ module read(/*AUTOARG*/
 	  state <= #1 state_n;
      end
    
-   always @(/*AS*/dc or m_src_empty or m_src_last or state)
+   always @(/*AS*/dc or m_enable or m_src_empty
+	    or m_src_last or state)
      begin
 	state_n = state;
 	case (state)
 	  S_IDLE: begin
-	     if (dc[8] && (!m_src_empty)) begin
+	     if (m_enable && dc[8] && (!m_src_empty)) begin
 		state_n = S_RUN;
 	     end
 	  end
