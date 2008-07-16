@@ -708,6 +708,14 @@ module ben_adma(/*AUTOARG*/
 	 check_reg("ctl_adr0 ", 5'h14, 32'h1000);
 	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
 	 check_reg("next_desc", 5'h16, 32'h1100);
+	 for (i = 'h500; i < 'h508; i = i + 1) begin
+	    check_val("memory", 32'h04040404, wbmH[i]);
+	    check_val("memory", 32'h04040404, wbmL[i]);
+	 end
+	 for (i = 'h520; i < 'h528; i = i + 1) begin
+	    check_val("memory", 32'h04040404, wbmH[i]);
+	    check_val("memory", 32'h04040404, wbmL[i]);
+	 end
       end
    endtask // check_job_100
 
