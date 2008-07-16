@@ -173,11 +173,11 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 
         lzf_wait(phys_mem, lzf_mem);
         /*HexDump(system_mem + 0x2000, 0x100);*/
-        unsigned char *s = system_mem + 0x2000;
+        unsigned char *s;
         int i;
-        for (i = 0; i < 0x80; i++) {
+        s = system_mem + 0x2000;
+        for (i = 0; i < 0x80; i++)
                 assert(s[i] == 'a');
-        }
         fprintf(stderr, "%04d: passed\n", __LINE__);
 
         /* 
@@ -223,10 +223,29 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 
         lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
         lzf_wait(phys_mem, lzf_mem);
-        HexDump(system_mem + 0x4000, 0x90);
+        /*HexDump(system_mem + 0x4000, 0x90);
         HexDump(system_mem + 0x5000, 0x90);
-        HexDump(system_mem + 0x6000, 0x90);
+        HexDump(system_mem + 0x6000, 0x90);*/
+        s = system_mem + 0x4000;
+        for (i = 0; i < 0x80; i++)
+                assert(s[i] == 'b');
+        s = system_mem + 0x5000;
+        for (i = 0; i < 0x80; i++)
+                assert(s[i] == 'c');
+        s = system_mem + 0x6000;
+        for (i = 0; i < 0x80; i++)
+                assert(s[i] == 'c');
+        fprintf(stderr, "%04d: passed\n", __LINE__);
 
+        /* 
+         * memory testing 
+         */
+        /*
+         * compress tesing
+         */
+        /*
+         * uncompress testing
+         */
         return 0;
 }
 
