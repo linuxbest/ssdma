@@ -99,7 +99,7 @@ static int lzf_wait(unsigned int phys_mem, unsigned int lzf_mem)
         uint32_t val;
 
         do {
-                pcisim_wait(200, 0);
+                pcisim_wait(100, 0xffff);
                 val = lzf_read(lzf_mem, OFS_CSR);
         } while (val & CSR_BUSY);
 
@@ -164,7 +164,7 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 
         buf_desc_t *b = (buf_desc_t *)(system_mem + 0x500);
         b->desc     = 0x80 | LZF_SG_LAST;
-        b->desc_adr = 0x2000;
+        b->desc_adr = phys_mem + 0x2000;
         b->desc_next= 0;
 
         lzf_write(lzf_mem, OFS_CCR,  0);

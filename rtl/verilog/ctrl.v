@@ -154,7 +154,9 @@ module ctrl(/*AUTOARG*/
 		S_WAIT1  = 4'h7,
 		S_CTL1   = 4'h8,
 		S_TR1    = 4'h9,
-		S_NEXT1  = 4'ha;
+		S_NEXT1  = 4'ha,
+		S_CYC0   = 4'hb,
+		S_CYC1   = 4'hc;
    reg [3:0]
 	    state, state_n;
 
@@ -325,8 +327,8 @@ module ctrl(/*AUTOARG*/
    
    always @(/*AS*/append or append_mode or c_done0
 	    or c_done1 or c_done2 or c_done3 or cdar
-	    or ctl_adr0 or ctl_adr1 or dar or dar_r or dc0
-	    or dc1 or enable or inc or ndar or ndar_dirty
+	    or ctl_adr0 or ctl_adr1 or dar_r or dc0 or dc1
+	    or enable or inc or ndar or ndar_dirty
 	    or next_desc or state or wbs_ack4 or wbs_cab4
 	    or wbs_cyc4 or wbs_err4 or wbs_rty4 or wbs_sel4
 	    or wbs_stb4 or wbs_we4)
@@ -386,7 +388,7 @@ module ctrl(/*AUTOARG*/
 		    2'b01: ;
 		    2'b10: ;
 		    2'b11: begin
-		       wbs_cyc4_n = 0;
+		       wbs_cyc4_n = 1'b0;
 		       state_n    = S_NEXT0;
 		    end
 		  endcase // case(inc)
@@ -397,7 +399,7 @@ module ctrl(/*AUTOARG*/
 	       end
 	     endcase // case({wbs_ack4, wbs_rty4, wbs_err4})
 	  end
-	  
+
 	  S_NEXT0:  begin
 	     if (dc0[14]) begin
 		wbs_adr4_n = next_desc;

@@ -124,14 +124,15 @@ module ss_sg(/*AUTOARG*/
      wbs_adr = {wbs_adr_r, 3'b000};
    
    parameter [2:0] 
-		S_IDLE   = 3'h0,
-		S_CMD    = 3'h1, /* accept command */
-		S_D_REQ  = 3'h2, /* request desc   */
-		S_B_REQ  = 3'h3, /* request buffer */
-		S_B_WAIT = 3'h4, /* wait fifo      */
-		S_NEXT   = 3'h5, /* next desc      */
-		S_END    = 3'h6, /* done           */
-		S_PANIC  = 3'h7; /* error state    */
+		S_IDLE   = 'h0,
+		S_CMD    = 'h1, /* accept command */
+		S_D_REQ  = 'h2, /* request desc   */
+		S_B_REQ  = 'h3, /* request buffer */
+		S_B_WAIT = 'h4, /* wait fifo      */
+		S_NEXT   = 'h5, /* next desc      */
+		S_END    = 'h6, /* done           */
+		S_PANIC  = 'h7, /* error state    */
+		S_DCYC   = 'h8;
    
    /* state register */
    reg [2:0] state, state_n;
@@ -181,7 +182,7 @@ module ss_sg(/*AUTOARG*/
 	    or ss_dat or ss_dc or ss_done or ss_end
 	    or ss_start or ss_stop or ss_we or state
 	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
-	    or wbs_dat64_o or wbs_err or wbs_rty or wbs_sel
+	    or wbs_dat_o or wbs_err or wbs_rty or wbs_sel
 	    or wbs_stb or wbs_we)
      begin
 	state_n   = state;
