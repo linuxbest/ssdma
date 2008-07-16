@@ -106,7 +106,7 @@ module ben_adma(/*AUTOARG*/
 	 $display("      current value :%x", v);
 	 if (e !== v) begin
 	    err = err + 1;
-	    $display("      FAILED ( total failed %d) %d", err, $time);
+	    $display(" **** FAILED ( total failed %d) %d", err, $time);
 	 end else begin
 	    $display("      PASSED ( total passed %d) ", cor);
 	    cor = cor + 1;
@@ -298,16 +298,16 @@ module ben_adma(/*AUTOARG*/
 
 	 i = 'h100;
 	 wbmH[i] = 'h100040;
-	 wbmL[i] = {16'h60,  3'b000};
+	 wbmL[i] = {16'h200,  3'b000};
 	 i = i + 1;
 	 wbmH[i] = 0;
 	 wbmL[i] = 0;
 	 
 	 /* fake data */
-	 i = 'h50;
-	 for (j = i; j < i + 100; j = j + 1) begin
-	    wbmH[j] = j;
-	    wbmL[j] = j;
+	 i = 'h200;
+	 for (j = 0; j < 9000; j = j + 1) begin
+	    wbmH[j+i] = j;
+	    wbmL[j+i] = j;
 	 end
       end
    endtask // pre_job_2
@@ -320,7 +320,7 @@ module ben_adma(/*AUTOARG*/
 	    check_val("memory", 32'h0a0a0a0a, wbmH[i]);
 	    check_val("memory", 32'h0a0a0a0a, wbmL[i]);
 	 end
-	 for (i = 'h60; i < 'h68; i = i + 1) begin
+	 for (i = 'h200; i < 'h208; i = i + 1) begin
 	    check_val("memory", 32'h0a0a0a0a, wbmH[i]);
 	    check_val("memory", 32'h0a0a0a0a, wbmL[i]);
 	 end
@@ -883,6 +883,170 @@ module ben_adma(/*AUTOARG*/
       end
    endtask // check_job_100
 
+   task pre_job_105;
+      begin
+	 /* [31:0] next_desc
+	  * [31:0] ctl_addr
+	  * [31:0] dc_fc
+	  * [31:0] u0
+	  * [31:0] src_desc
+	  * [31:0] u1
+	  * [31:0] dst_desc
+	  * [31:0] u2
+	  */
+	 i = 'h0;
+	 wbmH[i] = {16'h10, 3'b000}; /* next desc */
+	 wbmL[i] = 32'h1000;          /* ctrl addr */
+	 i = i + 1;
+	 wbmH[i] = {8'h40, 8'h16};   /* memcpy with CONT */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h40,  3'b000}; /* src */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h1100, 3'b000}; /* dst */
+	 wbmL[i] = 32'h0;
+	 
+	 i = 'h10;
+	 wbmH[i] = {16'h20, 3'b000};/* next */
+	 wbmL[i] = 32'h2000;        /* ctrl */
+	 i = i + 1;
+	 wbmH[i] = {8'h40, 8'h16};    /* memcpy with CONT */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h40,  3'b000};
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h1200, 3'b000}; /* dst */
+	 wbmL[i] = 32'h0;
+
+	 i = 'h20;
+	 wbmH[i] = {16'h30, 3'b000}; /* next desc */
+	 wbmL[i] = 32'h3000;          /* ctrl addr */
+	 i = i + 1;
+	 wbmH[i] = {8'h40, 8'h16};   /* memcpy with CONT */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h40,  3'b000};
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h1300, 3'b000}; /* dst */
+	 wbmL[i] = 32'h0;
+
+	 i = 'h30;
+	 wbmH[i] = 32'h1100; /* next desc */
+	 wbmL[i] = 32'h2100;          /* ctrl addr */
+	 i = i + 1;
+	 wbmH[i] = {8'h0, 8'h16};   /* memcpy without CONT */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h40, 3'b000};
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = {16'h1400, 3'b000}; /* dst */
+	 wbmL[i] = 32'h0;
+
+	 i = 'h40;
+	 wbmH[i] = 'h000040;             /* LAST with 0x80 */
+	 wbmL[i] = {16'h500,  3'b000};    /* address */
+	 i = i + 1;
+	 wbmH[i] = {16'h100, 3'b000};    /* Next */
+	 wbmL[i] = 0;
+
+	 i = 'h100;
+	 wbmH[i] = 'h102000;
+	 wbmL[i] = {16'h540,  3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+
+	 i = 'h500;
+	 t = 0;
+	 for (j = i; j < i + 16384; j = j + 1) begin
+	    wbmH[j] = t;
+	    t = t + 1;
+	    wbmL[j] = t;
+	    t = t + 1;
+	 end
+
+	 i = 'h110000;
+	 wbmH[i] = 'h102040;
+	 wbmL[i] = {16'h2100, 3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+
+	 i = 'h120000;
+	 wbmH[i] = 'h102040;
+	 wbmL[i] = {16'h2200, 3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+
+	 
+	 i = 'h130000;
+	 wbmH[i] = 'h102040;
+	 wbmL[i] = {16'h2300, 3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+
+	 i = 'h140000;
+	 wbmH[i] = 'h102040;
+	 wbmL[i] = {16'h2400, 3'b000};
+	 i = i + 1;
+	 wbmH[i] = 0;
+	 wbmL[i] = 0;
+      end
+   endtask // do_ssadma
+
+   task check_job_105;
+      integer s1, s2, d1;
+      begin
+	 check_reg("ctl_adr0 ", 5'h14, 32'h3000);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
+	 check_reg("next_desc", 5'h16, 32'h1100);
+	 s1 = 'h500;
+	 s2 = 'h540;
+	 d1 = 'h210000;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h400; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+	 d1 = 'h220000;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h400; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+	 d1 = 'h230000;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h400; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+	 d1 = 'h240000;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h400; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+      end
+   endtask // check_job_100
+
    task pre_job_200;
       input [7:0] w;
       begin
@@ -921,7 +1085,7 @@ module ben_adma(/*AUTOARG*/
 	 wbmH[1] = {8'h40, 8'h1};
 	 //queue_job;
 	 append_job;
-	 wait_job;
+	 wait_job(500);
       end
    endtask // pre_job_200
 
@@ -935,12 +1099,13 @@ module ben_adma(/*AUTOARG*/
    endtask // pre_job_200
    
    task wait_job;
+      input [31:0] w;
       begin
 	 @(negedge wb_clk_i);
 	 @(negedge wb_clk_i);
 	 @(negedge wb_clk_i);
 
-	 i = 500;
+	 i = w;
 	 while (i > 0) begin
 	    @(negedge wb_clk_i);
 	    if (ctrl_state == 0) begin
@@ -1039,7 +1204,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 0, %d", $time);
       pre_job_0;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_0;
 
       /* doing memory read
@@ -1047,7 +1212,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 1, %d", $time);
       pre_job_1;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_1;
 
       /*
@@ -1056,7 +1221,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 2, %d", $time);
       pre_job_2;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_2;
 
       /*
@@ -1065,7 +1230,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 10, %d", $time);
       pre_job_10;
       queue_job;
-      wait_job;
+      wait_job(5000);
       check_job_10;
 
       /*
@@ -1074,7 +1239,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 20, %d", $time);
       pre_job_20;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_20;
 
       //$write("time %d\n", $time);
@@ -1084,7 +1249,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 100, %d", $time);
       pre_job_100;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_100;
 
       /*
@@ -1093,7 +1258,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 101, %d", $time);
       pre_job_101;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_101;
 
       /*
@@ -1102,7 +1267,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 102, %d", $time);
       pre_job_102;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_102;
 
       /*
@@ -1111,7 +1276,7 @@ module ben_adma(/*AUTOARG*/
       $display("job 103, %d", $time);
       pre_job_103;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_103;
 
       /*
@@ -1120,8 +1285,17 @@ module ben_adma(/*AUTOARG*/
       $display("job 104, %d", $time);
       pre_job_104;
       queue_job;
-      wait_job;
+      wait_job(500);
       check_job_104;
+
+      /*
+       * doing large memory copy 
+       */
+      $display("job 105, %d", $time);
+      //pre_job_105;
+      //queue_job;
+      //wait_job(500000);
+      //check_job_105;
 
       /*
        * testing the append operation 
