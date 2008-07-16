@@ -19,7 +19,6 @@ module tb_adma(/*AUTOARG*/);
    /*AUTOREG*/
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
-   wire [7:0]		ctrl_state;		// From adma of ss_adma.v
    wire			spi_clk_i;		// From spi of dummy_spi.v
    wire			spi_clk_o;		// From adma of ss_adma.v
    wire			spi_di_en;		// From adma of ss_adma.v
@@ -60,9 +59,10 @@ module tb_adma(/*AUTOARG*/);
    wire			wbs_we_i;		// From badma of ben_adma.v
    // End of automatics
 
+   wire [7:0] 		ctrl_state;
+   
    ss_adma adma(/*AUTOINST*/
 		// Outputs
-		.ctrl_state		(ctrl_state[7:0]),
 		.spi_clk_o		(spi_clk_o),
 		.spi_di_en		(spi_di_en),
 		.spi_di_o		(spi_di_o),
@@ -150,6 +150,8 @@ module tb_adma(/*AUTOARG*/);
 		  .wbm_sel_o		(wbm_sel_o[3:0]),
 		  .ctrl_state		(ctrl_state[7:0]));
 
+   assign 		ctrl_state = adma.ctrl_state;
+   
    initial begin
       $dumpfile("tb_adma.vcd");
       $dumpvars(0, adma);

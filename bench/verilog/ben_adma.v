@@ -1128,7 +1128,41 @@ module ben_adma(/*AUTOARG*/
 	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // pre_job_200
-   
+
+   task pre_job_300;
+      begin
+	 i = 'h0;
+	 wbmH[i] = 32'h300; /* next desc */
+	 wbmL[i] = 32'h200; /* ctrl addr */
+	 i = i + 1;
+	 wbmH[i] = {8'h80, 8'h01};   /* DC_NULL with intr */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = 32'h400; /* src */
+	 wbmL[i] = 32'h0;
+	 i = i + 1;
+	 wbmH[i] = 32'h500; /* dst */
+	 wbmL[i] = 32'h0;
+
+	 queue_job;
+	 wait_job(50);
+	 if (wb_int_o == 0) begin
+	    err = err + 1;
+	    $display("    INTR0 FAILED, %d" , $time);
+	 end else begin
+	    cor = cor + 1;
+	    
+	    ack_intr;
+
+	    if (wb_int_o == 1) begin
+	       $display("    INTR1 FAILED, %d", $time);
+	    end else begin
+	       $display("    INTR PASSED");
+	    end
+	 end
+      end
+   endtask // pre_job_300
+
    task wait_job;
       input [31:0] w;
       begin
@@ -1213,6 +1247,23 @@ module ben_adma(/*AUTOARG*/
 	 wbs_cyc_i = 1'b1;
 	 wbs_adr_i = 4'h0; /* ccr */
 	 wbs_dat_i = 2'b11;/* append with resume */
+	 @(posedge wbs_ack_o);
+	 wbs_cyc_i = 1'b0;
+	 @(negedge wb_clk_i);
+	 @(negedge wbs_ack_o);
+      end
+   endtask // queue_job
+   
+   task ack_intr;
+      begin
+	 wbs_we_i  = 1'b1;
+	 wbs_stb_i = 1'b1;
+	 wbs_sel_i = 4'b1111;
+	 wbs_cab_i = 1'b0;
+
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = 4'h0; /* ccr */
+	 wbs_dat_i = 3'b110;/* intr ack with enable */
 	 @(posedge wbs_ack_o);
 	 wbs_cyc_i = 1'b0;
 	 @(negedge wb_clk_i);
@@ -1341,6 +1392,12 @@ module ben_adma(/*AUTOARG*/
       pre_job_200(4);
       check_job_200;
 
+      /*
+       * interrupt test
+       */
+      $display("job 300, %d", $time);
+      pre_job_300;
+      
       $display("PASSED %d", cor);
       $display("FAILED %d", err);
       

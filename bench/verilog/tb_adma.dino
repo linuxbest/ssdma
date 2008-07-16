@@ -2,6 +2,7 @@ signal_delete *.*
 
 signal_add tb_adma.adma.wb_clk_i
 signal_add tb_adma.adma.wb_rst_i
+signal_add tb_adma.adma.wb_int_o
 
 #signal_add tb_adma.PCI_AD
 #signal_add tb_adma.PCI_AD64
