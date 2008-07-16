@@ -837,10 +837,49 @@ module ben_adma(/*AUTOARG*/
    endtask // do_ssadma
 
    task check_job_104;
+      integer s1, s2, d1;
       begin
 	 check_reg("ctl_adr0 ", 5'h14, 32'h3000);
 	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
 	 check_reg("next_desc", 5'h16, 32'h1100);
+	 s1 = 'h500;
+	 s2 = 'h540;
+	 d1 = 'h2100;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+	 d1 = 'h2200;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+	 d1 = 'h2300;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
+	 d1 = 'h2400;
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s1+i], wbmH[d1+i]);
+	    check_val("memory", wbmL[s1+i], wbmL[d1+i]);
+	 end
+	 for (i = 'h0; i < 'h8; i = i + 1) begin
+	    check_val("memory", wbmH[s2+i], wbmH[d1+i+8]);
+	    check_val("memory", wbmL[s2+i], wbmL[d1+i+8]);
+	 end
       end
    endtask // check_job_100
 
