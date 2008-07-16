@@ -95,7 +95,7 @@ module ben_adma(/*AUTOARG*/
       end
    endtask // do_reset
 
-   integer err;
+   integer err, cor;
    
    task check_val ;
       input [255:0] s;
@@ -123,11 +123,12 @@ module ben_adma(/*AUTOARG*/
 	 @(posedge wbs_ack_o);
 	 $display("      except  value :%x", e);
 	 $display("      current value :%x", wbs_dat_o);
-	 if (e != wbs_dat_o) begin
+	 if (e !== wbs_dat_o) begin
 	    err = err + 1;
-	    $display("      FAILED (%d) ", err);
+	    $display("      FAILED ( total failed %d) %d", err, $time);
 	 end else begin
-	    $display("      PASSED (%d) ", err);
+	    $display("      PASSED ( total passed %d) ", cor);
+	    cor = cor + 1;
 	 end
 	 wbs_cyc_i = 1'b0;
 	 @(posedge wb_clk_i);
@@ -815,6 +816,7 @@ module ben_adma(/*AUTOARG*/
    endtask // check_job_100
 
    task pre_job_200;
+      input [7:0] w;
       begin
 	 i = 'h0;
 	 wbmH[i] = 0;
@@ -830,26 +832,27 @@ module ben_adma(/*AUTOARG*/
 	 wbmL[i] = 32'h0;
 
 	 queue_job;
-	 @(posedge wb_clk_i);
-	 //@(posedge wb_clk_i);
-	 //@(posedge wb_clk_i);
+	 for (i = 0; i < w; i = i+1) begin
+	    @(posedge wb_clk_i);
+	 end
 	 
-	 wbmH[0] = {8'h30, 3'b000};
-	 wbmH[1] = {8'h40, 8'h1};
-
-	 i = 'h30;
+	 i = 'h20;
 	 wbmH[i] = 32'h1100;        /* next desc */
 	 wbmL[i] = 32'h2100;        /* ctrl addr */
 	 i = i + 1;
-	 wbmH[i] = {8'h0, 8'h01};   /* memcpy without CONT */
+	 wbmH[i] = {8'h0, 8'h01};   /* NULL without CONT */
 	 wbmL[i] = 32'h0;
 	 i = i + 1;
-	 wbmH[i] = {16'h40, 3'b000};
+	 wbmH[i] = {16'h40,   3'b000};
 	 wbmL[i] = 32'h0;
 	 i = i + 1;
 	 wbmH[i] = {16'h1400, 3'b000}; /* dst */
 	 wbmL[i] = 32'h0;
 
+	 wbmH[0] = {8'h20, 3'b000};
+	 wbmH[1] = {8'h40, 8'h1};
+	 //queue_job;
+	 
 	 append_job;
 	 wait_job;
       end
@@ -857,9 +860,9 @@ module ben_adma(/*AUTOARG*/
 
    task check_job_200;
       begin
-	 check_reg("ctl_adr0 ", 5'h14, 32'h0000);
-	 check_reg("ctl_adr1 ", 5'h15, 32'h0000);
-	 check_reg("next_desc", 5'h16, 32'h0000);
+	 check_reg("ctl_adr0 ", 5'h14, 32'h2100);
+	 check_reg("ctl_adr1 ", 5'h15, 32'h2100);
+	 check_reg("next_desc", 5'h16, 32'h1100);
       end
    endtask // pre_job_200
    
@@ -904,11 +907,22 @@ module ben_adma(/*AUTOARG*/
    task queue_job;
       begin
 	 wbs_cyc_i = 1'b1;
-	 wbs_adr_i = 4'hc; /* ndar */
+
 	 wbs_we_i  = 1'b1;
 	 wbs_stb_i = 1'b1;
 	 wbs_sel_i = 4'b1111;
 	 wbs_cab_i = 1'b0;
+	 
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = 4'h0; /* ccr */
+	 wbs_dat_i = 2'b00;
+	 @(posedge wbs_ack_o);
+	 wbs_cyc_i = 1'b0;
+	 @(negedge wb_clk_i);
+	 @(negedge wbs_ack_o);
+
+	 wbs_cyc_i = 1'b1;
+	 wbs_adr_i = 4'hc; /* ndar */	 
 	 wbs_dat_i = 32'h0;
 	 @(posedge wbs_ack_o);
 	 wbs_cyc_i = 1'b0;
@@ -931,7 +945,7 @@ module ben_adma(/*AUTOARG*/
 	 wbs_stb_i = 1'b1;
 	 wbs_sel_i = 4'b1111;
 	 wbs_cab_i = 1'b0;
-	 
+
 	 wbs_cyc_i = 1'b1;
 	 wbs_adr_i = 4'h0; /* ccr */
 	 wbs_dat_i = 2'b11;/* append with resume */
@@ -947,6 +961,7 @@ module ben_adma(/*AUTOARG*/
       wb_rst_i = 0;
       inc      = 0;
       err      = 0;
+      cor      = 0;
       
       do_reset;
 
@@ -1044,7 +1059,16 @@ module ben_adma(/*AUTOARG*/
        * testing the resume operation 
        */
       $display("job 200, %d", $time);
-      pre_job_200;
+      pre_job_200(1);
+      check_job_200;
+      
+      pre_job_200(2);
+      check_job_200;
+
+      pre_job_200(3);
+      check_job_200;
+
+      pre_job_200(4);
       check_job_200;
       
       $finish;

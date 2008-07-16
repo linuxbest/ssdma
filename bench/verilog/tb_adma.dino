@@ -35,14 +35,18 @@ signal_highlight tb_adma.adma.wbm_err_i 8
 # s4
 signal_add tb_adma.adma.ctrl_state
 signal_add tb_adma.adma.enable
-signal_add tb_adma.adma.resume
+signal_add tb_adma.adma.append
 signal_add tb_adma.adma.ndar_dirty
 signal_add tb_adma.adma.dc0
 signal_add tb_adma.adma.dc1
 signal_add tb_adma.adma.ctrl.inc
-signal_add tb_adma.adma.ctrl.wbs_dat_o4
-signal_add tb_adma.adma.ctrl.wbs_dat64_o4
-signal_add tb_adma.adma.ctrl.next_desc
+#signal_add tb_adma.adma.ctrl.wbs_dat_o4
+#signal_add tb_adma.adma.ctrl.wbs_dat64_o4
+#signal_add tb_adma.adma.ctrl.next_desc
+signal_add tb_adma.adma.ctrl.append_mode
+signal_add tb_adma.adma.ctrl.append_clear
+signal_add tb_adma.adma.ctrl.dar_r
+signal_add tb_adma.adma.ctrl.cdar
 signal_highlight tb_adma.adma.ndar_dirty 8
 
 signal_add tb_adma.adma.wbs_cyc4

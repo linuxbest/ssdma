@@ -365,7 +365,7 @@ module ctrl(/*AUTOARG*/
 		inc_reset  = 1;
 	     end if (enable && append) begin
 		append_mode_n = 1;
-		wbs_adr4_n = dar;
+		wbs_adr4_n = dar_r;
 		
 		wbs_cyc4_n = 1'b1;
 		wbs_stb4_n = 1'b1;
@@ -413,7 +413,10 @@ module ctrl(/*AUTOARG*/
 	     end else begin
 		state_n    = S_WAIT0;
 	     end // else: !if(dc0[14])
-	     append_clear_n= append_mode;
+	     if (append_mode) begin
+		append_clear_n= 1'b1;
+		append_mode_n = 1'b0;
+	     end
 	  end
 	  
 	  S_CMD1:   begin
