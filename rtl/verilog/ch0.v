@@ -123,7 +123,7 @@ module ch0(/*AUTOARG*/
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
-		  .renable_in(ss_xfer1),
+		  .renable_in(ss_xfer1 && ~ss_end1),
 		  .wenable_in(!m_dst_putn0),
 		  .reset_in(wb_rst_i),
 		  .clear_in(m_reset0),
