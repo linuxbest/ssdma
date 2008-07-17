@@ -9,7 +9,7 @@ module main;
    wire [3:0]  c_be;
    /*wire*/tri1 [3:0]  req;
    wire [3:0]  gnt;
-   wire [15:0] irq;
+   tri1 [15:0] irq;
 
    wire [31:0] ad64;
    wire [3:0]  c_be64;
@@ -56,7 +56,7 @@ module main;
 	  .PCI_AD64(ad64), .PCI_CBE64(c_be64),
 	  .PCI_REQ64n(req64), .PCI_PAR64(par64),
           .USB_D(usb_d), .USB_FWRn(usb_fwrn),
-          .SPI_SEL(spi_sel), .USB_FRDn(1));
+          .SPI_SEL(spi_sel), .USB_FRDn(1), .PCI_INTAn(irq[0]));
 
    assign usb_d = 0;
    assign usb_fwrn = 0;

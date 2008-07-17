@@ -178,6 +178,7 @@ module wbm(/*AUTOARG*/
 	  5'h14: wbs_dat_o = {ctl_adr0, 3'b000};
 	  5'h15: wbs_dat_o = {ctl_adr1, 3'b000};
 	  5'h16: wbs_dat_o = {next_desc,3'b000};
+          5'h1f: wbs_dat_o = 32'haa55;
 	  default:wbs_dat_o = 32'h0;
 	endcase
      end
