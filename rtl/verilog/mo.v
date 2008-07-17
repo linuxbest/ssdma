@@ -26,10 +26,10 @@ module mo(/*AUTOARG*/
    always @(posedge wb_clk_i)
      gnt_r <= #1 gnt;
    
-   assign O = gnt[4] ? I[4] :
-	      gnt[3] ? I[3] :
-	      gnt[2] ? I[2] :
-	      gnt[1] ? I[1] :
-	      gnt[0] ? I[0] : 1'bz;
+   assign O = gnt_r[4] ? I[4] :
+	      gnt_r[3] ? I[3] :
+	      gnt_r[2] ? I[2] :
+	      gnt_r[1] ? I[1] :
+	      gnt_r[0] ? I[0] : 1'bz;
    
 endmodule // mixer0
