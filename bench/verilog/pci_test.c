@@ -141,10 +141,9 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
         lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
         
-        pcisim_wait(20, 0);
-        val = lzf_read(lzf_mem, OFS_CSR);
+        lzf_wait(phys_mem, lzf_mem);
         /* wait 200 clock, it must be done */
-        assert ((val & CSR_BUSY) == 0);
+        //assert ((val & CSR_BUSY) == 0);
         assert (lzf_read(lzf_mem, 0x14*4) == 0x200);
         assert (lzf_read(lzf_mem, 0x16*4) == 0x300);
         fprintf(stderr, "%04d: passed\n", __LINE__);

@@ -219,27 +219,29 @@ module ss_sg(/*AUTOARG*/
 	  end
 	  
 	  S_CMD: begin
-	     case (ss_adr[1:0]) 
-	       2'b00: begin /* next_desc, ctrl_addr */
-	       end
-	       2'b01: begin /* dc_fc, u0 */
-	       end
-	       2'b10: begin /* src_desc, u1 */
-		  if (rw == 1'b0)
-		    sg_next_n = ss_dat[31:3];
-	       end
-	       2'b11: begin /* dst_desc, u2 */
-		  if (rw == 1'b1)
-		    sg_next_n = ss_dat[31:3];
-		  sg_last_n = 1'b0;
-		  if (rw == 1'b1 && ss_dc[2] == 0)
-		    state_n = S_IDLE;
-		  else if (rw == 1'b0 && ss_dc[1] == 0)
-		    state_n = S_IDLE;
-		  else 
-		    state_n = S_NEXT;
-	       end
-	     endcase // case(ss_adr[1:0])
+	     if (ss_we) begin
+		case (ss_adr[1:0]) 
+		  2'b00: begin /* next_desc, ctrl_addr */
+		  end
+		  2'b01: begin /* dc_fc, u0 */
+		  end
+		  2'b10: begin /* src_desc, u1 */
+		     if (rw == 1'b0)
+		       sg_next_n = ss_dat[31:3];
+		  end
+		  2'b11: begin /* dst_desc, u2 */
+		     if (rw == 1'b1)
+		       sg_next_n = ss_dat[31:3];
+		     sg_last_n = 1'b0;
+		     if (rw == 1'b1 && ss_dc[2] == 0)
+		       state_n = S_IDLE;
+		     else if (rw == 1'b0 && ss_dc[1] == 0)
+		       state_n = S_IDLE;
+		     else 
+		       state_n = S_NEXT;
+		  end
+		endcase // case(ss_adr[1:0])
+	     end
 	  end // case: S_CMD
 	  
 	  S_D_REQ: begin

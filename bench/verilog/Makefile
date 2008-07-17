@@ -16,6 +16,9 @@ tpci: top.v pci_tb.v pci_arbiter.v  pci_master.v  pci_memory.v
 	iverilog -Wall -y $(OC_DIR) -I $(OC_DIR) -y ../../rtl/verilog/ -o $@ $^
 trun: tpci tc
 	vvp -M${PCISIM}/vpi/ -mpci tpci
+trun0: tpci tc
+	vvp -M${PCISIM}/vpi/ -mpci tpci +mem-retry-rate=4 +mem-discon-rate=4
+
 tc: pci_test.c
 	${CC} -g -o $@ -I${LZFDMA} -I${PCISIM}/libpcisim/ $< -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim
 
