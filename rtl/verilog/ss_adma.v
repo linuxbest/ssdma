@@ -543,7 +543,25 @@ module ss_adma(/*AUTOARG*/
 	   .ctl_adr0			(ctl_adr0[31:3]),
 	   .ctl_adr1			(ctl_adr1[31:3]),
 	   .next_desc			(next_desc[31:3]),
-	   .ctrl_state			(ctrl_state[7:0]));
+	   .ctrl_state			(ctrl_state[7:0]),
+	   .dc0				(dc0[23:0]),
+	   .dc1				(dc1[23:0]),
+	   .m_enable0			(m_enable0),
+	   .m_enable1			(m_enable1),
+	   .m_src_last0			(m_src_last0),
+	   .m_src_last1			(m_src_last1),
+	   .m_src_almost_empty0		(m_src_almost_empty0),
+	   .m_src_almost_empty1		(m_src_almost_empty1),
+	   .m_src_empty0		(m_src_empty0),
+	   .m_src_empty1		(m_src_empty1),
+	   .m_dst_last0			(m_dst_last0),
+	   .m_dst_last1			(m_dst_last1),
+	   .m_dst_almost_full0		(m_dst_almost_full0),
+	   .m_dst_almost_full1		(m_dst_almost_full1),
+	   .m_dst_full0			(m_dst_full0),
+	   .m_dst_full1			(m_dst_full1),
+	   .m_endn0			(m_endn0),
+	   .m_endn1			(m_endn1));
 
    ctrl ctrl(/*AUTOINST*/
 	     // Outputs

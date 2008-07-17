@@ -26,7 +26,12 @@ module wbm(/*AUTOARG*/
    wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i,
    spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
    ndar_dirty_clear, append_clear, wb_int_o, busy, ctl_adr0,
-   ctl_adr1, next_desc, ctrl_state
+   ctl_adr1, next_desc, ctrl_state, dc0, dc1, m_enable0,
+   m_enable1, m_src_last0, m_src_last1, m_src_almost_empty0,
+   m_src_almost_empty1, m_src_empty0, m_src_empty1,
+   m_dst_last0, m_dst_last1, m_dst_almost_full0,
+   m_dst_almost_full1, m_dst_full0, m_dst_full1, m_endn0,
+   m_endn1
    );
    
    input wb_clk_i,
@@ -91,6 +96,18 @@ module wbm(/*AUTOARG*/
 		ctl_adr1,
 		next_desc;
    input [7:0] 	ctrl_state;
+
+   input [23:0] dc0, dc1;
+
+   input 	m_enable0, m_enable1;
+   input 	m_src_last0, m_src_last1;
+   input 	m_src_almost_empty0, m_src_almost_empty1;
+   input 	m_src_empty0, m_src_empty1;
+
+   input 	m_dst_last0, m_dst_last1;
+   input 	m_dst_almost_full0, m_dst_almost_full1;
+   input 	m_dst_full0, m_dst_full1;
+   input 	m_endn0, m_endn1;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -141,19 +158,43 @@ module wbm(/*AUTOARG*/
 
    wire [4:0] 	   adr = wbs_adr_i[6:2];
 
+   reg [7:0] 	   m_status0, m_status1;
+   reg [7:0] 	   m_src0, m_src1;
+   reg [7:0] 	   m_dst0, m_dst1;
+   always @(/*AS*/m_enable0 or m_endn0)
+     m_status0 = {m_enable0, m_endn0};
+   always @(/*AS*/m_src_almost_empty0 or m_src_empty0
+	    or m_src_last0)
+     m_src0 = {m_src_last0, m_src_almost_empty0, m_src_empty0};
+   always @(/*AS*/m_dst_almost_full0 or m_dst_full0
+	    or m_dst_last0)
+     m_dst0 = {m_dst_last0, m_dst_almost_full0, m_dst_full0};
+   
+   always @(/*AS*/m_enable1 or m_endn1)
+     m_status1 = {m_enable1, m_endn1};
+   always @(/*AS*/m_src_almost_empty1 or m_src_empty1
+	    or m_src_last1)
+     m_src1 = {m_src_last1, m_src_almost_empty1, m_src_empty1};
+   always @(/*AS*/m_dst_almost_full1 or m_dst_full1
+	    or m_dst_last1)
+     m_dst1 = {m_dst_last1, m_dst_almost_full1, m_dst_full1};
+   
    always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1
-	    or dar or enable or ndar or next_desc
-	    or sg_addr0 or sg_addr1 or sg_addr2 or sg_addr3
-	    or sg_desc0 or sg_desc1 or sg_desc2 or sg_desc3
-	    or sg_next0 or sg_next1 or sg_next2 or sg_next3
-	    or sg_state0 or sg_state1 or sg_state2
-	    or sg_state3 or wb_int_o or wbs_adr_i)
+	    or dar or dc0 or dc1 or enable or m_dst0
+	    or m_dst1 or m_src0 or m_src1 or m_status0
+	    or m_status1 or ndar or next_desc or sg_addr0
+	    or sg_addr1 or sg_addr2 or sg_addr3 or sg_desc0
+	    or sg_desc1 or sg_desc2 or sg_desc3 or sg_next0
+	    or sg_next1 or sg_next2 or sg_next3 or sg_state0
+	    or sg_state1 or sg_state2 or sg_state3
+	    or wb_int_o or wbs_adr_i)
      begin
+	wbs_dat_o = 32'h0;
 	case (wbs_adr_i[6:2])
 	  5'h0: wbs_dat_o = {enable, append};
 	  5'h1: wbs_dat_o = {busy, wb_int_o};
 	  5'h2: wbs_dat_o = dar;
-	  5'h3: wbs_dat_o = ndar;
+	  5'h3: wbs_dat_o = {ndar, 3'b000};
 
 	  5'h4: wbs_dat_o = sg_state0;
 	  5'h5: wbs_dat_o = sg_desc0;
@@ -178,8 +219,17 @@ module wbm(/*AUTOARG*/
 	  5'h14: wbs_dat_o = {ctl_adr0, 3'b000};
 	  5'h15: wbs_dat_o = {ctl_adr1, 3'b000};
 	  5'h16: wbs_dat_o = {next_desc,3'b000};
+	  5'h17: ;
+	  
+	  5'h18: wbs_dat_o = dc0;
+	  5'h19: wbs_dat_o = dc1;
+	  5'h1a: ;
+	  5'h1b: ;
+	  
+	  5'h1c: wbs_dat_o = {m_status0, m_src0, m_dst0};
+	  5'h1d: wbs_dat_o = {m_status1, m_src1, m_dst1};
+	  5'h1e: ;
           5'h1f: wbs_dat_o = 32'haa55;
-	  default:wbs_dat_o = 32'h0;
 	endcase
      end
 
