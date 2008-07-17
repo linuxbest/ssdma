@@ -266,9 +266,24 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         b->desc_next= 0;
         
         b = (buf_desc_t *)(system_mem + 0x700);
-        b->desc     = len | LZF_SG_LAST;
+        b->desc     = 0x40;
         b->desc_adr = phys_mem + 0x200000;
-        b->desc_next= 0;
+        b->desc_next= phys_mem + 0x720;
+        
+        b = (buf_desc_t *)(system_mem + 0x720);
+        b->desc     = 0x40;
+        b->desc_adr = phys_mem + 0x200040;
+        b->desc_next= phys_mem + 0x740;
+        
+        b = (buf_desc_t *)(system_mem + 0x740);
+        b->desc     = 0x40;
+        b->desc_adr = phys_mem + 0x200080;
+        b->desc_next= phys_mem + 0x760;
+
+        b = (buf_desc_t *)(system_mem + 0x760);
+        b->desc     = 0x740 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x2000c0;
+        b->desc_next= phys_mem + 0x760;
         
         lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
         lzf_wait(phys_mem, lzf_mem);
