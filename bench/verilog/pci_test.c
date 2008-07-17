@@ -171,7 +171,7 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
 
         lzf_wait(phys_mem, lzf_mem);
-        /*HexDump(system_mem + 0x2000, 0x100);*/
+        HexDump(system_mem + 0x2000, 0x100);
         unsigned char *s;
         int i;
         s = system_mem + 0x2000;
@@ -239,6 +239,42 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         /* 
          * memory testing 
          */
+        s = system_mem + 0x100000; /* 1M */
+        int len = 2048;
+        for (i = 0; i < len; i++) 
+                s[i] = i;
+        s = system_mem + 0x200000; /* 2M */
+        for (i = 0; i < len; i++) 
+                s[i] = 0xff - i;
+
+        off = 0x10100;
+        j->dc_fc    |= DC_CONT;
+        j->next_desc =  phys_mem + off;
+        j = (job_desc_t *)(system_mem + off);
+
+        j->next_desc = 0;
+        j->ctl_addr  = 0;
+        j->dc_fc     = DC_MEMCPY;
+        j->u0        = 0;
+        j->u1        = 0;
+        j->src_desc  = phys_mem + 0x600;
+        j->dst_desc  = phys_mem + 0x700;
+
+        b = (buf_desc_t *)(system_mem + 0x600);
+        b->desc     = len | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x100000;
+        b->desc_next= 0;
+        
+        b = (buf_desc_t *)(system_mem + 0x700);
+        b->desc     = len | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x200000;
+        b->desc_next= 0;
+        
+        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
+        lzf_wait(phys_mem, lzf_mem);
+        HexDump(system_mem + 0x100000, len);
+        HexDump(system_mem + 0x200000, len);
+
         /*
          * compress tesing
          */

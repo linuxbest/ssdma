@@ -15,9 +15,10 @@
 module ss_adma(/*AUTOARG*/
    // Outputs
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
-   wbm_stb_o, wbm_sel_o, wbm_dat_o, wbm_dat64_o, wbm_cyc_o,
-   wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en, spi_do_o,
-   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, wb_int_o,
+   wbm_stb_o, wbm_sel_o, wbm_pref_o, wbm_dat_o, wbm_dat64_o,
+   wbm_cyc_o, wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en,
+   spi_do_o, spi_do_en, spi_di_o, spi_di_en, spi_clk_o,
+   wb_int_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
@@ -40,6 +41,7 @@ module ss_adma(/*AUTOARG*/
    output		wbm_cyc_o;		// From m0 of mixer.v
    output [31:0]	wbm_dat64_o;		// From m0 of mixer.v
    output [31:0]	wbm_dat_o;		// From m0 of mixer.v
+   output		wbm_pref_o;		// From m0 of mixer.v
    output [3:0]		wbm_sel_o;		// From m0 of mixer.v
    output		wbm_stb_o;		// From m0 of mixer.v
    output		wbm_we_o;		// From m0 of mixer.v
@@ -416,6 +418,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbm_stb_o			(wbm_stb_o),
 	     .wbm_we_o			(wbm_we_o),
 	     .wbm_cab_o			(wbm_cab_o),
+	     .wbm_pref_o		(wbm_pref_o),
 	     .wbm_sel_o			(wbm_sel_o[3:0]),
 	     .wbm_adr_o			(wbm_adr_o[31:0]),
 	     .wbm_dat_o			(wbm_dat_o[31:0]),

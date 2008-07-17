@@ -207,6 +207,11 @@ module ctrl(/*AUTOARG*/
      end
    always @(/*AS*/wbs_adr4_r)
      wbs_adr4 = {wbs_adr4_r, 3'b000};
+   always @(/*AS*/wbs_ack4 or wbs_err4 or wbs_rty4)
+     if (wbs_ack4 && (!wbs_rty4) && (!wbs_err4))
+       inc_active = 1;
+     else
+       inc_active = 0;
    
    reg append_mode, append_mode_n;
    always @(posedge wb_clk_i or posedge wb_rst_i)
@@ -353,7 +358,6 @@ module ctrl(/*AUTOARG*/
 	wbs_sel4_n = wbs_sel4;
 
 	inc_reset  = 0;
-	inc_active = 0;
 
 	dar_n      = dar_r;
 	wb_int_set = 0;
@@ -392,7 +396,6 @@ module ctrl(/*AUTOARG*/
 	  S_CMD0:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  inc_active = 1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
@@ -436,7 +439,6 @@ module ctrl(/*AUTOARG*/
 	  S_CMD1:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  inc_active = 1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
@@ -477,7 +479,6 @@ module ctrl(/*AUTOARG*/
 	  S_CTL0:  begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  inc_active = 1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
@@ -528,7 +529,6 @@ module ctrl(/*AUTOARG*/
 	  S_CTL1:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  inc_active = 1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;

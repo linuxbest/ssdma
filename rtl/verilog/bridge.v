@@ -24,8 +24,8 @@ module bridge(/*AUTOARG*/
    // Inputs
    PCI_CLK, PCI_IDSEL, PCI_GNTn, wbs_rty_o, wbs_err_o,
    wbs_ack_o, wbs_dat_o, wb_int_o, wbm_we_o, wbm_stb_o,
-   wbm_cyc_o, wbm_cab_o, wbm_sel_o, wbm_dat_o, wbm_dat64_o,
-   wbm_adr_o
+   wbm_cyc_o, wbm_cab_o, wbm_pref_o, wbm_sel_o, wbm_dat_o,
+   wbm_dat64_o, wbm_adr_o
    );
    inout [31:0] PCI_AD;
    inout [31:0] PCI_AD64;
@@ -76,7 +76,8 @@ module bridge(/*AUTOARG*/
    input 	 wbm_we_o,
 		 wbm_stb_o,
 		 wbm_cyc_o,
-		 wbm_cab_o;
+		 wbm_cab_o,
+		 wbm_pref_o;
    input [3:0] 	 wbm_sel_o;
    input [31:0]  wbm_dat_o,
 		 wbm_dat64_o,
@@ -173,7 +174,7 @@ module bridge(/*AUTOARG*/
 		  .wbs_stb_i(wbm_stb_o),
 		  .wbs_we_i (wbm_we_o),
 		  .wbs_cab_i(wbm_cab_o),
-		  .wbs_pref_i(1'b1),
+		  .wbs_pref_i(wbm_pref_o),
 		  .wbs_ack_o(wbm_ack_i),
 		  .wbs_rty_o(wbm_rty_i),
 		  .wbs_err_o(wbm_err_i),

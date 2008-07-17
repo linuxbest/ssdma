@@ -18,8 +18,8 @@ module mixer(/*AUTOARG*/
    wbs_dat_o2, wbs_dat64_o2, wbs_ack2, wbs_err2, wbs_rty2,
    wbs_dat_o3, wbs_dat64_o3, wbs_ack3, wbs_err3, wbs_rty3,
    wbs_dat_o4, wbs_dat64_o4, wbs_ack4, wbs_err4, wbs_rty4,
-   wbm_cyc_o, wbm_stb_o, wbm_we_o, wbm_cab_o, wbm_sel_o,
-   wbm_adr_o, wbm_dat_o, wbm_dat64_o,
+   wbm_cyc_o, wbm_stb_o, wbm_we_o, wbm_cab_o, wbm_pref_o,
+   wbm_sel_o, wbm_adr_o, wbm_dat_o, wbm_dat64_o,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_cyc0, wbs_stb0, wbs_we0,
    wbs_cab0, wbs_sel0, wbs_adr0, wbs_dat_i0, wbs_dat64_i0,
@@ -118,7 +118,8 @@ module mixer(/*AUTOARG*/
    output      wbm_cyc_o,
 	       wbm_stb_o,
 	       wbm_we_o,
-	       wbm_cab_o;
+	       wbm_cab_o,
+	       wbm_pref_o;
    output [3:0] wbm_sel_o;
    output [31:0] wbm_adr_o,
 		 wbm_dat_o,
@@ -241,5 +242,7 @@ module mixer(/*AUTOARG*/
 		.O4(wbs_dat64_o4),
 		.gnt(gnt),
 		.I(wbm_dat64_i));
+
+   assign 	 wbm_pref_o = ~gnt[4];
    
    endmodule // mixer

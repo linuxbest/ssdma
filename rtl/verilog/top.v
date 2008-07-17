@@ -94,6 +94,7 @@ module top(/*AUTOARG*/
    wire [31:0]		wbm_dat_i;		// From bridge of bridge.v
    wire [31:0]		wbm_dat_o;		// From adma of ss_adma.v
    wire			wbm_err_i;		// From bridge of bridge.v
+   wire			wbm_pref_o;		// From adma of ss_adma.v
    wire			wbm_rty_i;		// From bridge of bridge.v
    wire [3:0]		wbm_sel_o;		// From adma of ss_adma.v
    wire			wbm_stb_o;		// From adma of ss_adma.v
@@ -150,6 +151,7 @@ module top(/*AUTOARG*/
 		.wbm_cyc_o		(wbm_cyc_o),
 		.wbm_dat64_o		(wbm_dat64_o[31:0]),
 		.wbm_dat_o		(wbm_dat_o[31:0]),
+		.wbm_pref_o		(wbm_pref_o),
 		.wbm_sel_o		(wbm_sel_o[3:0]),
 		.wbm_stb_o		(wbm_stb_o),
 		.wbm_we_o		(wbm_we_o),
@@ -228,6 +230,7 @@ module top(/*AUTOARG*/
 		 .wbm_stb_o		(wbm_stb_o),
 		 .wbm_cyc_o		(wbm_cyc_o),
 		 .wbm_cab_o		(wbm_cab_o),
+		 .wbm_pref_o		(wbm_pref_o),
 		 .wbm_sel_o		(wbm_sel_o[3:0]),
 		 .wbm_dat_o		(wbm_dat_o[31:0]),
 		 .wbm_dat64_o		(wbm_dat64_o[31:0]),
