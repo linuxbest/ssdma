@@ -227,6 +227,11 @@ module ss_adma(/*AUTOARG*/
    wire			wbs_err2;		// From m0 of mixer.v
    wire			wbs_err3;		// From m0 of mixer.v
    wire			wbs_err4;		// From m0 of mixer.v
+   wire			wbs_pref0;		// From r_0 of ss_sg.v
+   wire			wbs_pref1;		// From r_1 of ss_sg.v
+   wire			wbs_pref2;		// From r_2 of ss_sg.v
+   wire			wbs_pref3;		// From r_3 of ss_sg.v
+   wire			wbs_pref4;		// From ctrl of ctrl.v
    wire			wbs_rty0;		// From m0 of mixer.v
    wire			wbs_rty1;		// From m0 of mixer.v
    wire			wbs_rty2;		// From m0 of mixer.v
@@ -261,6 +266,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc			(wbs_cyc0),		 // Templated
 	     .wbs_stb			(wbs_stb0),		 // Templated
 	     .wbs_we			(wbs_we0),		 // Templated
+	     .wbs_pref			(wbs_pref0),		 // Templated
 	     .wbs_cab			(wbs_cab0),		 // Templated
 	     .wbs_sel			(wbs_sel0[3:0]),	 // Templated
 	     .wbs_adr			(wbs_adr0[31:0]),	 // Templated
@@ -294,6 +300,7 @@ module ss_adma(/*AUTOARG*/
 	      .wbs_cyc			(wbs_cyc1),		 // Templated
 	      .wbs_stb			(wbs_stb1),		 // Templated
 	      .wbs_we			(wbs_we1),		 // Templated
+	      .wbs_pref			(wbs_pref1),		 // Templated
 	      .wbs_cab			(wbs_cab1),		 // Templated
 	      .wbs_sel			(wbs_sel1[3:0]),	 // Templated
 	      .wbs_adr			(wbs_adr1[31:0]),	 // Templated
@@ -327,6 +334,7 @@ module ss_adma(/*AUTOARG*/
 	      .wbs_cyc			(wbs_cyc2),		 // Templated
 	      .wbs_stb			(wbs_stb2),		 // Templated
 	      .wbs_we			(wbs_we2),		 // Templated
+	      .wbs_pref			(wbs_pref2),		 // Templated
 	      .wbs_cab			(wbs_cab2),		 // Templated
 	      .wbs_sel			(wbs_sel2[3:0]),	 // Templated
 	      .wbs_adr			(wbs_adr2[31:0]),	 // Templated
@@ -360,6 +368,7 @@ module ss_adma(/*AUTOARG*/
 	      .wbs_cyc			(wbs_cyc3),		 // Templated
 	      .wbs_stb			(wbs_stb3),		 // Templated
 	      .wbs_we			(wbs_we3),		 // Templated
+	      .wbs_pref			(wbs_pref3),		 // Templated
 	      .wbs_cab			(wbs_cab3),		 // Templated
 	      .wbs_sel			(wbs_sel3[3:0]),	 // Templated
 	      .wbs_adr			(wbs_adr3[31:0]),	 // Templated
@@ -429,6 +438,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc0			(wbs_cyc0),
 	     .wbs_stb0			(wbs_stb0),
 	     .wbs_we0			(wbs_we0),
+	     .wbs_pref0			(wbs_pref0),
 	     .wbs_cab0			(wbs_cab0),
 	     .wbs_sel0			(wbs_sel0[3:0]),
 	     .wbs_adr0			(wbs_adr0[31:0]),
@@ -437,6 +447,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc1			(wbs_cyc1),
 	     .wbs_stb1			(wbs_stb1),
 	     .wbs_we1			(wbs_we1),
+	     .wbs_pref1			(wbs_pref1),
 	     .wbs_cab1			(wbs_cab1),
 	     .wbs_sel1			(wbs_sel1[3:0]),
 	     .wbs_adr1			(wbs_adr1[31:0]),
@@ -445,6 +456,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc2			(wbs_cyc2),
 	     .wbs_stb2			(wbs_stb2),
 	     .wbs_we2			(wbs_we2),
+	     .wbs_pref2			(wbs_pref2),
 	     .wbs_cab2			(wbs_cab2),
 	     .wbs_sel2			(wbs_sel2[3:0]),
 	     .wbs_adr2			(wbs_adr2[31:0]),
@@ -453,6 +465,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc3			(wbs_cyc3),
 	     .wbs_stb3			(wbs_stb3),
 	     .wbs_we3			(wbs_we3),
+	     .wbs_pref3			(wbs_pref3),
 	     .wbs_cab3			(wbs_cab3),
 	     .wbs_sel3			(wbs_sel3[3:0]),
 	     .wbs_adr3			(wbs_adr3[31:0]),
@@ -461,6 +474,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc4			(wbs_cyc4),
 	     .wbs_stb4			(wbs_stb4),
 	     .wbs_we4			(wbs_we4),
+	     .wbs_pref4			(wbs_pref4),
 	     .wbs_cab4			(wbs_cab4),
 	     .wbs_sel4			(wbs_sel4[3:0]),
 	     .wbs_adr4			(wbs_adr4[31:0]),
@@ -568,6 +582,7 @@ module ss_adma(/*AUTOARG*/
 	     .wbs_cyc4			(wbs_cyc4),
 	     .wbs_stb4			(wbs_stb4),
 	     .wbs_we4			(wbs_we4),
+	     .wbs_pref4			(wbs_pref4),
 	     .wbs_cab4			(wbs_cab4),
 	     .wbs_sel4			(wbs_sel4[3:0]),
 	     .wbs_adr4			(wbs_adr4[31:0]),

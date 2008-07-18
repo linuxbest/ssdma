@@ -16,9 +16,9 @@
 
 module ss_sg(/*AUTOARG*/
    // Outputs
-   wbs_cyc, wbs_stb, wbs_we, wbs_cab, wbs_sel, wbs_adr,
-   sg_state, sg_desc, sg_addr, sg_next, ss_xfer, ss_last,
-   c_done,
+   wbs_cyc, wbs_stb, wbs_we, wbs_pref, wbs_cab, wbs_sel,
+   wbs_adr, sg_state, sg_desc, sg_addr, sg_next, ss_xfer,
+   ss_last, c_done,
    // Inputs
    wb_clk_i, wb_rst_i, rw, wbs_dat_o, wbs_dat64_o, wbs_ack,
    wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done, ss_dc,
@@ -35,7 +35,8 @@ module ss_sg(/*AUTOARG*/
    /* WB interface */
    output wbs_cyc, 		// cycle signal
 	  wbs_stb, 		// strobe 
-	  wbs_we, 		// we 
+	  wbs_we, 		// we
+	  wbs_pref,
 	  wbs_cab;		// 
    output [3:0] wbs_sel;	// byte select
    output [31:0] wbs_adr/*, 	// address 
@@ -95,12 +96,14 @@ module ss_sg(/*AUTOARG*/
    reg 		 wbs_cyc, wbs_cyc_n;
    reg 		 wbs_stb, wbs_stb_n;
    reg 		 wbs_we,  wbs_we_n;
+   reg 		 wbs_pref,wbs_pref_n;
    reg 		 wbs_cab, wbs_cab_n;
    reg [3:0] 	 wbs_sel, wbs_sel_n;
    always @(posedge wb_clk_i)
      begin
 	wbs_stb <= #1 wbs_stb_n;
 	wbs_we  <= #1 wbs_we_n;
+	wbs_pref<= #1 wbs_pref_n;
 	wbs_cab <= #1 wbs_cab_n;
 	wbs_sel <= #1 wbs_sel_n;
      end
@@ -182,8 +185,8 @@ module ss_sg(/*AUTOARG*/
 	    or ss_dat or ss_dc or ss_done or ss_end
 	    or ss_start or ss_stop or ss_we or state
 	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
-	    or wbs_dat_o or wbs_err or wbs_rty or wbs_sel
-	    or wbs_stb or wbs_we)
+	    or wbs_dat_o or wbs_err or wbs_pref or wbs_rty
+	    or wbs_sel or wbs_stb or wbs_we)
      begin
 	state_n   = state;
 
@@ -201,6 +204,7 @@ module ss_sg(/*AUTOARG*/
 	wbs_cyc_n = wbs_cyc;
 	wbs_stb_n = wbs_stb;
 	wbs_we_n  = wbs_we;
+	wbs_pref_n= wbs_pref;
 	wbs_cab_n = wbs_cab;
 	wbs_sel_n = wbs_sel;
 
@@ -248,6 +252,7 @@ module ss_sg(/*AUTOARG*/
 	     wbs_cyc_n = 1'b1;
 	     wbs_stb_n = 1'b1;
 	     wbs_we_n  = 1'b0;
+	     wbs_pref_n= 1'b0;
 	     wbs_cab_n = 1'b1;
 	     wbs_sel_n = 4'b1111;
 	     
@@ -280,6 +285,7 @@ module ss_sg(/*AUTOARG*/
 	     wbs_cyc_n = 1'b1;
 	     wbs_stb_n = 1'b1;
 	     wbs_we_n  = rw;
+	     wbs_pref_n= 1'b1;
 	     wbs_cab_n = 1'b1;
 	     wbs_sel_n = 4'h0;
 
@@ -322,6 +328,7 @@ module ss_sg(/*AUTOARG*/
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
 		wbs_we_n  = rw;
+		wbs_pref_n= 1'b1;
 		wbs_cab_n = 1'b1;
 		wbs_sel_n = 4'h0;
 		state_n   = S_B_REQ;
@@ -345,6 +352,7 @@ module ss_sg(/*AUTOARG*/
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
 		wbs_we_n  = 1'b0;
+		wbs_pref_n= 1'b0;
 		wbs_cab_n = 1'b1;
 		wbs_sel_n = 4'h0;
 

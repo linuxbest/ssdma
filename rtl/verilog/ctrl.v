@@ -46,14 +46,14 @@
  */
 module ctrl(/*AUTOARG*/
    // Outputs
-   wbs_cyc4, wbs_stb4, wbs_we4, wbs_cab4, wbs_sel4,
-   wbs_adr4, wbs_dat_i4, wbs_dat64_i4, ss_we0, ss_we1,
-   ss_we2, ss_we3, ss_done0, ss_done1, ss_done2, ss_done3,
-   ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0, ss_adr1,
-   ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2, ss_dc3,
-   wb_int_o, dar, csr, ndar_dirty_clear, busy, append_clear,
-   dc0, dc1, ctl_adr0, ctl_adr1, next_desc, m_reset0,
-   m_reset1, m_enable0, m_enable1, ctrl_state,
+   wbs_cyc4, wbs_stb4, wbs_we4, wbs_pref4, wbs_cab4,
+   wbs_sel4, wbs_adr4, wbs_dat_i4, wbs_dat64_i4, ss_we0,
+   ss_we1, ss_we2, ss_we3, ss_done0, ss_done1, ss_done2,
+   ss_done3, ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0,
+   ss_adr1, ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2,
+   ss_dc3, wb_int_o, dar, csr, ndar_dirty_clear, busy,
+   append_clear, dc0, dc1, ctl_adr0, ctl_adr1, next_desc,
+   m_reset0, m_reset1, m_enable0, m_enable1, ctrl_state,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
@@ -66,7 +66,8 @@ module ctrl(/*AUTOARG*/
    /* WB interface */
    output wbs_cyc4, 		// cycle signal
 	  wbs_stb4, 		// strobe 
-	  wbs_we4, 		// we 
+	  wbs_we4, 		// we
+	  wbs_pref4,
 	  wbs_cab4;		// 
    output [3:0] wbs_sel4;	// byte select
    output [31:0] wbs_adr4, 	// address 
@@ -195,6 +196,7 @@ module ctrl(/*AUTOARG*/
 	wbs_cab4 <= #1 wbs_cab4_n;
 	wbs_sel4 <= #1 wbs_sel4_n;
      end
+   assign wbs_pref4 = 0;
    
    reg inc_reset, inc_active;
    reg [31:3] wbs_adr4_r, wbs_adr4_n;

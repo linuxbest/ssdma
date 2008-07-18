@@ -22,13 +22,14 @@ module mixer(/*AUTOARG*/
    wbm_sel_o, wbm_adr_o, wbm_dat_o, wbm_dat64_o,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_cyc0, wbs_stb0, wbs_we0,
-   wbs_cab0, wbs_sel0, wbs_adr0, wbs_dat_i0, wbs_dat64_i0,
-   wbs_cyc1, wbs_stb1, wbs_we1, wbs_cab1, wbs_sel1,
-   wbs_adr1, wbs_dat_i1, wbs_dat64_i1, wbs_cyc2, wbs_stb2,
-   wbs_we2, wbs_cab2, wbs_sel2, wbs_adr2, wbs_dat_i2,
-   wbs_dat64_i2, wbs_cyc3, wbs_stb3, wbs_we3, wbs_cab3,
-   wbs_sel3, wbs_adr3, wbs_dat_i3, wbs_dat64_i3, wbs_cyc4,
-   wbs_stb4, wbs_we4, wbs_cab4, wbs_sel4, wbs_adr4,
+   wbs_pref0, wbs_cab0, wbs_sel0, wbs_adr0, wbs_dat_i0,
+   wbs_dat64_i0, wbs_cyc1, wbs_stb1, wbs_we1, wbs_pref1,
+   wbs_cab1, wbs_sel1, wbs_adr1, wbs_dat_i1, wbs_dat64_i1,
+   wbs_cyc2, wbs_stb2, wbs_we2, wbs_pref2, wbs_cab2,
+   wbs_sel2, wbs_adr2, wbs_dat_i2, wbs_dat64_i2, wbs_cyc3,
+   wbs_stb3, wbs_we3, wbs_pref3, wbs_cab3, wbs_sel3,
+   wbs_adr3, wbs_dat_i3, wbs_dat64_i3, wbs_cyc4, wbs_stb4,
+   wbs_we4, wbs_pref4, wbs_cab4, wbs_sel4, wbs_adr4,
    wbs_dat_i4, wbs_dat64_i4, gnt, wbm_ack_i, wbm_err_i,
    wbm_rty_i, wbm_dat_i, wbm_dat64_i
    );
@@ -40,6 +41,7 @@ module mixer(/*AUTOARG*/
    input wbs_cyc0,
 	 wbs_stb0,
 	 wbs_we0,
+	 wbs_pref0,
 	 wbs_cab0;
    input [3:0] wbs_sel0;
    input [31:0] wbs_adr0,
@@ -55,6 +57,7 @@ module mixer(/*AUTOARG*/
    input  wbs_cyc1,
 	  wbs_stb1,
 	  wbs_we1,
+	  wbs_pref1,
 	  wbs_cab1;
    input [3:0] wbs_sel1;
    input [31:0] wbs_adr1,
@@ -70,6 +73,7 @@ module mixer(/*AUTOARG*/
    input  wbs_cyc2,
 	  wbs_stb2,
 	  wbs_we2,
+	  wbs_pref2,
 	  wbs_cab2;
    input [3:0] wbs_sel2;
    input [31:0] wbs_adr2,
@@ -85,6 +89,7 @@ module mixer(/*AUTOARG*/
    input  wbs_cyc3,
 	  wbs_stb3,
 	  wbs_we3,
+	  wbs_pref3,
 	  wbs_cab3;
    input [3:0] wbs_sel3;
    input [31:0] wbs_adr3,
@@ -100,6 +105,7 @@ module mixer(/*AUTOARG*/
    input  wbs_cyc4,
 	  wbs_stb4,
 	  wbs_we4,
+	  wbs_pref4,
 	  wbs_cab4;
    input [3:0] wbs_sel4;
    input [31:0] wbs_adr4,
@@ -160,6 +166,14 @@ module mixer(/*AUTOARG*/
 	   .I				({wbs_we4,wbs_we3,wbs_we2,wbs_we1,wbs_we0}), // Templated
 	   .wb_clk_i			(wb_clk_i),
 	   .wb_rst_i			(wb_rst_i));
+   mo o_pref(/*AUTOINST*/
+	     // Outputs
+	     .O				(wbm_pref_o),		 // Templated
+	     // Inputs
+	     .gnt			(gnt[4:0]),		 // Templated
+	     .I				({wbs_pref4,wbs_pref3,wbs_pref2,wbs_pref1,wbs_pref0}), // Templated
+	     .wb_clk_i			(wb_clk_i),
+	     .wb_rst_i			(wb_rst_i));
    mo o_cab(/*AUTOINST*/
 	    // Outputs
 	    .O				(wbm_cab_o),		 // Templated
@@ -243,6 +257,4 @@ module mixer(/*AUTOARG*/
 		.gnt(gnt),
 		.I(wbm_dat64_i));
 
-   assign 	 wbm_pref_o = ~gnt[4];
-   
    endmodule // mixer
