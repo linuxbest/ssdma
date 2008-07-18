@@ -299,7 +299,7 @@ module ss_sg(/*AUTOARG*/
 		     state_n   = S_B_WAIT;
 		  end
 	       end
-	       3'b010: begin
+	       3'b010, 3'b000: begin
 		  if (io) begin
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
