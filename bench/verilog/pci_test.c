@@ -328,14 +328,14 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 
         b = (buf_desc_t *)(system_mem + 0x700);
         b->desc     = 0x1000 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x100040;
+        b->desc_adr = phys_mem + 0x200000;
         b->desc_next= phys_mem + 0x640;
 
         lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
         lzf_wait(phys_mem, lzf_mem);
        
-        uint32_t *p = system_mem + 0x200;
-        HexDump(system_mem + 0x200, 32);
+        uint32_t *p = (uint32_t *)(system_mem + 0x200);
+        HexDump((char *)p, 32);
         printf("cycle %04x\n", *p);
 
         /*

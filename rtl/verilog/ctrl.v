@@ -336,7 +336,7 @@ module ctrl(/*AUTOARG*/
      end
 
    reg m_enable0_n, m_enable1_n;
-   reg [15:0] m_cyc0, m_cyc1;
+   reg [31:0] m_cyc0, m_cyc1;
    reg 	      m_cyc0_start, m_cyc1_start;
    always @(posedge wb_clk_i)
      begin
@@ -619,10 +619,34 @@ module ctrl(/*AUTOARG*/
 	m_enable0 <= #1 m_enable0_n;
 	m_enable1 <= #1 m_enable1_n;
      end
+
+   // synopsys translate_off
+   reg [63:0] ctl0, ctl1;
+   always @(/*AS*/inc or m_cyc0)
+     begin
+	ctl0 = 32'h0;
+	case (inc)
+	  2'b00: ctl0 = {32'h01, m_cyc0};
+	  2'b01: ctl0 = 32'h02;
+	  2'b10: ctl0 = 32'h03;
+	  2'b11: ctl0 = 32'h04;
+	endcase
+     end
    
-   assign wbs_dat_i4   = inc == 2'b00 ? m_cyc0 : m_cyc1;
-   assign wbs_dat64_i4 = 32'h0;
+   always @(/*AS*/inc)
+     begin
+	ctl1 = 32'h0;
+	case (inc)
+	  2'b00: ctl1 = {32'h01, m_cyc1};
+	  2'b01: ctl1 = 32'h02;
+	  2'b10: ctl1 = 32'h03;
+	  2'b11: ctl1 = 32'h04;
+	endcase
+     end
    
+   assign {wbs_dat64_i4, wbs_dat_i4} = state == S_CTL0 ? ctl0 : ctl1;
+   
+   // synopsys translate_on
 endmodule // ctrl
 
   
