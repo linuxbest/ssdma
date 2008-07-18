@@ -17,7 +17,7 @@ tpci: top.v pci_tb.v pci_arbiter.v  pci_master.v  pci_memory.v
 trun: tpci tc
 	vvp -M${PCISIM}/vpi/ -mpci tpci
 trun0: tpci tc
-	vvp -M${PCISIM}/vpi/ -mpci tpci +mem-retry-rate=4 +mem-discon-rate=4
+	vvp -M${PCISIM}/vpi/ -mpci tpci +mem-retry-rate=4 +mem-discon-rate=8
 
 tc: pci_test.c
 	${CC} -g -o $@ -I${LZFDMA} -I${PCISIM}/libpcisim/ $< -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim
