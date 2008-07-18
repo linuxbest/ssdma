@@ -261,10 +261,26 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j->dst_desc  = phys_mem + 0x700;
 
         b = (buf_desc_t *)(system_mem + 0x600);
-        b->desc     = len | LZF_SG_LAST;
+        b->desc     = 0x40;
         b->desc_adr = phys_mem + 0x100000;
-        b->desc_next= 0;
-        
+        b->desc_next= phys_mem + 0x620;
+
+        b = (buf_desc_t *)(system_mem + 0x620);
+        b->desc     = 0x40;
+        b->desc_adr = phys_mem + 0x100040;
+        b->desc_next= phys_mem + 0x640;
+
+        b = (buf_desc_t *)(system_mem + 0x640);
+        b->desc     = 0x40;
+        b->desc_adr = phys_mem + 0x100080;
+        b->desc_next= phys_mem + 0x660;
+
+        b = (buf_desc_t *)(system_mem + 0x660);
+        b->desc     = 0x740 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x1000c0;
+        b->desc_next= phys_mem + 0x660;
+
+        /* dst */
         b = (buf_desc_t *)(system_mem + 0x700);
         b->desc     = 0x40;
         b->desc_adr = phys_mem + 0x200000;
