@@ -142,8 +142,6 @@ module ctrl(/*AUTOARG*/
    reg [31:0]		wbs_adr4;
    reg			wbs_cab4;
    reg			wbs_cyc4;
-   reg [31:0]		wbs_dat64_i4;
-   reg [31:0]		wbs_dat_i4;
    reg [3:0]		wbs_sel4;
    reg			wbs_stb4;
    reg			wbs_we4;
@@ -338,6 +336,22 @@ module ctrl(/*AUTOARG*/
      end
 
    reg m_enable0_n, m_enable1_n;
+   reg [15:0] m_cyc0, m_cyc1;
+   reg 	      m_cyc0_start, m_cyc1_start;
+   always @(posedge wb_clk_i)
+     begin
+	if (m_cyc0_start)
+	  m_cyc0 <= #1 0;
+	else
+	  m_cyc0 <= #1 m_cyc0 + 1'b1;
+     end
+   always @(posedge wb_clk_i)
+     begin
+	if (m_cyc1_start)
+	  m_cyc1 <= #1 0;
+	else
+	  m_cyc1 <= #1 m_cyc1 + 1'b1;
+     end
    
    always @(/*AS*/append or append_mode or c_done0
 	    or c_done1 or c_done2 or c_done3 or cdar
@@ -367,6 +381,9 @@ module ctrl(/*AUTOARG*/
 
 	m_enable0_n = m_enable0;
 	m_enable1_n = m_enable1;
+
+	m_cyc0_start = 1'b0;
+	m_cyc1_start = 1'b0;
 	
 	case (state)
 	  S_IDLE:   begin
@@ -435,6 +452,7 @@ module ctrl(/*AUTOARG*/
 		append_mode_n = 1'b0;
 	     end else begin
 		m_enable0_n   = 1'b1;
+		m_cyc0_start  = 1'b1;
 	     end
 	  end
 	  
@@ -476,11 +494,13 @@ module ctrl(/*AUTOARG*/
 		end
 	     end // if (c0_done && c1_done)
 	     m_enable1_n = 1'b1;
+	     m_cyc1_start= 1'b1;
 	  end // case: S_WAIT0
 
 	  S_CTL0:  begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
+		  inc_active = 1'b1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
@@ -531,6 +551,7 @@ module ctrl(/*AUTOARG*/
 	  S_CTL1:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
+		  inc_active = 1'b1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
@@ -598,6 +619,9 @@ module ctrl(/*AUTOARG*/
 	m_enable0 <= #1 m_enable0_n;
 	m_enable1 <= #1 m_enable1_n;
      end
+   
+   assign wbs_dat_i4   = inc == 2'b00 ? m_cyc0 : m_cyc1;
+   assign wbs_dat64_i4 = 32'h0;
    
 endmodule // ctrl
 
