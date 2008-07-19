@@ -313,13 +313,26 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j = (job_desc_t *)(system_mem + off);
         memset(system_mem + 0x200, 0, 32);
 
-        j->next_desc = 0;
+        j->next_desc = phys_mem + 0x220;
         j->ctl_addr  = phys_mem + 0x200;
-        j->dc_fc     = DC_MEMCPY | DC_CTRL;
+        j->dc_fc     = DC_MEMCPY | DC_CTRL | DC_CONT;
         j->u0        = 0;
         j->u1        = 0;
         j->src_desc  = phys_mem + 0x600;
         j->dst_desc  = phys_mem + 0x700;
+        
+        off = 0x220;
+        j = (job_desc_t *)(system_mem + off);
+        memset(system_mem + 0x200, 0, 32);
+
+        j->next_desc = 0;
+        j->ctl_addr  = phys_mem + 0x240;
+        j->dc_fc     = DC_MEMCPY | DC_CTRL;
+        j->u0        = 0;
+        j->u1        = 0;
+        j->src_desc  = phys_mem + 0x600;
+        j->dst_desc  = phys_mem + 0x800;
+
 
         b = (buf_desc_t *)(system_mem + 0x600);
         b->desc     = 0x1000 | LZF_SG_LAST;
@@ -332,11 +345,20 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         b->desc     = 0x1000 | LZF_SG_LAST;
         b->desc_adr = phys_mem + 0x200000;
         b->desc_next= phys_mem + 0x640;
+        
+        b = (buf_desc_t *)(system_mem + 0x800);
+        b->desc     = 0x1000 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x300000;
+        b->desc_next= phys_mem + 0x640;
 
         lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
         lzf_wait(phys_mem, lzf_mem);
        
         p = (uint32_t *)(system_mem + 0x200);
+        HexDump((char *)p, 32);
+        printf("cycle %04x\n", *p);
+        
+        p = (uint32_t *)(system_mem + 0x240);
         HexDump((char *)p, 32);
         printf("cycle %04x\n", *p);
 

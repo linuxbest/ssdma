@@ -452,7 +452,7 @@ module ctrl(/*AUTOARG*/
 		append_mode_n = 1'b0;
 	     end else begin
 		m_enable0_n   = 1'b1;
-		m_cyc0_start  = 1'b1;
+		m_cyc0_start  = !m_enable0;
 	     end
 	  end
 	  
@@ -494,7 +494,7 @@ module ctrl(/*AUTOARG*/
 		end
 	     end // if (c0_done && c1_done)
 	     m_enable1_n = 1'b1;
-	     m_cyc1_start= 1'b1;
+	     m_cyc1_start= !m_enable1;
 	  end // case: S_WAIT0
 
 	  S_CTL0:  begin
