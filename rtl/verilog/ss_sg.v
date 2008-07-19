@@ -328,7 +328,7 @@ module ss_sg(/*AUTOARG*/
 		wbs_cyc_n = 1'b1;
 		wbs_stb_n = 1'b1;
 		wbs_we_n  = rw;
-		wbs_pref_n= 1'b1;
+		wbs_pref_n= (|sg_len[15:5]);
 		wbs_cab_n = 1'b1;
 		wbs_sel_n = 4'h0;
 		state_n   = S_B_REQ;
