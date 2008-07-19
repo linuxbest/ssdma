@@ -315,7 +315,7 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 
         j->next_desc = phys_mem + 0x220;
         j->ctl_addr  = phys_mem + 0x200;
-        j->dc_fc     = DC_MEMCPY | DC_CTRL | DC_CONT;
+        j->dc_fc     = DC_MEMCPY | DC_CTRL/* | DC_CONT*/;
         j->u0        = 0;
         j->u1        = 0;
         j->src_desc  = phys_mem + 0x600;
