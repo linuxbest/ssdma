@@ -500,7 +500,6 @@ module ctrl(/*AUTOARG*/
 	  S_CTL0:  begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  inc_active = 1'b1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
@@ -551,7 +550,6 @@ module ctrl(/*AUTOARG*/
 	  S_CTL1:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  inc_active = 1'b1;
 		  case (inc)
 		    2'b00: ;
 		    2'b01: ;
