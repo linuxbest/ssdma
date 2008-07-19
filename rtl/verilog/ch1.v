@@ -62,7 +62,7 @@ module ch1(/*AUTOARG*/
    output        m_dst_full1;
    input 	 m_endn1;
    
-   parameter 	 FIFO_WIDTH = 4;
+   parameter 	 FIFO_WIDTH = 9;
    wire [FIFO_WIDTH-1:0] src_waddr,
 			 src_raddr,
 			 dst_waddr,
