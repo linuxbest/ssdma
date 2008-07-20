@@ -61,7 +61,7 @@
 //
 // CVS Revision History
 //
-// $Log: pci_wb_tpram.v,v $
+// $Log: pci_pci_tpram.v,v $
 // Revision 1.4  2004/08/19 15:27:34  mihad
 // Changed minimum pci image size to 256 bytes because
 // of some PC system problems with size of IO images.
@@ -78,7 +78,7 @@
 // Revision 1.7  2002/10/18 03:36:37  tadejm
 // Changed wrong signal name mbist_sen into mbist_ctrl_i.
 //
-// Revision 1.6  2002/10/17 22:49:22  tadejm
+// Revision 1.6  2002/10/17 22:51:08  tadejm
 // Changed BIST signals for RAMs.
 //
 // Revision 1.5  2002/10/11 10:09:01  mihad
@@ -98,7 +98,12 @@
 //
 //
 
-module /*pci_wb_*/tpram
+// synopsys translate_off
+//`include "timescale.v"
+// synopsys translate_on
+//`include "pci_constants.v"
+
+module /*pci_pci_*/tpram
 (
 	// Generic synchronous two-port RAM interface
 	clk_a,
@@ -163,8 +168,8 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
 // Internal wires and registers
 //
 
-`ifdef WB_VS_STP
-    `define PCI_WB_RAM_SELECTED
+`ifdef PCI_VS_STP
+    `define PCI_PCI_RAM_SELECTED
     `ifdef PCI_BIST
         vs_hdtp_64x40_bist i_vs_hdtp_64x40_bist
     `else
@@ -187,12 +192,12 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
             .mbist_ctrl_i   (mbist_ctrl_i)
         `endif
         );
-    
+
     assign do_a = 0 ;
 `endif
 
-`ifdef WB_ARTISAN_SDP
-    `define PCI_WB_RAM_SELECTED
+`ifdef PCI_ARTISAN_SDP
+    `define PCI_PCI_RAM_SELECTED
     //
     // Instantiation of ASIC memory:
     //
@@ -241,7 +246,7 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
 `endif
 
 `ifdef AVANT_ATP
-    `define PCI_WB_RAM_SELECTED
+    `define PCI_PCI_RAM_SELECTED
     //
     // Instantiation of ASIC memory:
     //
@@ -258,11 +263,10 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
     	.di(di),
     	.do(do)
     );
-
 `endif
 
 `ifdef VIRAGE_STP
-    `define PCI_WB_RAM_SELECTED
+    `define PCI_PCI_RAM_SELECTED
     //
     // Instantiation of ASIC memory:
     //
@@ -286,34 +290,10 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
     	.MEB(ce_b),
     	.CLKB(clk_b)
     );
-
 `endif
 
-`ifdef WB_XILINX_DIST_RAM
-    `define PCI_WB_RAM_SELECTED
-
-    reg [(aw-1):0] out_address ;
-    always@(posedge clk_b or posedge rst_b)
-    begin
-        if ( rst_b )
-            out_address <= #1 0 ;
-        else if (ce_b)
-            out_address <= #1 addr_b ;
-    end
-
-    pci_ram_16x40d #(aw) wb_distributed_ram
-    (
-        .data_out       (do_b),
-        .we             (we_a),
-        .data_in        (di_a),
-        .read_address   (out_address),
-        .write_address  (addr_a),
-        .wclk           (clk_a)
-    );
-    assign do_a = 0 ;
-`endif
-`ifdef WB_XILINX_RAMB4
-    `define PCI_WB_RAM_SELECTED
+`ifdef PCI_XILINX_RAMB4
+    `define PCI_PCI_RAM_SELECTED
     //
     // Instantiation of FPGA memory:
     //
@@ -397,7 +377,31 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
 
 `endif
 
-`ifdef PCI_WB_RAM_SELECTED
+`ifdef PCI_XILINX_DIST_RAM
+    `define PCI_PCI_RAM_SELECTED
+    reg [(aw-1):0] out_address ;
+    always@(posedge clk_b or posedge rst_b)
+    begin
+        if ( rst_b )
+            out_address <= #1 0 ;
+        else if (ce_b)
+            out_address <= #1 addr_b ;
+    end
+
+    pci_ram_16x40d #(aw) pci_distributed_ram
+    (
+        .data_out       (do_b),
+        .we             (we_a),
+        .data_in        (di_a),
+        .read_address   (out_address),
+        .write_address  (addr_a),
+        .wclk           (clk_a)
+    );
+
+    assign do_a = 0 ;
+`endif
+
+`ifdef PCI_PCI_RAM_SELECTED
 `else
     //
     // Generic two-port synchronous RAM model
@@ -407,35 +411,67 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
     // Generic RAM's registers and wires
     //
     reg	[dw-1:0]	mem [(1<<aw)-1:0];	// RAM content
-    reg	[dw-1:0]	do_reg_b;		// RAM data output register
+    reg [dw-1:0] 	do_reg_b, do_reg_a;     // RAM data output register
 
     //
     // Data output drivers
     //
-    assign do_a = {dw{1'b0}}    ;
-    assign do_b = do_reg_b      ;
+    assign do_a = do_reg_a   ;
+    assign do_b = do_reg_b   ;
 
     //
     // RAM read and write
     //
-    always @(posedge clk_a)
-    	if (ce_a && we_a)
-    		mem[addr_a] <= #1 di_a;
-
-    //
-    // RAM read and write
-    //
-    always @(posedge clk_b)
-    	if (ce_b)
-    		do_reg_b <= #1 mem[addr_b];
-
-    integer f;
-    initial begin
-        for (f = 0; f < 1<<aw; f = f + 1) begin
-           mem[f] = 0;
-        end
+    always @(posedge clk_a) begin
+       if (ce_a)
+	 begin
+	    if (we_a)
+	       mem[addr_a] <= #1 di_a;
+	    do_reg_a <= #1 mem[addr_a];
+	 end
     end
-`endif
+   
+   always @(posedge clk_b) begin
+      if (ce_b)
+	begin
+	   if (we_b) 
+	      mem[addr_b] <= #1 di_b;
+	   do_reg_b <= #1 mem[addr_b];
+	end
+   end
+   integer f;
+   initial begin
+     for (f = 0; f < 1<<aw; f = f + 1) begin
+       mem[f] = 0;
+     end
+   end
+   `endif
+
+// synopsys translate_off
+initial
+begin
+    if (dw !== 40 && dw != 72)
+    begin
+        $display("RAM instantiation error! Expected RAM width %d, actual %h!", 40, dw) ;
+        $finish ;
+    end
+    `ifdef XILINX_RAMB4
+        if (aw !== 8)
+        begin
+            $display("RAM instantiation error! Expected RAM address width %d, actual %h!", 40, aw) ;
+            $finish ;
+        end
+    `endif
+    // currenlty only artisan ram of depth 256 is supported - they don't provide generic ram models
+    `ifdef ARTISAN_SDP
+        if (aw !== 8)
+        begin
+            $display("RAM instantiation error! Expected RAM address width %d, actual %h!", 40, aw) ;
+            $finish ;
+        end
+    `endif
+end
+// synopsys translate_on
 
 endmodule
 
