@@ -340,7 +340,9 @@ module ctrl(/*AUTOARG*/
 
    reg m_enable0_n, m_enable1_n;
    reg [31:0] m_cyc0, m_cyc1;
+   reg [3:0]  m_err0, m_err1;
    reg 	      m_cyc0_start, m_cyc1_start;
+// synopsys translate_off
    always @(posedge wb_clk_i)
      begin
 	if (m_cyc0_start)
@@ -355,7 +357,7 @@ module ctrl(/*AUTOARG*/
 	else
 	  m_cyc1 <= #1 m_cyc1 + 1'b1;
      end
-   
+// synopsys translate_on   
    always @(/*AS*/append or append_mode or c_done0
 	    or c_done1 or c_done2 or c_done3 or cdar
 	    or ctl_adr0 or ctl_adr1 or dar_r or dc0 or dc1
@@ -621,33 +623,31 @@ module ctrl(/*AUTOARG*/
 	m_enable1 <= #1 m_enable1_n;
      end
 
-   // synopsys translate_off
    reg [63:0] ctl0, ctl1;
-   always @(/*AS*/inc or m_cyc0 or ocnt0)
+   always @(/*AS*/dc0 or inc or m_cyc0 or m_err0 or ocnt0)
      begin
 	ctl0 = 32'h0;
 	case (inc)
-	  2'b00: ctl0 = {32'h01, m_cyc0};
-	  2'b01: ctl0 = {ocnt0, 3'b000};
-	  2'b10: ;
-	  2'b11: ;
+	  2'b00: ctl0 = {ocnt0, 3'b00};
+	  2'b01: ctl0 = {m_err0};
+	  2'b10: ctl0 = {m_cyc0};
+	  2'b11: ctl0 = {dc0};
 	endcase
      end
    
-   always @(/*AS*/inc or m_cyc1 or ocnt1)
+   always @(/*AS*/dc1 or inc or m_cyc1 or m_err1 or ocnt1)
      begin
 	ctl1 = 32'h0;
 	case (inc)
-	  2'b00: ctl1 = {32'h01, m_cyc1};
-	  2'b01: ctl1 = {ocnt1, 3'b000};
-	  2'b10: ctl1 = 32'h03;
-	  2'b11: ctl1 = 32'h04;
+	  2'b00: ctl1 = {ocnt1, 3'b000};
+	  2'b01: ctl1 = {m_err1};
+	  2'b10: ctl1 = {m_cyc1};
+	  2'b11: ctl1 = {dc1};
 	endcase
      end
    
    assign {wbs_dat64_i4, wbs_dat_i4} = state == S_CTL0 ? ctl0 : ctl1;
    
-   // synopsys translate_on
 endmodule // ctrl
 
   
