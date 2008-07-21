@@ -439,13 +439,15 @@ input [`PCI_MBIST_CTRL_WIDTH - 1:0] mbist_ctrl_i;       // bist chain shift cont
 	   do_reg_b <= #1 mem[addr_b];
 	end
    end
+// synopsys translate_off
    integer f;
    initial begin
      for (f = 0; f < 1<<aw; f = f + 1) begin
        mem[f] = 0;
      end
    end
-   `endif
+// synopsys translate_on
+`endif
 
 // synopsys translate_off
 initial
