@@ -103,13 +103,15 @@ module mod(/*AUTOARG*/
 
    wire 	 fo_full   = m_dst_full  || m_dst_almost_full;
    wire 	 src_empty = m_src_empty || m_src_almost_empty;
-  
+   
    encode encode(
 		 // Outputs
 		 .m_dst			(m_dst[63:0]),
 		 .m_dst_putn		(m_dst_putn),
 		 .m_endn		(m_endn),
 		 .m_src_getn		(m_src_getn),
+                 .m_dst_last            (m_dst_last),
+
 		 // Inputs
 		 .ce			(dc[5] && m_enable),
 		 .clk			(wb_clk_i),
