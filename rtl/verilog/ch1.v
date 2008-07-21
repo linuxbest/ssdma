@@ -16,7 +16,7 @@ module ch1(/*AUTOARG*/
    ss_stop2, ss_stop3, ss_start2, ss_start3, ss_end2,
    ss_end3, wbs_dat_i2, wbs_dat_i3, wbs_dat64_i2,
    wbs_dat64_i3, m_src1, m_src_last1, m_src_almost_empty1,
-   m_src_empty1, m_dst_almost_full1, m_dst_full1,
+   m_src_empty1, m_dst_almost_full1, m_dst_full1, ocnt1,
    // Inputs
    wb_clk_i, wb_rst_i, ss_xfer2, ss_xfer3, ss_last2,
    ss_last3, wbs_dat_o2, wbs_dat_o3, wbs_dat64_o2,
@@ -61,6 +61,8 @@ module ch1(/*AUTOARG*/
    output 	 m_dst_almost_full1;
    output        m_dst_full1;
    input 	 m_endn1;
+
+   output [15:0] ocnt1;
    
    parameter 	 FIFO_WIDTH = 9;
    wire [FIFO_WIDTH-1:0] src_waddr,
@@ -154,6 +156,16 @@ module ch1(/*AUTOARG*/
 	      .addr_b(dst_raddr),
 	      .do_b(dst_do),
 	      .di_b(0));
+   
+   reg [15:0] 		 ocnt1;
+   always @(posedge wb_clk_i)
+     begin
+	if (m_reset1)
+	  ocnt1 <= #1 16'h0;
+	else if (!m_dst_putn1 && !m_dst_last1)
+	  ocnt1 <= #1 ocnt1 + 1'b1;
+     end
+
    defparam 		 dst_control.ADDR_LENGTH = FIFO_WIDTH;   
    defparam 		 dst_ram.aw = FIFO_WIDTH;
    defparam 		 dst_ram.dw = DATA_WIDTH;

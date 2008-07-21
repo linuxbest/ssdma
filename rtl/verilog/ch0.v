@@ -16,7 +16,7 @@ module ch0(/*AUTOARG*/
    ss_stop0, ss_stop1, ss_start0, ss_start1, ss_end0,
    ss_end1, wbs_dat_i0, wbs_dat_i1, wbs_dat64_i0,
    wbs_dat64_i1, m_src0, m_src_last0, m_src_almost_empty0,
-   m_src_empty0, m_dst_almost_full0, m_dst_full0,
+   m_src_empty0, m_dst_almost_full0, m_dst_full0, ocnt0,
    // Inputs
    wb_clk_i, wb_rst_i, ss_xfer0, ss_xfer1, ss_last0,
    ss_last1, wbs_dat_o0, wbs_dat_o1, wbs_dat64_o0,
@@ -61,6 +61,8 @@ module ch0(/*AUTOARG*/
    output 	 m_dst_almost_full0;
    output        m_dst_full0;
    input 	 m_endn0;
+
+   output [15:0] ocnt0;
    
    parameter 	 FIFO_WIDTH = 9;
    wire [FIFO_WIDTH-1:0] src_waddr,
@@ -158,6 +160,15 @@ module ch0(/*AUTOARG*/
    defparam 		 dst_ram.aw = FIFO_WIDTH;
    defparam 		 dst_ram.dw = DATA_WIDTH;
 
+   reg [15:0] 		 ocnt0;
+   always @(posedge wb_clk_i)
+     begin
+	if (m_reset0)
+	  ocnt0 <= #1 16'h0;
+	else if (!m_dst_putn0 & !m_dst_last0)
+	  ocnt0 <= #1 ocnt0 + 1'b1;
+     end
+   
    /* DATA path */
    assign 		 src_di[63:32]= wbs_dat64_o0;
    assign 		 src_di[31:00]= wbs_dat_o0;

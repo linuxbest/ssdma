@@ -57,7 +57,8 @@ module ctrl(/*AUTOARG*/
    // Inputs
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
-   ndar_dirty, ndar, wb_int_clear, append, enable
+   ndar_dirty, ndar, wb_int_clear, append, enable, ocnt0,
+   ocnt1
    );
 
    input wb_clk_i;
@@ -127,6 +128,8 @@ module ctrl(/*AUTOARG*/
 
    output 	 m_enable0;
    output 	 m_enable1;
+
+   input [15:0]  ocnt0, ocnt1;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -620,23 +623,23 @@ module ctrl(/*AUTOARG*/
 
    // synopsys translate_off
    reg [63:0] ctl0, ctl1;
-   always @(/*AS*/inc or m_cyc0)
+   always @(/*AS*/inc or m_cyc0 or ocnt0)
      begin
 	ctl0 = 32'h0;
 	case (inc)
 	  2'b00: ctl0 = {32'h01, m_cyc0};
-	  2'b01: ctl0 = 32'h02;
-	  2'b10: ctl0 = 32'h03;
-	  2'b11: ctl0 = 32'h04;
+	  2'b01: ctl0 = {ocnt0, 3'b000};
+	  2'b10: ;
+	  2'b11: ;
 	endcase
      end
    
-   always @(/*AS*/inc)
+   always @(/*AS*/inc or m_cyc1 or ocnt1)
      begin
 	ctl1 = 32'h0;
 	case (inc)
 	  2'b00: ctl1 = {32'h01, m_cyc1};
-	  2'b01: ctl1 = 32'h02;
+	  2'b01: ctl1 = {ocnt1, 3'b000};
 	  2'b10: ctl1 = 32'h03;
 	  2'b11: ctl1 = 32'h04;
 	endcase

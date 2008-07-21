@@ -125,6 +125,8 @@ module ss_adma(/*AUTOARG*/
    wire			ndar_dirty;		// From wbm of wbm.v
    wire			ndar_dirty_clear;	// From ctrl of ctrl.v
    wire [31:3]		next_desc;		// From ctrl of ctrl.v
+   wire [15:0]		ocnt0;			// From ch0 of ch0.v
+   wire [15:0]		ocnt1;			// From ch1 of ch1.v
    wire [31:3]		sg_addr0;		// From r_0 of ss_sg.v
    wire [31:3]		sg_addr1;		// From r_1 of ss_sg.v
    wire [31:3]		sg_addr2;		// From r_2 of ss_sg.v
@@ -640,7 +642,9 @@ module ss_adma(/*AUTOARG*/
 	     .ndar			(ndar[31:3]),
 	     .wb_int_clear		(wb_int_clear),
 	     .append			(append),
-	     .enable			(enable));
+	     .enable			(enable),
+	     .ocnt0			(ocnt0[15:0]),
+	     .ocnt1			(ocnt1[15:0]));
    
    ch0 ch0(/*AUTOINST*/
 	   // Outputs
@@ -660,6 +664,7 @@ module ss_adma(/*AUTOARG*/
 	   .m_src_empty0		(m_src_empty0),
 	   .m_dst_almost_full0		(m_dst_almost_full0),
 	   .m_dst_full0			(m_dst_full0),
+	   .ocnt0			(ocnt0[15:0]),
 	   // Inputs
 	   .wb_clk_i			(wb_clk_i),
 	   .wb_rst_i			(wb_rst_i),
@@ -697,6 +702,7 @@ module ss_adma(/*AUTOARG*/
 	   .m_src_empty1		(m_src_empty1),
 	   .m_dst_almost_full1		(m_dst_almost_full1),
 	   .m_dst_full1			(m_dst_full1),
+	   .ocnt1			(ocnt1[15:0]),
 	   // Inputs
 	   .wb_clk_i			(wb_clk_i),
 	   .wb_rst_i			(wb_rst_i),

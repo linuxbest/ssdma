@@ -379,7 +379,7 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j->dst_desc  = phys_mem + 0x800;
 
         b = (buf_desc_t *)(system_mem + 0x600);
-        b->desc     = 0x100 | LZF_SG_LAST;
+        b->desc     = 0x200 | LZF_SG_LAST;
         b->desc_adr = phys_mem + 0x100000;
         b->desc_next= phys_mem + 0x620;
         uint8_t *a = (uint8_t *)(system_mem + 0x100000);
@@ -413,8 +413,10 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
         lzf_wait(phys_mem, lzf_mem);
 
-        HexDump(system_mem + 0x300000, 0x100);
-        HexDump(system_mem + 0x400000, 0x100);
+        p = (uint32_t *)(system_mem + 0x240);
+        HexDump(system_mem + 0x300000, *(p+2));
+        p = (uint32_t *)(system_mem + 0x260);
+        HexDump(system_mem + 0x400000, *(p+2));
 
         p = (uint32_t *)(system_mem + 0x240);
         HexDump((char *)p, 32);
