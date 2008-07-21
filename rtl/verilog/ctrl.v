@@ -623,6 +623,12 @@ module ctrl(/*AUTOARG*/
 	m_enable1 <= #1 m_enable1_n;
      end
 
+   always @(posedge wb_clk_i)
+     begin
+	m_err0 <= #1 0;
+	m_err1 <= #1 0;
+     end
+   
    reg [63:0] ctl0, ctl1;
    always @(/*AS*/dc0 or inc or m_cyc0 or m_err0 or ocnt0)
      begin

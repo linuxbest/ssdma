@@ -355,7 +355,7 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
        
         p = (uint32_t *)(system_mem + 0x200);
         HexDump((char *)p, 32);
-        printf("cycle %04x\n", *p);
+        printf("cycle %04x\n", *(p+2));
         
         p = (uint32_t *)(system_mem + 0x240);
         HexDump((char *)p, 32);
@@ -414,17 +414,17 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         lzf_wait(phys_mem, lzf_mem);
 
         p = (uint32_t *)(system_mem + 0x240);
-        HexDump(system_mem + 0x300000, *(p+2));
+        HexDump(system_mem + 0x300000, *(p));
         p = (uint32_t *)(system_mem + 0x260);
-        HexDump(system_mem + 0x400000, *(p+2));
+        HexDump(system_mem + 0x400000, *(p));
 
         p = (uint32_t *)(system_mem + 0x240);
         HexDump((char *)p, 32);
-        printf("compress cycle %04x\n", *p);
+        printf("compress cycle %04x\n", *(p+4));
         
         p = (uint32_t *)(system_mem + 0x260);
         HexDump((char *)p, 32);
-        printf("compress cycle %04x\n", *p);
+        printf("compress cycle %04x\n", *(p+4));
  
         /*
          * uncompress testing
