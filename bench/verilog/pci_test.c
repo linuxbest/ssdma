@@ -315,7 +315,7 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
 
         j->next_desc = phys_mem + 0x220;
         j->ctl_addr  = phys_mem + 0x200;
-        j->dc_fc     = DC_MEMCPY | DC_CTRL/* | DC_CONT*/;
+        j->dc_fc     = DC_MEMCPY | DC_CTRL | DC_CONT;
         j->u0        = 0;
         j->u1        = 0;
         j->src_desc  = phys_mem + 0x600;
@@ -332,7 +332,6 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         j->u1        = 0;
         j->src_desc  = phys_mem + 0x600;
         j->dst_desc  = phys_mem + 0x800;
-
 
         b = (buf_desc_t *)(system_mem + 0x600);
         b->desc     = 0x1000 | LZF_SG_LAST;
@@ -365,6 +364,65 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         /*
          * compress tesing
          */
+        off = 0x100;
+        j->dc_fc    |= DC_CONT;
+        j->next_desc =  phys_mem + off;
+        j = (job_desc_t *)(system_mem + off);
+        memset(system_mem + off, 0, 32);
+
+        j->next_desc = 0;
+        j->ctl_addr  = phys_mem + 0x240;
+        j->dc_fc     = DC_COMPRESS | DC_CTRL;
+        j->u0        = 0;
+        j->u1        = 0;
+        j->src_desc  = phys_mem + 0x600;
+        j->dst_desc  = phys_mem + 0x800;
+
+        b = (buf_desc_t *)(system_mem + 0x600);
+        b->desc     = 0x1000 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x100000;
+        b->desc_next= phys_mem + 0x620;
+        uint8_t *a = (uint8_t *)(system_mem + 0x100000);
+        for (i = 0; i < 0x1000; i ++, a ++)
+                *a = i;
+        
+        b = (buf_desc_t *)(system_mem + 0x800);
+        b->desc     = 0x1000 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x300000;
+        b->desc_next= phys_mem + 0x640;
+#if 1
+        off = 0x120;
+        j->dc_fc    |= DC_CONT;
+        j->next_desc =  phys_mem + off;
+        j = (job_desc_t *)(system_mem + off);
+        memset(system_mem + off, 0, 32);
+
+        j->next_desc = 0;
+        j->ctl_addr  = phys_mem + 0x260;
+        j->dc_fc     = DC_COMPRESS | DC_CTRL;
+        j->u0        = 0;
+        j->u1        = 0;
+        j->src_desc  = phys_mem + 0x600;
+        j->dst_desc  = phys_mem + 0x900;
+#endif
+        b = (buf_desc_t *)(system_mem + 0x900);
+        b->desc     = 0x1000 | LZF_SG_LAST;
+        b->desc_adr = phys_mem + 0x400000;
+        b->desc_next= phys_mem + 0x640;
+
+        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
+        lzf_wait(phys_mem, lzf_mem);
+
+        HexDump(system_mem + 0x300000, 0x100);
+
+        p = (uint32_t *)(system_mem + 0x240);
+        HexDump((char *)p, 32);
+        printf("compress cycle %04x\n", *p);
+        
+        p = (uint32_t *)(system_mem + 0x260);
+        HexDump((char *)p, 32);
+        printf("compress cycle %04x\n", *p);
+ 
         /*
          * uncompress testing
          */

@@ -2,6 +2,7 @@ TBS = tb_sg tb_adma tpci tc
 PCISIM?=/p/hw/pcisim/
 OC_DIR?=/p/hw/oc-pci/rtl/verilog
 LZFDMA?=/p/hw/lzs/kernel
+LZS?=/p/hw/lzs
 VPATH=../../rtl/verilog:$(PCISIM)/ver
 
 all: ${TBS}
@@ -13,7 +14,7 @@ tb_adma: tb_adma.v ben_adma.v dummy_spi.v
 	iverilog -Wall -o $@ $^ -y ../../rtl/verilog/
 
 tpci: top.v pci_tb.v pci_arbiter.v  pci_master.v  pci_memory.v
-	iverilog -Wall -y $(OC_DIR) -I $(OC_DIR) -y ../../rtl/verilog/ -o $@ $^
+	iverilog -Wall -y $(OC_DIR) -I $(OC_DIR) -y ../../rtl/verilog/ -y ${LZS}/encode/rtl/verilog -o $@ $^
 trun: tpci tc
 	vvp -M${PCISIM}/vpi/ -mpci tpci
 trun0: tpci tc
