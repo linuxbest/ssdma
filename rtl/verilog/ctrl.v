@@ -634,7 +634,7 @@ module ctrl(/*AUTOARG*/
      begin
 	ctl0 = 32'h0;
 	case (inc)
-	  2'b00: ctl0 = {ocnt0, 3'b00};
+	  2'b00: ctl0 = {ocnt0, 3'b000};
 	  2'b01: ctl0 = {m_err0};
 	  2'b10: ctl0 = {m_cyc0};
 	  2'b11: ctl0 = {dc0};
