@@ -82,6 +82,11 @@ module ch0(/*AUTOARG*/
 			 dst_half_full,
 			 dst_empty,
 			 dst_almost_empty;
+
+   wire 		 src_rallow,
+			 src_wallow,
+			 dst_rallow,
+			 dst_wallow;
    
    fifo_control
      src_control (.rclock_in(wb_clk_i),
@@ -95,32 +100,10 @@ module ch0(/*AUTOARG*/
 		  .empty_out(m_src_empty0),
 		  .waddr_out(src_waddr),
 		  .raddr_out(src_raddr),
-		  .rallow_out(),
-		  .wallow_out(),
+		  .rallow_out(src_rallow),
+		  .wallow_out(dst_wallow),
 		  .full_out(),
 		  .half_full_out(src_half_full));
-
-   tpram
-     src_ram (.clk_a(wb_clk_i),
-	      .rst_a(wb_rst_i),
-	      .ce_a(1'b1),
-	      .we_a(ss_xfer0),
-	      .addr_a(src_waddr),
-	      .di_a(src_di),
-	      .do_a(),
-	      .oe_a(1'b1),
-
-	      .clk_b(wb_clk_i),
-	      .rst_b(wb_rst_i),
-	      .ce_b(1'b1),
-	      .we_b(1'b0),
-	      .oe_b(1'b1),
-	      .addr_b(src_raddr),
-	      .do_b(src_do),
-	      .di_b(0));
-   defparam 		 src_control.ADDR_LENGTH = FIFO_WIDTH;   
-   defparam 		 src_ram.aw = FIFO_WIDTH;
-   defparam 		 src_ram.dw = DATA_WIDTH;
 
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
@@ -134,8 +117,8 @@ module ch0(/*AUTOARG*/
 		  .empty_out(dst_empty),
 		  .waddr_out(dst_waddr),
 		  .raddr_out(dst_raddr),
-		  .rallow_out(),
-		  .wallow_out(),
+		  .rallow_out(dst_rallow),
+		  .wallow_out(dst_wallow),
 		  .full_out(m_dst_full0),
 		  .half_full_out(dst_half_full));
    tpram
@@ -156,9 +139,31 @@ module ch0(/*AUTOARG*/
 	      .addr_b(dst_raddr),
 	      .do_b(dst_do),
 	      .di_b(0));
+   tpram
+     src_ram (.clk_a(wb_clk_i),
+	      .rst_a(wb_rst_i),
+	      .ce_a(1'b1),
+	      .we_a(ss_xfer0),
+	      .addr_a(src_waddr),
+	      .di_a(src_di),
+	      .do_a(),
+	      .oe_a(1'b1),
+
+	      .clk_b(wb_clk_i),
+	      .rst_b(wb_rst_i),
+	      .ce_b(1'b1),
+	      .we_b(1'b0),
+	      .oe_b(1'b1),
+	      .addr_b(src_raddr),
+	      .do_b(src_do),
+	      .di_b(0));
+
    defparam 		 dst_control.ADDR_LENGTH = FIFO_WIDTH;   
    defparam 		 dst_ram.aw = FIFO_WIDTH;
    defparam 		 dst_ram.dw = DATA_WIDTH;
+   defparam 		 src_control.ADDR_LENGTH = FIFO_WIDTH;   
+   defparam 		 src_ram.aw = FIFO_WIDTH;
+   defparam 		 src_ram.dw = DATA_WIDTH;
 
    reg [15:0] 		 ocnt0;
    always @(posedge wb_clk_i)
