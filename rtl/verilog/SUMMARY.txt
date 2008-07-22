@@ -50,3 +50,15 @@ ss_adma
  Number of 4 input LUTs:              3696  out of   7168    51%  
    Minimum period: 13.292ns (Maximum Frequency: 75.231MHz)
 
+ch0
+ Number of Slices:                     191  out of   3584     5%  
+ Number of Slice Flip Flops:           268  out of   7168     3%  
+ Number of 4 input LUTs:               175  out of   7168     2%  
+   Minimum period: 7.417ns (Maximum Frequency: 134.825MHz)
+
+ch1
+ Number of Slices:                     191  out of   3584     5%  
+ Number of Slice Flip Flops:           268  out of   7168     3%  
+ Number of 4 input LUTs:               175  out of   7168     2%  
+   Minimum period: 7.417ns (Maximum Frequency: 134.825MHz)
+
