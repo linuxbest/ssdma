@@ -2,13 +2,15 @@
 
 set -e 
 
-> SUMMY.txt
+ofile=SUMMARY.txt
 
-M="ctrl ss_sg mixer arbiter copy fill encode"
+> $ofile
+
+M="ctrl ss_sg mixer arbiter copy fill fifo_control tpram ss_adma"
 for i in $M
 do
   echo $i >> SUMMY.txt
   sh /p/fpga/ise/build_xst  $i
-  /p/fpga/ise/iselog.pl xst/$i.log >> SUMMY.txt
-  echo    >> SUMMY.txt
+  /p/fpga/ise/iselog.pl xst/$i.log >> $ofile
+  echo    >> $ofile
 done
