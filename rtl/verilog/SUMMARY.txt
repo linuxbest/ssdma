@@ -44,12 +44,6 @@ tpram
  Number of Slices:                       0  out of   3584     0%  
    Minimum period: No path found
 
-ss_adma
- Number of Slices:                    2071  out of   3584    57%  
- Number of Slice Flip Flops:          1870  out of   7168    26%  
- Number of 4 input LUTs:              3696  out of   7168    51%  
-   Minimum period: 13.292ns (Maximum Frequency: 75.231MHz)
-
 ch0
  Number of Slices:                     191  out of   3584     5%  
  Number of Slice Flip Flops:           268  out of   7168     3%  
@@ -61,4 +55,22 @@ ch1
  Number of Slice Flip Flops:           268  out of   7168     3%  
  Number of 4 input LUTs:               175  out of   7168     2%  
    Minimum period: 7.417ns (Maximum Frequency: 134.825MHz)
+
+wbm
+ Number of Slices:                     211  out of   3584     5%  
+ Number of Slice Flip Flops:            32  out of   7168     0%  
+ Number of 4 input LUTs:               386  out of   7168     5%  
+   Minimum period: 4.652ns (Maximum Frequency: 214.965MHz)
+
+spi_usb
+ Number of Slices:                      15  out of   3584     0%  
+ Number of Slice Flip Flops:            23  out of   7168     0%  
+ Number of 4 input LUTs:                29  out of   7168     0%  
+   Minimum period: 5.298ns (Maximum Frequency: 188.751MHz)
+
+ss_adma
+ Number of Slices:                    2071  out of   3584    57%  
+ Number of Slice Flip Flops:          1870  out of   7168    26%  
+ Number of 4 input LUTs:              3696  out of   7168    51%  
+   Minimum period: 13.292ns (Maximum Frequency: 75.231MHz)
 

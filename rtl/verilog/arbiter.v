@@ -57,8 +57,8 @@ module arbiter(/*AUTOARG*/
 	    or wbs_cyc3 or wbs_cyc4)
      begin
 	gnt_n = gnt;
-	case (gnt)
-	  grant0: begin
+	case (1)
+	  gnt[0]: begin
 	     if (!wbs_cyc0) begin
 		if (wbs_cyc1)       gnt_n = grant1;
 		else if (wbs_cyc2)  gnt_n = grant2;
@@ -67,7 +67,7 @@ module arbiter(/*AUTOARG*/
 	     end
 	  end
 	  
-	  grant1: begin
+	  gnt[1]: begin
 	     if (!wbs_cyc1) begin
 		if (wbs_cyc2)       gnt_n = grant2;
 		else if (wbs_cyc3)  gnt_n = grant3;
@@ -76,7 +76,7 @@ module arbiter(/*AUTOARG*/
 	     end
 	  end
 	  
-	  grant2: begin
+	  gnt[2]: begin
 	     if (!wbs_cyc2) begin
 		if (wbs_cyc3)       gnt_n = grant3;
 		else if (wbs_cyc4)  gnt_n = grant4;
@@ -85,7 +85,7 @@ module arbiter(/*AUTOARG*/
 	     end
 	  end
 	  
-	  grant3: begin
+	  gnt[3]: begin
 	     if (!wbs_cyc3) begin
 		if (wbs_cyc4)       gnt_n = grant4;
 		else if (wbs_cyc0)  gnt_n = grant0;
@@ -94,7 +94,7 @@ module arbiter(/*AUTOARG*/
 	     end
 	  end
 	  
-	  grant4: begin
+	  gnt[4]: begin
 	     if (!wbs_cyc4) begin
 		if (wbs_cyc0)       gnt_n = grant0;
 		else if (wbs_cyc1)  gnt_n = grant1;
