@@ -111,7 +111,6 @@ module mod(/*AUTOARG*/
 		 .m_endn		(m_endn),
 		 .m_src_getn		(m_src_getn),
                  .m_dst_last            (m_dst_last),
-
 		 // Inputs
 		 .ce			(dc[5] && m_enable),
 		 .clk			(wb_clk_i),
@@ -120,11 +119,28 @@ module mod(/*AUTOARG*/
 		 .m_last		(m_src_last),
 		 .rst			(wb_rst_i),
 		 .src_empty		(src_empty));
-   
+
+   decode_dp decode(
+		    // Outputs
+		    .m_dst		(m_dst[63:0]),
+		    .m_dst_putn		(m_dst_putn),
+		    .m_endn		(m_endn),
+		    .m_src_getn		(m_src_getn),
+		    //.m_dst_last         (m_dst_last),
+		    // Inputs
+		    .ce			(dc[6] && m_enable),
+		    .clk		(wb_clk_i),
+		    .rst		(wb_rst_i),
+		    .fo_full		(fo_full),
+		    .fi			(m_src[63:0]),
+		    .m_src_empty	(src_empty),
+		    .m_last		(m_src_last),
+		    .sbc_done           (m_src_last));
+		    
 endmodule // mod
 
 // Local Variables:
-// verilog-library-directories:("." "/p/hw/lzs/encode/rtl/verilog")
+// verilog-library-directories:("." "/p/hw/lzs/encode/rtl/verilog" "/p/hw/lzs/decode/rtl/verilog/")
 // verilog-library-files:("/some/path/technology.v" "/some/path/tech2.v")
 // verilog-library-extensions:(".v" ".h")
 // End:
