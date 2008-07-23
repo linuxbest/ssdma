@@ -17,10 +17,10 @@ mixer
    Minimum period: No path found
 
 arbiter
- Number of Slices:                      23  out of   3584     0%  
+ Number of Slices:                      24  out of   3584     0%  
  Number of Slice Flip Flops:             5  out of   7168     0%  
- Number of 4 input LUTs:                44  out of   7168     0%  
-   Minimum period: 7.297ns (Maximum Frequency: 137.043MHz)
+ Number of 4 input LUTs:                42  out of   7168     0%  
+   Minimum period: 6.746ns (Maximum Frequency: 148.236MHz)
 
 copy
  Number of Slices:                       5  out of   3584     0%  
@@ -45,10 +45,10 @@ tpram
    Minimum period: No path found
 
 ch0
- Number of Slices:                     191  out of   3584     5%  
- Number of Slice Flip Flops:           268  out of   7168     3%  
- Number of 4 input LUTs:               175  out of   7168     2%  
-   Minimum period: 7.417ns (Maximum Frequency: 134.825MHz)
+ Number of Slices:                     170  out of   3584     4%  
+ Number of Slice Flip Flops:           240  out of   7168     3%  
+ Number of 4 input LUTs:               182  out of   7168     2%  
+   Minimum period: 8.418ns (Maximum Frequency: 118.793MHz)
 
 ch1
  Number of Slices:                     191  out of   3584     5%  
@@ -69,8 +69,8 @@ spi_usb
    Minimum period: 5.298ns (Maximum Frequency: 188.751MHz)
 
 ss_adma
- Number of Slices:                    2071  out of   3584    57%  
- Number of Slice Flip Flops:          1870  out of   7168    26%  
- Number of 4 input LUTs:              3696  out of   7168    51%  
-   Minimum period: 13.292ns (Maximum Frequency: 75.231MHz)
+ Number of Slices:                    2033  out of   3584    56%  
+ Number of Slice Flip Flops:          1814  out of   7168    25%  
+ Number of 4 input LUTs:              3784  out of   7168    52%  
+   Minimum period: 13.378ns (Maximum Frequency: 74.749MHz)
 
