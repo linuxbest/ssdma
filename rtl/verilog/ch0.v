@@ -101,7 +101,7 @@ module ch0(/*AUTOARG*/
 		  .waddr_out(src_waddr),
 		  .raddr_out(src_raddr),
 		  .rallow_out(src_rallow),
-		  .wallow_out(dst_wallow),
+		  .wallow_out(src_wallow),
 		  .full_out(),
 		  .half_full_out(src_half_full));
 
@@ -125,7 +125,7 @@ module ch0(/*AUTOARG*/
      dst_ram (.clk_a(wb_clk_i),
 	      .rst_a(wb_rst_i),
 	      .ce_a(1'b1),
-	      .we_a(!m_dst_putn0),
+	      .we_a(dst_wallow),
 	      .addr_a(dst_waddr),
 	      .di_a(dst_di),
 	      .do_a(),
@@ -143,7 +143,7 @@ module ch0(/*AUTOARG*/
      src_ram (.clk_a(wb_clk_i),
 	      .rst_a(wb_rst_i),
 	      .ce_a(1'b1),
-	      .we_a(ss_xfer0),
+	      .we_a(src_wallow),
 	      .addr_a(src_waddr),
 	      .di_a(src_di),
 	      .do_a(),
