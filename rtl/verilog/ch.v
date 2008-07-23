@@ -108,7 +108,7 @@ module ch(/*AUTOARG*/
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
-		  .renable_in(src_xfer && ~dst_end),
+		  .renable_in(dst_xfer && ~dst_end),
 		  .wenable_in(!m_dst_putn),
 		  .reset_in(wb_rst_i),
 		  .clear_in(m_reset),
