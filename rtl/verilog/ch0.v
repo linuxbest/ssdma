@@ -65,7 +65,7 @@ module ch0(/*AUTOARG*/
    output [15:0] ocnt0;
    
    parameter 	 FIFO_WIDTH = 9;
-   wire [FIFO_WIDTH-1:0] src_waddr,
+   wire [FIFO_WIDTH-2:0] src_waddr,
 			 src_raddr,
 			 dst_waddr,
 			 dst_raddr;
@@ -121,49 +121,35 @@ module ch0(/*AUTOARG*/
 		  .wallow_out(dst_wallow),
 		  .full_out(m_dst_full0),
 		  .half_full_out(dst_half_full));
+
+   wire [FIFO_WIDTH-1:0] portA_addr = src_wallow ? {1'b1, src_waddr} :
+			 {1'b0, dst_raddr};
+   wire [FIFO_WIDTH-1:0] portB_addr = dst_wallow ? {1'b0, dst_waddr} :
+			 {1'b1, src_raddr};
+
    tpram
-     dst_ram (.clk_a(wb_clk_i),
-	      .rst_a(wb_rst_i),
-	      .ce_a(1'b1),
-	      .we_a(dst_wallow),
-	      .addr_a(dst_waddr),
-	      .di_a(dst_di),
-	      .do_a(),
-	      .oe_a(1'b1),
+     ram (.clk_a(wb_clk_i),
+	  .rst_a(wb_rst_i),
+	  .ce_a(1'b1),
+	  .oe_a(1'b1),
+	  .we_a(src_wallow),
+	  .addr_a(portA_addr),
+	  .di_a(src_di),
+	  .do_a(dst_do),
+	  
+	  .clk_b(wb_clk_i),
+	  .rst_b(wb_rst_i),
+	  .ce_b(1'b1),
+	  .oe_b(1'b1),
+	  .we_b(dst_wallow),
+	  .addr_b(portB_addr),
+	  .di_b(dst_di),
+	  .do_b(src_do));
 
-	      .clk_b(wb_clk_i),
-	      .rst_b(wb_rst_i),
-	      .ce_b(1'b1),
-	      .we_b(1'b0),
-	      .oe_b(1'b1),
-	      .addr_b(dst_raddr),
-	      .do_b(dst_do),
-	      .di_b(0));
-   tpram
-     src_ram (.clk_a(wb_clk_i),
-	      .rst_a(wb_rst_i),
-	      .ce_a(1'b1),
-	      .we_a(src_wallow),
-	      .addr_a(src_waddr),
-	      .di_a(src_di),
-	      .do_a(),
-	      .oe_a(1'b1),
-
-	      .clk_b(wb_clk_i),
-	      .rst_b(wb_rst_i),
-	      .ce_b(1'b1),
-	      .we_b(1'b0),
-	      .oe_b(1'b1),
-	      .addr_b(src_raddr),
-	      .do_b(src_do),
-	      .di_b(0));
-
-   defparam 		 dst_control.ADDR_LENGTH = FIFO_WIDTH;   
-   defparam 		 dst_ram.aw = FIFO_WIDTH;
-   defparam 		 dst_ram.dw = DATA_WIDTH;
-   defparam 		 src_control.ADDR_LENGTH = FIFO_WIDTH;   
-   defparam 		 src_ram.aw = FIFO_WIDTH;
-   defparam 		 src_ram.dw = DATA_WIDTH;
+   defparam 		 dst_control.ADDR_LENGTH = FIFO_WIDTH-1;
+   defparam 		 src_control.ADDR_LENGTH = FIFO_WIDTH-1;   
+   defparam 		 ram.aw = FIFO_WIDTH;
+   defparam 		 ram.dw = DATA_WIDTH;
 
    reg [15:0] 		 ocnt0;
    always @(posedge wb_clk_i)

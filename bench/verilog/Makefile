@@ -24,4 +24,4 @@ tc: pci_test.c
 	${CC} -g -o $@ -I${LZFDMA} -I${PCISIM}/libpcisim/ $< -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim
 
 clean:
-	rm -f ${TBS}
+	rm -f ${TBS} *.vpp
