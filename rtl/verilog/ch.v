@@ -11,58 +11,58 @@
  *
  *
  ***********************************************************************/
-module ch0(/*AUTOARG*/
+module ch(/*AUTOARG*/
    // Outputs
-   ss_stop0, ss_stop1, ss_start0, ss_start1, ss_end0,
-   ss_end1, wbs_dat_i0, wbs_dat_i1, wbs_dat64_i0,
-   wbs_dat64_i1, m_src0, m_src_last0, m_src_almost_empty0,
-   m_src_empty0, m_dst_almost_full0, m_dst_full0, ocnt0,
+   src_stop, dst_stop, src_start, dst_start, src_end,
+   dst_end, src_dat_i, dst_dat_i, src_dat64_i, dst_dat64_i,
+   m_src, m_src_last, m_src_almost_empty, m_src_empty,
+   m_dst_almost_full, m_dst_full, ocnt,
    // Inputs
-   wb_clk_i, wb_rst_i, ss_xfer0, ss_xfer1, ss_last0,
-   ss_last1, wbs_dat_o0, wbs_dat_o1, wbs_dat64_o0,
-   wbs_dat64_o1, dc0, m_reset0, m_src_getn0, m_dst_putn0,
-   m_dst0, m_dst_last0, m_endn0
+   wb_clk_i, wb_rst_i, src_xfer, dst_xfer, src_last,
+   dst_last, src_dat_o, dst_dat_o, src_dat64_o, dst_dat64_o,
+   dc, m_reset, m_src_getn, m_dst_putn, m_dst, m_dst_last,
+   m_endn
    );
    input wb_clk_i;
    input wb_rst_i;
    
-   input ss_xfer0,
-	 ss_xfer1;
-   input ss_last0,
-	 ss_last1;
-   output ss_stop0,
-	  ss_stop1;
-   output ss_start0,
-	  ss_start1,
-	  ss_end0,
-	  ss_end1;
-   input [31:0] wbs_dat_o0,
-		wbs_dat_o1,
-		wbs_dat64_o0,
-		wbs_dat64_o1;
-   output [31:0] wbs_dat_i0, 
-		 wbs_dat_i1,
-		 wbs_dat64_i0,
-		 wbs_dat64_i1;
-   input [23:0]  dc0;
+   input src_xfer,
+	 dst_xfer;
+   input src_last,
+	 dst_last;
+   output src_stop,
+	  dst_stop;
+   output src_start,
+	  dst_start,
+	  src_end,
+	  dst_end;
+   input [31:0] src_dat_o,
+		dst_dat_o,
+		src_dat64_o,
+		dst_dat64_o;
+   output [31:0] src_dat_i, 
+		 dst_dat_i,
+		 src_dat64_i,
+		 dst_dat64_i;
+   input [23:0]  dc;
 
    /* module interface */
-   input 	 m_reset0;
+   input 	 m_reset;
    
-   input         m_src_getn0; 
-   output [63:0] m_src0;      
-   output        m_src_last0;
-   output        m_src_almost_empty0;
-   output 	 m_src_empty0;
+   input         m_src_getn; 
+   output [63:0] m_src;      
+   output        m_src_last;
+   output        m_src_almost_empty;
+   output 	 m_src_empty;
    
-   input         m_dst_putn0;
-   input [63:0]  m_dst0;     
-   input 	 m_dst_last0;
-   output 	 m_dst_almost_full0;
-   output        m_dst_full0;
-   input 	 m_endn0;
+   input         m_dst_putn;
+   input [63:0]  m_dst;     
+   input 	 m_dst_last;
+   output 	 m_dst_almost_full;
+   output        m_dst_full;
+   input 	 m_endn;
 
-   output [15:0] ocnt0;
+   output [15:0] ocnt;
    
    parameter 	 FIFO_WIDTH = 9;
    wire [FIFO_WIDTH-2:0] src_waddr,
@@ -91,13 +91,13 @@ module ch0(/*AUTOARG*/
    fifo_control
      src_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
-		  .renable_in(!m_src_getn0),
-		  .wenable_in(ss_xfer0),
+		  .renable_in(!m_src_getn),
+		  .wenable_in(src_xfer),
 		  .reset_in(wb_rst_i),
-		  .clear_in(m_reset0),
-		  .almost_empty_out(m_src_almost_empty0),
+		  .clear_in(m_reset),
+		  .almost_empty_out(m_src_almost_empty),
 		  .almost_full_out(src_almost_full),
-		  .empty_out(m_src_empty0),
+		  .empty_out(m_src_empty),
 		  .waddr_out(src_waddr),
 		  .raddr_out(src_raddr),
 		  .rallow_out(src_rallow),
@@ -108,18 +108,18 @@ module ch0(/*AUTOARG*/
    fifo_control
      dst_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
-		  .renable_in(ss_xfer1 && ~ss_end1),
-		  .wenable_in(!m_dst_putn0),
+		  .renable_in(src_xfer && ~dst_end),
+		  .wenable_in(!m_dst_putn),
 		  .reset_in(wb_rst_i),
-		  .clear_in(m_reset0),
+		  .clear_in(m_reset),
 		  .almost_empty_out(dst_almost_empty),
-		  .almost_full_out(m_dst_almost_full0),
+		  .almost_full_out(m_dst_almost_full),
 		  .empty_out(dst_empty),
 		  .waddr_out(dst_waddr),
 		  .raddr_out(dst_raddr),
 		  .rallow_out(dst_rallow),
 		  .wallow_out(dst_wallow),
-		  .full_out(m_dst_full0),
+		  .full_out(m_dst_full),
 		  .half_full_out(dst_half_full));
 
    wire [FIFO_WIDTH-1:0] portA_addr = src_wallow ? {1'b1, src_waddr} :
@@ -151,28 +151,28 @@ module ch0(/*AUTOARG*/
    defparam 		 ram.aw = FIFO_WIDTH;
    defparam 		 ram.dw = DATA_WIDTH;
 
-   reg [15:0] 		 ocnt0;
+   reg [15:0] 		 ocnt;
    always @(posedge wb_clk_i)
      begin
-	if (m_reset0)
-	  ocnt0 <= #1 16'h0;
-	else if (!m_dst_putn0 & !m_dst_last0)
-	  ocnt0 <= #1 ocnt0 + 1'b1;
+	if (m_reset)
+	  ocnt <= #1 16'h0;
+	else if (!m_dst_putn & !m_dst_last)
+	  ocnt <= #1 ocnt + 1'b1;
      end
    
    /* DATA path */
-   assign 		 src_di[63:32]= wbs_dat64_o0;
-   assign 		 src_di[31:00]= wbs_dat_o0;
-   assign 		 src_di[71:64]= {ss_last0, 7'b0};
+   assign 		 src_di[63:32]= src_dat64_o;
+   assign 		 src_di[31:00]= src_dat_o;
+   assign 		 src_di[71:64]= {src_last, 7'b0};
    
-   assign 		 m_src0       = src_do[63:0];
-   assign 		 m_src_last0  = src_do[71];
+   assign 		 m_src       = src_do[63:0];
+   assign 		 m_src_last  = src_do[71];
    
-   assign 		 dst_di[63:0] = m_dst0;
-   assign 		 dst_di[71:64]= {m_dst_last0, 7'b0};
+   assign 		 dst_di[63:0] = m_dst;
+   assign 		 dst_di[71:64]= {m_dst_last, 7'b0};
    
-   assign 		 wbs_dat64_i1 = dst_do[63:32];
-   assign 		 wbs_dat_i1   = dst_do[31:00];
+   assign 		 dst_dat64_i = dst_do[63:32];
+   assign 		 dst_dat_i   = dst_do[31:00];
 
    /*
     * start: 表示可以启动读取或者写入
@@ -180,13 +180,13 @@ module ch0(/*AUTOARG*/
     * end  : 指示该任务结束
     * 
     */
-   assign 		 ss_stop0     = src_almost_full;
-   assign 		 ss_stop1     = dst_almost_empty /*|| dst_empty*/;
+   assign 		 src_stop     = src_almost_full;
+   assign 		 dst_stop     = dst_almost_empty /*|| dst_empty*/;
    
-   assign                ss_end0      = 1'b0;
-   assign 		 ss_end1      = dst_do[71];
+   assign                src_end      = 1'b0;
+   assign 		 dst_end      = dst_do[71];
 
-   assign 		 ss_start0    = !src_half_full;
-   assign 		 ss_start1    = dst_half_full ||
-					((!m_endn0) && (!dst_empty));
+   assign 		 src_start    = !src_half_full;
+   assign 		 dst_start    = dst_half_full ||
+					((!m_endn) && (!dst_empty));
 endmodule // ch
