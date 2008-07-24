@@ -21,7 +21,7 @@ trun0: tpci tc
 	vvp -M${PCISIM}/vpi/ -mpci tpci +mem-retry-rate=4 +mem-discon-rate=8
 
 tc: pci_test.c
-	${CC} -g -o $@ -I${LZFDMA} -I${PCISIM}/libpcisim/ $< -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim
+	${CC} -g -o $@ -I${LZFDMA} -I${LZS} -I${PCISIM}/libpcisim/ $< -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim
 
 clean:
 	rm -f ${TBS} *.vpp

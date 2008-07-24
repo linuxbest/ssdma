@@ -8,10 +8,7 @@
 #include "pcisim.h"
 #include "lzf_chip.h"
 
-#if 0
-#include "../drv/pci_dma.h"
-#include "../drv/liblzs.c"
-#endif
+#include "liblzs.c"
 #define IfPrint(c) (c >= 32 && c < 127 ? c : '.')
 
 static void HexDump (unsigned char *p_Buffer, unsigned long p_Size)
@@ -432,11 +429,10 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         return 0;
 }
 
-#if 0
 static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem, 
                 int cnt, FILE *fp)
 {
-	int i, j = 0;
+	int i, j = 0, err = 0;
 	uint32_t val = 0;
 	unsigned char in_buffer[1024 * 1024];
 	unsigned char uncompress_buffer[1024 * 1024];
@@ -455,7 +451,7 @@ static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem,
 
         memcpy(system_mem, compress_buffer, len);
         printf("%x\n", len);
-
+#if 0
 	/* fill the chain desc memory */
 	chain_desc *desc = system_mem + 0x95000;
 	memset((void*)desc, 0, sizeof(*desc));
@@ -490,6 +486,7 @@ static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem,
                 printf("%02X   %08X, %08X  %s\n", 
                                 i, *c, buf[i], buf[i] != *c ? "XXX" : "");
         }
+#endif
 	if (err == 0)
 		printf("\tPASSED\n");
 	else
@@ -501,7 +498,7 @@ static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem,
 static int do_compress(unsigned int phys_mem, unsigned int lzf_mem, 
                 int cnt, FILE *fp)
 {
-	int i, j = 0;
+	int i, j = 0, err = 0;
 	uint32_t *val = 0;
 	unsigned char in_buffer[1024*1024];
 	unsigned char out_buffer[1024*1024];
@@ -518,7 +515,7 @@ static int do_compress(unsigned int phys_mem, unsigned int lzf_mem,
         HexDump(in_buffer, cnt);*/
 
         memcpy(system_mem + 0x10000, in_buffer, cnt);
-	
+#if 0	
 	/* fill the chain desc memory */
 	chain_desc *desc = system_mem;
 	memset((void*)desc, 0, sizeof(*desc));
@@ -564,6 +561,7 @@ static int do_compress(unsigned int phys_mem, unsigned int lzf_mem,
 	for (i = 0; i < 8; i ++, c++) {
                 printf("%02X CTL  %08X\n", i, *c);
 	}
+#endif
 	if (err == 0)
 		printf("\tPASSED\n");
 	else
@@ -588,6 +586,7 @@ static int do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
 	}
 	
 	printf(".");
+#if 0
 	/* fill the chain desc memory */
 	chain_desc *desc = system_mem + 0x100;
 	memset((void*)desc, 0, sizeof(*desc));
@@ -630,6 +629,7 @@ static int do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
         for (i = 0; i < 8; i ++, v++) {
                 printf("CTL %02X   %08X\n", i, *v);
         }
+#endif
         return err;
 }
 
@@ -637,7 +637,7 @@ static int do_null(unsigned int phys_mem, unsigned int lzf_mem)
 {
 	int i;
 	uint32_t val;
-	
+#if 0	
 	printf("NULL\t");
 	/* fill the chain desc memory */
 	chain_desc *desc = system_mem;
@@ -683,6 +683,7 @@ static int do_null(unsigned int phys_mem, unsigned int lzf_mem)
                 dump_reg(dev);
 		return -1;
 	}
+#endif
         printf("\n");
         dump_reg(lzf_mem);
 	printf("\tPASSED\n");
@@ -714,6 +715,7 @@ static int do_fill(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
         unsigned char *buf = system_mem;
 
 	printf("FILL\t");
+#if 0
 	/* fill the src memory */
 	for (i = 0; i < 256; i ++) {
                 buf[i] = i;
@@ -761,7 +763,7 @@ static int do_fill(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
         if (err == 0)
                 printf("\tPASSED\n"); 
 	lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* disable it */
-	
+#endif	
 	return /*err*/0;
 }
 
@@ -771,6 +773,7 @@ static int do_fill_loop(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
         unsigned char *buf = system_mem;
 
 	printf("FILL\t");
+#if 0
 	/* fill the src memory */
 	for (i = 0; i < 256; i ++) {
                 buf[i] = i;
@@ -827,9 +830,10 @@ static int do_fill_loop(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
         if (err == 0)
                 printf("\tPASSED\n"); 
 	lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* disable it */
-	
+#endif	
 	return /*err*/0;
 }
+
 enum DO_OPT {
 	DO_NULL = 1<<0,
 	DO_FILL = 1<<1,
@@ -838,7 +842,6 @@ enum DO_OPT {
 	DO_UNCOMPRESS = 1<<4,
         DO_FILL_LOOP  = 1<<5,
 };
-#endif
 
 static int 
 dev_scan(int dev)
@@ -877,7 +880,7 @@ main(int argc, char *argv[])
 	int cnt = 64;
 	unsigned int opt = 0, p = 0;
         FILE *fp = NULL;
-#if 0
+
 	while ((p = getopt(argc, argv, "NMCUAFhn:fr:")) != EOF) {
 		switch (p) {
                 case 'r':
@@ -922,7 +925,7 @@ main(int argc, char *argv[])
                         break;
 		}
 	}
-#endif
+
 	pcisim_init(".", qemu_peek, qemu_poke);
 	
 	pci_reset(phys_mem);
@@ -956,7 +959,7 @@ main(int argc, char *argv[])
 	
 	lzf_dev.mmr_base = lzf_mem;
         /*dump_reg(lzf_mem);*/
-        test_0(phys_mem, lzf_mem);
+        /*test_0(phys_mem, lzf_mem);*/
 #if 0	
 	if (sum != DMA_MAGIC_NUM) {
 		printf("Magic %x\n", sum);
@@ -964,6 +967,7 @@ main(int argc, char *argv[])
                 return -1;
 	}
 	printf("MAGIC: %08X, %x\n", sum, ADMA_OFS_MAGIC * 4);
+#endif
 	if (opt & DO_NULL && do_null(phys_mem, lzf_mem) != 0)
 		return -1;
 	
@@ -978,9 +982,10 @@ main(int argc, char *argv[])
         if (opt & DO_COMPRESS && do_compress(phys_mem, lzf_mem, cnt, fp) != 0)
 		return -1;
 	
-	if (opt & DO_UNCOMPRESS && do_uncompress(phys_mem, lzf_mem, cnt, fp) != 0)
+	if (opt & DO_UNCOMPRESS && do_uncompress(phys_mem, lzf_mem, cnt, 
+                                fp) != 0)
 		return -1;
-#endif	
+
  done:
 	return 0;
 }
