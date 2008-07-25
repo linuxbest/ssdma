@@ -11,6 +11,8 @@
 #include "liblzs.c"
 #define IfPrint(c) (c >= 32 && c < 127 ? c : '.')
 
+#include "tlsf.h"
+
 static void HexDump (unsigned char *p_Buffer, unsigned long p_Size)
 {
         unsigned long l_Index, l_Idx;
@@ -29,7 +31,8 @@ static void HexDump (unsigned char *p_Buffer, unsigned long p_Size)
 
         printf("\n");
 }
-static unsigned char system_mem[1024 * 1024 * 64];
+#define POOL_SIZE  1024 * 1024 * 64
+static unsigned char system_mem[POOL_SIZE];
 
 static uint32_t qemu_peek(uint32_t addr)
 {
@@ -429,6 +432,100 @@ static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
         return 0;
 }
 
+typedef struct {
+        void *desc_p; /* pointer to job_desc memory */
+        job_desc_t *desc;
+        unsigned long desc_phys;
+
+        void *res_p;
+        res_desc_t *res;
+        unsigned long res_phys;
+
+        buf_desc_t *src, *dst;
+        void *src_p, *dst_p;
+        unsigned long src_phys, dst_phys;
+} job_entry_t;
+
+static void *
+tlsf_malloc_align(void **o, unsigned long *off, int len, int size, 
+                unsigned long phys_mem)
+{
+        void *p;
+        unsigned long l;
+        p = l = tlsf_malloc(size + len);
+        if (l & (len-1))
+                l += (len-(l%len));
+        if (off)
+                *off = l - (unsigned long)system_mem + phys_mem;
+        if (o)
+                *o = p;
+        memset(p, 0, size+len);
+        return (void *)l;
+}
+
+static job_entry_t *
+new_job_entry(unsigned long phys_mem)
+{
+        job_entry_t *j;
+
+        j = malloc(sizeof(*j));
+        j->desc = tlsf_malloc_align(&j->desc_p, &j->desc_phys, 32, 
+                        sizeof(job_desc_t), phys_mem);
+        j->res  = tlsf_malloc_align(&j->res_p,  &j->res_phys,  32, 
+                        sizeof(res_desc_t), phys_mem);
+        j->desc->ctl_addr  = j->res_phys;
+
+        return j;
+}
+
+#define SG_MAX_SIZE 0x40
+
+static int 
+map_bufs(unsigned long phys, int size, unsigned long *res, 
+                unsigned long phys_mem)
+{
+        buf_desc_t *b = NULL, *prev = NULL, *h = NULL;
+        unsigned long addr = phys, hw_addr;
+        int bytes_to_go = size;
+
+        if (bytes_to_go <= SG_MAX_SIZE) {
+                b = tlsf_malloc_align(NULL, &hw_addr, 32, 32, phys_mem);
+                b->desc_next = 0;
+                b->desc      = bytes_to_go;
+                b->desc     |= LZF_SG_LAST;
+                b->desc_adr  = addr;
+                *res = hw_addr;
+                return 0;
+        } 
+
+        while (bytes_to_go > 0) {
+                int this_mapping_len = bytes_to_go;
+                int offset = 0;
+                while (this_mapping_len > 0) {
+                        int this_len = this_mapping_len > SG_MAX_SIZE ?
+                                SG_MAX_SIZE : this_mapping_len;
+                        b = tlsf_malloc_align(NULL, &hw_addr, 32, 32, phys_mem);
+                        b->desc_next = 0;
+                        b->desc      = this_len;
+                        b->desc_adr  = addr + offset;
+
+                        if (prev == NULL) {
+                                h = b;
+                                *res = hw_addr;
+                        } else {
+                                prev->desc_next = hw_addr;
+                        }
+                        prev = b;
+
+                        this_mapping_len -= this_len;
+                        bytes_to_go -= this_len;
+                        offset += this_len;
+                }
+        }
+        prev->desc |= LZF_SG_LAST;
+        return 0;
+}
+
 static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem, 
                 int cnt, FILE *fp)
 {
@@ -571,267 +668,101 @@ static int do_compress(unsigned int phys_mem, unsigned int lzf_mem,
 
 static int do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
 {
-	int i;
-        uint32_t val, *a, *b;
-        int err = 0;
+        job_entry_t *j;
+        unsigned long src_buf_phys, 
+                      dst_buf_phys, 
+                      src_dat_phys, 
+                      dst_dat_phys;
+        unsigned char *src, *dst;
+        int i;
 
-        a = system_mem + 0x200;
-        b = system_mem + 0x1000;
-	printf("MEMCPY\t");
-	/* fill the src memory */
-	for (i = 0; i < cnt/2; i ++, a++, b++) {
-		*a = 0xBB000000 | i;
-		*b = 0xAA000000 | i;
-		//printf("%02X   %08X\n", i, pcisim_readl(phys_mem+4*i));
-	}
-	
-	printf(".");
-#if 0
-	/* fill the chain desc memory */
-	chain_desc *desc = system_mem + 0x100;
-	memset((void*)desc, 0, sizeof(*desc));
-	desc->nad = 0;
-	desc->sad = phys_mem + 0x200;
-	desc->dad = phys_mem + 0x10000;
-	desc->cad = phys_mem + 0x50000;
-	desc->sbc = cnt;
-	desc->dbc = cnt;
-	desc->dc = DC_MEMCPY | DC_CTRL;
-	
-	printf(".");
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 0);
-	lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem+0x100);
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 2); /* enable it */
-	
-	printf(".");
-	i = 20;
-	while ((lzf_read(lzf_mem, ADMA_OFS_CSR) & (1<<10)) && i) {
-		pcisim_wait(100, 0xffff);
-		printf(".");
-		//i --;
-	}
-	printf(".\n");
-        uint32_t *v = system_mem + 0x10000;
-        for (i = 0; i < cnt/4; i ++, v ++) {
-		printf("%02X   %08X   %08X\n", i, *v, (0xBB000000 | i));
-		if (*v != (0xBB000000 | i)) {
-			printf("MEMCPY: ERROR: idx %02X %08X should be %08X\n",
-			       i, *v, (0xBB000000 | i));
-			//return -1;
-                        err ++;
-		}
-        }
-        if (i == 0 || err) { printf("MEMCPY: ERROR\n"); /*return -1;*/ }
-        v ++;
-        printf("%02X   %08X   %08X\n", i, *v, (0xBB000000 | i));
-	printf("\tPASSED\n");
-        v = system_mem + 0x50000;
-        for (i = 0; i < 8; i ++, v++) {
-                printf("CTL %02X   %08X\n", i, *v);
-        }
-#endif
-        return err;
+        j = new_job_entry(phys_mem);
+        src = tlsf_malloc_align(NULL, &src_dat_phys, 32, cnt, phys_mem);
+        dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, cnt, phys_mem);
+        map_bufs(src_dat_phys, cnt, &src_buf_phys, phys_mem);
+        map_bufs(dst_dat_phys, cnt, &dst_buf_phys, phys_mem);
+
+        for (i = 0; i < cnt; i++)
+                src[i] = i;
+
+        j->desc->dc_fc     = DC_MEMCPY /*| DC_CTRL*/;
+        j->desc->src_desc  = src_buf_phys;
+        j->desc->dst_desc  = dst_buf_phys;
+        /*printf("buf %x, %x\n", src_buf_phys, dst_buf_phys);*/
+
+        lzf_write(lzf_mem, OFS_CCR,  0);
+        lzf_write(lzf_mem, OFS_NDAR, j->desc_phys);
+        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
+
+        lzf_wait(phys_mem, lzf_mem);
+
+        HexDump(dst, cnt);
+
+	return 0;
 }
 
-static int do_null(unsigned int phys_mem, unsigned int lzf_mem)
+/*
+ * A simple chain test 
+ */
+static int 
+do_null(unsigned int phys_mem, unsigned int lzf_mem)
 {
-	int i;
-	uint32_t val;
-#if 0	
-	printf("NULL\t");
-	/* fill the chain desc memory */
-	chain_desc *desc = system_mem;
-	memset((void*)desc, 0, sizeof(*desc));
-	desc->nad = phys_mem + 0x40;
-	desc->sad = 0;
-	desc->cad = 0xFFFFFFFF;
-	desc->dad = 0xFFFFFFFF;
-	desc->dc = DC_NULL | DC_CONT;
-	
-	printf(".");
-        
-        desc = system_mem + 0x40;
-	/* test interrupt */
-	desc->nad = 0;
-	desc->sad = 0;
-	desc->cad = 0xFFFFFFFF;
-	desc->dad = 0xFFFFFFFF;
-	desc->fc  = 0x12345678;
-	desc->dc = DC_NULL /*| DC_INTR_EN*/;
-	
-	printf(".");
-        uint32_t *buf = system_mem;
-        for (i = 0; i < 8; i ++)
-                printf("%d: %08x\n", i, buf[i]);
-	
-	lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem);
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 2); /* enable it */
+        job_entry_t *j, *n;
 
-        i = 5;
-	while ((lzf_read(lzf_mem, ADMA_OFS_CSR) & (1<<10)) && i) {
-		pcisim_wait(20, 0xffff);
-		printf(".");
-                //i --;
-	}
-        /* disable the DMA */
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 0);
-	
-	val = readl(DMA_M_FC(dev));
-	if (val != 0x12345678) {
-		printf("\n%d: NULL: ERROR: val(%08X) is not 0x12345678\n",
-		       __LINE__, val);
-                dump_reg(dev);
-		return -1;
-	}
-#endif
-        printf("\n");
-        dump_reg(lzf_mem);
-	printf("\tPASSED\n");
-	//lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem);
-	//pcisim_wait(200, 0);
-#if 0
-	/* test resume */
-	desc->nad =  phys_mem + 0x40;
-	desc->pad  = 0xABCDEFFF;
-	desc->puad = 0xFFFFFFFF;
-	desc->lad  = 0xFFFFFFFF;
-	desc->dc = DC_NULL;
-	
-	for (i = 0; i < 8; i ++)
-		pcisim_writel(phys_mem+4*i + 0x40, buf[i]);
-	
-	/* resume */
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 3);
-	
-	for (i = 0; i < 100; i ++)
-		pcisim_wait(10, 0);
-#endif
-	return 0;
+        j = new_job_entry(phys_mem);
+        n = new_job_entry(phys_mem);
+
+        j->desc->dc_fc     = DC_NULL | DC_CONT;
+        j->desc->next_desc = n->desc_phys;
+
+        n->desc->dc_fc     = DC_NULL;
+        n->desc->ctl_addr  = 0xFFFFFFFF;
+        n->desc->next_desc = 0x1FFFFFFF;
+
+        lzf_write(lzf_mem, OFS_NDAR , j->desc_phys);
+        lzf_write(lzf_mem, OFS_CCR , 2); /* enable it */
+
+        lzf_wait(phys_mem, lzf_mem);
+        lzf_write(lzf_mem, OFS_CCR, 0);
+
+        assert(lzf_read(lzf_mem, 0x16*4) == 0x1ffffff8);
+
+        return 0;
 }
 
 static int do_fill(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
 {
-	int i, err = 0;
-        unsigned char *buf = system_mem;
+        job_entry_t *j;
+        unsigned long buf_phys, dat_phys;
+        buf_desc_t *buf;
+        unsigned char *dat;
 
-	printf("FILL\t");
-#if 0
-	/* fill the src memory */
-	for (i = 0; i < 256; i ++) {
-                buf[i] = i;
-	}
-	printf(".");
-	/* fill the chain desc memory */
-	chain_desc *desc = system_mem + 0x80;
-	memset((void*)desc, 0, sizeof(*desc));
-	desc->nad = 0;
-	desc->dad = phys_mem;
-	desc->dbc = cnt;
-	desc->dc  = DC_FILL;
-	desc->fc  = 0xAABBCCDD;
-	desc->dbc = cnt;
-	
-	printf(".");
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* disable it */
-	lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem+0x80);
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 2); /* enable it */
-	
-	i = 20;
-	while ((lzf_read(lzf_mem, ADMA_OFS_CSR) & (1<<10)) && i) {
-		pcisim_wait(100, 0xffff);
-		printf(".");
-		i --;
-	}
-        
-	printf(".\n"); 
-        if (i == 0) printf("TIMED OUT\n");
-	uint32_t *val = system_mem;
-        for (i = 0; i < cnt/4; i ++, val ++) {
-                printf("FILL: %02X   %08X\n", i, *val);
-                if (*val != 0xAABBCCDD) {
-                        err ++;
-			//return -1;
-		}
-	}
-        i = 0;
-        while (*val == 0xAABBCCDD) {
-                printf("FILL: OVERFLOW %02X   %08X\n", cnt/4+i, *val);
-                err ++;
-                i++;
-                break;
-        }
-        if (err == 0)
-                printf("\tPASSED\n"); 
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* disable it */
-#endif	
-	return /*err*/0;
+        j = new_job_entry(phys_mem);
+        buf = tlsf_malloc_align(NULL, &buf_phys, 32, sizeof(*buf), phys_mem);
+        dat = tlsf_malloc_align(NULL, &dat_phys, 32, 0x100, phys_mem);
+
+        j->desc->dc_fc     = DC_FILL | ('a' << 16);
+        j->desc->dst_desc  = buf_phys;
+
+        buf->desc     = 0x80 | LZF_SG_LAST;
+        buf->desc_adr = dat_phys;
+
+        lzf_write(lzf_mem, OFS_CCR,  0);
+        lzf_write(lzf_mem, OFS_NDAR, j->desc_phys);
+        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
+
+        lzf_wait(phys_mem, lzf_mem);
+
+        int i;
+        for (i = 0; i < 0x80; i++)
+                assert(dat[i] == 'a');
+
+	return 0;
 }
 
 static int do_fill_loop(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
 {
-	int i, err = 0;
-        unsigned char *buf = system_mem;
-
-	printf("FILL\t");
-#if 0
-	/* fill the src memory */
-	for (i = 0; i < 256; i ++) {
-                buf[i] = i;
-	}
-	printf(".");
-	/* fill the chain desc memory */
-	chain_desc *desc = system_mem + 0x80;
-	memset((void*)desc, 0, sizeof(*desc));
-	desc->nad = phys_mem + 0x1000;
-	desc->dad = phys_mem;
-	desc->sbc = cnt;
-	desc->dc = DC_FILL | DC_CONT;
-	desc->fc = 0x19791979;
-	desc->dbc = cnt;
-	
-	printf(".");
-        desc = system_mem + 0x1000;	
-        desc->nad = 0;
-	desc->dad = phys_mem + 0x2000;
-	desc->sbc = cnt;
-	desc->dc = DC_FILL;
-	desc->fc = 0x11223344;
-	desc->dbc = cnt;
-	
-        printf(".");
-        lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* disable it */
-        lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem+0x80);
-        lzf_write(lzf_mem, ADMA_OFS_CCR, 2); /* enable it */
-
-	i = 20;
-	while ((lzf_read(lzf_mem, ADMA_OFS_CSR) & (1<<10)) && i) {
-		pcisim_wait(100, 0xffff);
-		printf(".");
-	//	i --;
-	}
-        
-	printf(".\n"); 
-        if (i == 0) printf("TIMED OUT\n");
-	uint32_t *val = system_mem;
-	for (i = 0; i < cnt/4; i ++) {
-                printf("FILL: %02X   %08X  %s\n", i, *val, 
-                                *val == 0x19791979 ?  " " : "X");
-                if (*val != 0x19791979)
-                        err ++;
-	}
-        i = 0;
-        val = system_mem + 0x2000;
-        for (i = 0; i < cnt/4; i ++) {
-                printf("FILL: %02X   %08X  %s\n", i, *val,
-                                *val == 0x11223344 ? " " : "X");
-                if (*val != 0x11223344)
-                                err ++;
-        }
-        if (err == 0)
-                printf("\tPASSED\n"); 
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* disable it */
-#endif	
-	return /*err*/0;
+        /* TODO */
 }
 
 enum DO_OPT {
@@ -925,6 +856,8 @@ main(int argc, char *argv[])
                         break;
 		}
 	}
+
+        init_memory_pool(POOL_SIZE, system_mem);
 
 	pcisim_init(".", qemu_peek, qemu_poke);
 	

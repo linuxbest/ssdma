@@ -5,6 +5,9 @@ LZFDMA?=/p/hw/lzs/kernel
 LZS?=/p/hw/lzs
 VPATH=../../rtl/verilog:$(PCISIM)/ver
 
+TLSF_DIR = TLSF-2.4/src/
+VPATH+=${TLSF_DIR}
+
 all: ${TBS}
 
 tb_sg: tb_sgr.v ben_sgr.v ss_sg.v
@@ -20,8 +23,8 @@ trun: tpci tc
 trun0: tpci tc
 	vvp -M${PCISIM}/vpi/ -mpci tpci +mem-retry-rate=4 +mem-discon-rate=8
 
-tc: pci_test.c
-	${CC} -g -o $@ -I${LZFDMA} -I${LZS} -I${PCISIM}/libpcisim/ $< -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim
+tc: pci_test.c tlsf.c
+	${CC} -g -o $@ -I${LZFDMA} -I${LZS} -I${TLSF_DIR} -I${PCISIM}/libpcisim/ -L${PCISIM}/libpcisim/ -lpcisim -Wl,-rpath,${PCISIM}/libpcisim $^
 
 clean:
 	rm -f ${TBS} *.vpp
