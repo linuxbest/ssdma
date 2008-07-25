@@ -343,16 +343,20 @@ module ctrl(/*AUTOARG*/
    reg [3:0]  m_err0, m_err1;
    reg 	      m_cyc0_start, m_cyc1_start;
 // synopsys translate_off
-   always @(posedge wb_clk_i)
+   always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
-	if (m_cyc0_start)
+	if (wb_rst_i)
+	  m_cyc0 <= #1 0;
+	else if (m_cyc0_start)
 	  m_cyc0 <= #1 0;
 	else
 	  m_cyc0 <= #1 m_cyc0 + 1'b1;
      end
    always @(posedge wb_clk_i)
      begin
-	if (m_cyc1_start)
+	if (wb_rst_i)
+	  m_cyc1 <= #1 0;
+	else if (m_cyc1_start)
 	  m_cyc1 <= #1 0;
 	else
 	  m_cyc1 <= #1 m_cyc1 + 1'b1;

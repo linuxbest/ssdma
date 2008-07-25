@@ -13,7 +13,7 @@
 
 #include "tlsf.h"
 
-static void HexDump (unsigned char *p_Buffer, unsigned long p_Size)
+static void HexDump(unsigned char *p_Buffer, unsigned long p_Size)
 {
         unsigned long l_Index, l_Idx;
         unsigned char l_Row [17];
@@ -33,6 +33,7 @@ static void HexDump (unsigned char *p_Buffer, unsigned long p_Size)
 }
 #define POOL_SIZE  1024 * 1024 * 64
 static unsigned char system_mem[POOL_SIZE];
+static int verbose = 0;
 
 static uint32_t qemu_peek(uint32_t addr)
 {
@@ -106,333 +107,7 @@ static int lzf_wait(unsigned int phys_mem, unsigned int lzf_mem)
         return 0;
 }
 
-static int test_0(unsigned int phys_mem, unsigned int lzf_mem)
-{
-        int off = 0x10000;
-        job_desc_t *j = (job_desc_t *)(system_mem + off);
-        uint32_t val;
-
-        /**************************************************
-         * first we must sure the datapath is ok 
-         **************************************************/
-        /* test null first */
-        j->next_desc = 0;
-        j->ctl_addr  = 0;
-        j->dc_fc     = DC_NULL;
-        j->u0        = 0;
-        j->src_desc  = 0;
-        j->u1        = 0;
-        j->dst_desc  = 0;
-        j->u2        = 0;
-        lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
-        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
-
-        lzf_wait(phys_mem, lzf_mem);
-        assert(lzf_read(lzf_mem, 0x14*4) == 0);
-        //assert(lzf_read(lzf_mem, 0x15*4) == 0);
-        assert(lzf_read(lzf_mem, 0x16*4) == 0);
-
-        /* check register */
-        lzf_write(lzf_mem, OFS_CCR,  0);
-        j->next_desc = 0x300;
-        j->ctl_addr  = 0x200;
-        j->src_desc  = 0;
-        j->dst_desc  = 0;
-        lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
-        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
-        
-        lzf_wait(phys_mem, lzf_mem);
-        /* wait 200 clock, it must be done */
-        //assert ((val & CSR_BUSY) == 0);
-        assert (lzf_read(lzf_mem, 0x14*4) == 0x200);
-        assert (lzf_read(lzf_mem, 0x16*4) == 0x300);
-        fprintf(stderr, "%04d: passed\n", __LINE__);
-
-        /***********************************************
-         * datapath seem ok.
-         *
-         * testing 1 chain.
-         ***********************************************/
-        j->next_desc = 0x100;
-        j->ctl_addr  = 0;
-        j->dc_fc     = DC_FILL | ('a' << 16); /* memset '0a0a0a0a' */
-        j->u0        = 0;
-        j->src_desc  = 0;
-        j->u1        = 0;
-        j->dst_desc  = phys_mem + 0x500;
-
-        buf_desc_t *b = (buf_desc_t *)(system_mem + 0x500);
-        b->desc     = 0x80 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x2000;
-        b->desc_next= 0;
-
-        lzf_write(lzf_mem, OFS_CCR,  0);
-        lzf_write(lzf_mem, OFS_NDAR, phys_mem + off); 
-        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
-
-        lzf_wait(phys_mem, lzf_mem);
-        HexDump(system_mem + 0x2000, 0x100);
-        unsigned char *s;
-        int i;
-        s = system_mem + 0x2000;
-        for (i = 0; i < 0x80; i++)
-                assert(s[i] == 'a');
-        fprintf(stderr, "%04d: passed\n", __LINE__);
-
-        /* 
-         * fill with sg address and append mode 
-         */
-        off = 0x10040;
-        j->dc_fc    |= DC_CONT;
-        j->next_desc =  phys_mem + off;
-        j = (job_desc_t *)(system_mem + off);
-        
-        off = 0x10080;
-        j->next_desc = phys_mem + off;
-        j->ctl_addr  = 0;
-        j->dc_fc     = DC_FILL | ('b' << 16) | DC_CONT; /* memset '0a0a0a0a' */
-        j->u0        = 0;
-        j->src_desc  = 0;
-        j->u1        = 0;
-        j->dst_desc  = phys_mem + 0x600;
-
-        b = (buf_desc_t *)(system_mem + 0x600);
-        b->desc     = 0x80 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x4000;
-        b->desc_next= 0;
-        
-        j = (job_desc_t *)(system_mem + off);
-        j->next_desc = phys_mem + off;
-        j->ctl_addr  = 0;
-        j->dc_fc     = DC_FILL | ('c' << 16); /* memset '0a0a0a0a' */
-        j->u0        = 0;
-        j->src_desc  = 0;
-        j->u1        = 0;
-        j->dst_desc  = phys_mem + 0x700;
-        
-        b = (buf_desc_t *)(system_mem + 0x700);
-        b->desc     = 0x80 /*| LZF_SG_LAST*/;
-        b->desc_adr = phys_mem + 0x5000;
-        b->desc_next= phys_mem + 0x0800;
-        
-        b = (buf_desc_t *)(system_mem + 0x800);
-        b->desc     = 0x80 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x6000;
-        b->desc_next= phys_mem + 0x0800;
-
-        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
-        lzf_wait(phys_mem, lzf_mem);
-        HexDump(system_mem + 0x4000, 0x90);
-        HexDump(system_mem + 0x5000, 0x90);
-        HexDump(system_mem + 0x6000, 0x90);
-        s = system_mem + 0x4000;
-        for (i = 0; i < 0x80; i++)
-                assert(s[i] == 'b');
-        s = system_mem + 0x5000;
-        for (i = 0; i < 0x80; i++)
-                assert(s[i] == 'c');
-        s = system_mem + 0x6000;
-        for (i = 0; i < 0x80; i++)
-                assert(s[i] == 'c');
-        fprintf(stderr, "%04d: passed\n", __LINE__);
-
-        /* 
-         * memory testing 
-         */
-        s = system_mem + 0x100000; /* 1M */
-        int len = 2048;
-        for (i = 0; i < len; i++) 
-                s[i] = i;
-        s = system_mem + 0x200000; /* 2M */
-        for (i = 0; i < len; i++) 
-                s[i] = 0xff - i;
-
-        off = 0x10100;
-        j->dc_fc    |= DC_CONT;
-        j->next_desc =  phys_mem + off;
-        j = (job_desc_t *)(system_mem + off);
-
-        j->next_desc = 0;
-        j->ctl_addr  = 0;
-        j->dc_fc     = DC_MEMCPY;
-        j->u0        = 0;
-        j->u1        = 0;
-        j->src_desc  = phys_mem + 0x600;
-        j->dst_desc  = phys_mem + 0x700;
-
-        b = (buf_desc_t *)(system_mem + 0x600);
-        b->desc     = 0x40;
-        b->desc_adr = phys_mem + 0x100000;
-        b->desc_next= phys_mem + 0x620;
-
-        b = (buf_desc_t *)(system_mem + 0x620);
-        b->desc     = 0x40;
-        b->desc_adr = phys_mem + 0x100040;
-        b->desc_next= phys_mem + 0x640;
-
-        b = (buf_desc_t *)(system_mem + 0x640);
-        b->desc     = 0x40;
-        b->desc_adr = phys_mem + 0x100080;
-        b->desc_next= phys_mem + 0x660;
-
-        b = (buf_desc_t *)(system_mem + 0x660);
-        b->desc     = 0x740 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x1000c0;
-        b->desc_next= phys_mem + 0x660;
-
-        /* dst */
-        b = (buf_desc_t *)(system_mem + 0x700);
-        b->desc     = 0x40;
-        b->desc_adr = phys_mem + 0x200000;
-        b->desc_next= phys_mem + 0x720;
-        
-        b = (buf_desc_t *)(system_mem + 0x720);
-        b->desc     = 0x40;
-        b->desc_adr = phys_mem + 0x200040;
-        b->desc_next= phys_mem + 0x740;
-        
-        b = (buf_desc_t *)(system_mem + 0x740);
-        b->desc     = 0x40;
-        b->desc_adr = phys_mem + 0x200080;
-        b->desc_next= phys_mem + 0x760;
-
-        b = (buf_desc_t *)(system_mem + 0x760);
-        b->desc     = 0x740 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x2000c0;
-        b->desc_next= phys_mem + 0x760;
-        
-        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
-        lzf_wait(phys_mem, lzf_mem);
-        /*HexDump(system_mem + 0x100000, len);
-        HexDump(system_mem + 0x200000, len);*/
-
-        /* speed testing */
-        off = 0x100;
-        j->dc_fc    |= DC_CONT;
-        j->next_desc =  phys_mem + off;
-        j = (job_desc_t *)(system_mem + off);
-        memset(system_mem + 0x200, 0, 32);
-
-        j->next_desc = phys_mem + 0x220;
-        j->ctl_addr  = phys_mem + 0x200;
-        j->dc_fc     = DC_MEMCPY | DC_CTRL | DC_CONT;
-        j->u0        = 0;
-        j->u1        = 0;
-        j->src_desc  = phys_mem + 0x600;
-        j->dst_desc  = phys_mem + 0x700;
-        
-        off = 0x220;
-        j = (job_desc_t *)(system_mem + off);
-        memset(system_mem + 0x200, 0, 32);
-
-        j->next_desc = 0;
-        j->ctl_addr  = phys_mem + 0x240;
-        j->dc_fc     = DC_MEMCPY | DC_CTRL;
-        j->u0        = 0;
-        j->u1        = 0;
-        j->src_desc  = phys_mem + 0x600;
-        j->dst_desc  = phys_mem + 0x800;
-
-        b = (buf_desc_t *)(system_mem + 0x600);
-        b->desc     = 0x1000 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x100000;
-        b->desc_next= phys_mem + 0x620;
-        uint32_t *p = (uint32_t *)(system_mem + 0x100000);
-        for (i = 0; i < 0x400; i ++, p ++)
-                *p = i;
-        b = (buf_desc_t *)(system_mem + 0x700);
-        b->desc     = 0x1000 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x200000;
-        b->desc_next= phys_mem + 0x640;
-        
-        b = (buf_desc_t *)(system_mem + 0x800);
-        b->desc     = 0x1000 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x300000;
-        b->desc_next= phys_mem + 0x640;
-
-        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
-        lzf_wait(phys_mem, lzf_mem);
-       
-        p = (uint32_t *)(system_mem + 0x200);
-        HexDump((char *)p, 32);
-        printf("cycle %04x\n", *(p+2));
-        
-        p = (uint32_t *)(system_mem + 0x240);
-        HexDump((char *)p, 32);
-        printf("cycle %04x\n", *p);
-
-        /*
-         * compress tesing
-         */
-        off = 0x100;
-        j->dc_fc    |= DC_CONT;
-        j->next_desc =  phys_mem + off;
-        j = (job_desc_t *)(system_mem + off);
-        memset(system_mem + off, 0, 32);
-
-        j->next_desc = 0;
-        j->ctl_addr  = phys_mem + 0x240;
-        j->dc_fc     = DC_COMPRESS | DC_CTRL;
-        j->u0        = 0;
-        j->u1        = 0;
-        j->src_desc  = phys_mem + 0x600;
-        j->dst_desc  = phys_mem + 0x800;
-
-        b = (buf_desc_t *)(system_mem + 0x600);
-        b->desc     = 0x200 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x100000;
-        b->desc_next= phys_mem + 0x620;
-        uint8_t *a = (uint8_t *)(system_mem + 0x100000);
-        for (i = 0; i < 0x1000; i ++, a ++)
-                *a = i;
-        
-        b = (buf_desc_t *)(system_mem + 0x800);
-        b->desc     = 0x1000 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x300000;
-        b->desc_next= phys_mem + 0x640;
-#if 1
-        off = 0x120;
-        j->dc_fc    |= DC_CONT;
-        j->next_desc =  phys_mem + off;
-        j = (job_desc_t *)(system_mem + off);
-        memset(system_mem + off, 0, 32);
-
-        j->next_desc = 0;
-        j->ctl_addr  = phys_mem + 0x260;
-        j->dc_fc     = DC_COMPRESS | DC_CTRL;
-        j->u0        = 0;
-        j->u1        = 0;
-        j->src_desc  = phys_mem + 0x600;
-        j->dst_desc  = phys_mem + 0x900;
-#endif
-        b = (buf_desc_t *)(system_mem + 0x900);
-        b->desc     = 0x1000 | LZF_SG_LAST;
-        b->desc_adr = phys_mem + 0x400000;
-        b->desc_next= phys_mem + 0x640;
-
-        lzf_write(lzf_mem, OFS_CCR,  CCR_APPEND|CCR_ENABLE);
-        lzf_wait(phys_mem, lzf_mem);
-
-        p = (uint32_t *)(system_mem + 0x240);
-        HexDump(system_mem + 0x300000, *(p));
-        p = (uint32_t *)(system_mem + 0x260);
-        HexDump(system_mem + 0x400000, *(p));
-
-        p = (uint32_t *)(system_mem + 0x240);
-        HexDump((char *)p, 32);
-        printf("compress cycle %04x\n", *(p+4));
-        
-        p = (uint32_t *)(system_mem + 0x260);
-        HexDump((char *)p, 32);
-        printf("compress cycle %04x\n", *(p+4));
- 
-        /*
-         * uncompress testing
-         */
-        return 0;
-}
-
-typedef struct {
+typedef struct job_entry {
         void *desc_p; /* pointer to job_desc memory */
         job_desc_t *desc;
         unsigned long desc_phys;
@@ -444,6 +119,10 @@ typedef struct {
         buf_desc_t *src, *dst;
         void *src_p, *dst_p;
         unsigned long src_phys, dst_phys;
+
+        struct job_entry *next;
+
+        unsigned char *s, *d;
 } job_entry_t;
 
 static void *
@@ -526,153 +205,74 @@ map_bufs(unsigned long phys, int size, unsigned long *res,
         return 0;
 }
 
-static int do_uncompress(unsigned int phys_mem, unsigned int lzf_mem, 
-                int cnt, FILE *fp)
+static int 
+do_uncompress(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp)
 {
-	int i, j = 0, err = 0;
-	uint32_t val = 0;
-	unsigned char in_buffer[1024 * 1024];
-	unsigned char uncompress_buffer[1024 * 1024];
-	unsigned char compress_buffer[1024 * 1024];
-	uint32_t *buf = (uint32_t *)compress_buffer;
-	uint32_t len = 0;
+        return 0;
+}
 
-        if (fp == NULL) {
+static int 
+do_compress(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
+                int loop)
+{
+        job_entry_t *j = NULL, *prev = NULL, *h = NULL;
+        unsigned long src_buf_phys, dst_buf_phys, 
+                      src_dat_phys, dst_dat_phys;
+        unsigned char *src, *dst;
+        int i;
+
+        do {
+                j = new_job_entry(phys_mem);
+                src = tlsf_malloc_align(NULL, &src_dat_phys, 32, cnt, phys_mem);
+                dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, cnt, phys_mem);
+                map_bufs(src_dat_phys, cnt, &src_buf_phys, phys_mem);
+                map_bufs(dst_dat_phys, cnt, &dst_buf_phys, phys_mem);
+                j->s = src;
+                j->d = dst;
                 for (i = 0; i < cnt; i++)
-                        in_buffer[i] = i % 0x100;
-        } else {
-                fread(in_buffer, cnt, 1, fp);
-        }
-        len = lzsCompress(in_buffer, cnt, compress_buffer, 1024 * 1024);
-        printf("UNCOMPRESS, %d\n", len);
+                        src[i] = i;
 
-        memcpy(system_mem, compress_buffer, len);
-        printf("%x\n", len);
-#if 0
-	/* fill the chain desc memory */
-	chain_desc *desc = system_mem + 0x95000;
-	memset((void*)desc, 0, sizeof(*desc));
-	desc->nad = 0;
-	desc->sad = phys_mem;
-	desc->dad = phys_mem + 0x50000;
-	desc->sbc = len;
-	desc->dbc = cnt;
-	desc->dc  = DC_UNCOMPRESS | DC_CTRL;
-        desc->cad  = phys_mem + 0x90000;
+                j->desc->dc_fc     = DC_COMPRESS | DC_CTRL;
+                j->desc->src_desc  = src_buf_phys;
+                j->desc->dst_desc  = dst_buf_phys;
+                j->next = NULL;
 
-	
-	lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem+0x95000);
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 2); /* enable it */
-	
-        i = cnt*2;
-        while ((val = lzf_read(lzf_mem, ADMA_OFS_CSR) & (1<<10)) && i) {
-                pcisim_wait(100, 0xffff);
-		i --;
-	}
-	if (i == 0) {
-		printf("ERROR\n");
-	//	return -1;
-	}
-	buf = in_buffer;
-	int err = 0;
-        uint32_t *c = system_mem + 0x50000;	
-	for (i = 0; i < cnt/4; i ++, c++) {
-                if (buf[i] != *c) {
-                        err ++;
+                if (h == NULL) {
+                        h = j;
+                } else {
+                        prev->desc->next_desc = j->desc_phys;
+                        prev->desc->dc_fc    |= DC_CONT;
+                        prev->next = j;
                 }
-                printf("%02X   %08X, %08X  %s\n", 
-                                i, *c, buf[i], buf[i] != *c ? "XXX" : "");
+                prev = j;
+                loop --;
+        } while (loop > 0);
+
+        lzf_write(lzf_mem, OFS_CCR,  0);
+        lzf_write(lzf_mem, OFS_NDAR, h->desc_phys);
+        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
+
+        lzf_wait(phys_mem, lzf_mem);
+
+        j = h;
+        while (j) {
+                if (verbose) {
+                        HexDump(j->res, 32);
+                        //HexDump(j->dst, j->res->ocnt);
+                }
+                j = j->next;
         }
-#endif
-	if (err == 0)
-		printf("\tPASSED\n");
-	else
-		printf("\tFAILED\n");
-	
+        /*for (i = i; i < cnt; i ++)
+                sssert(dst[i] == i);*/
 	return 0;
 }
 
-static int do_compress(unsigned int phys_mem, unsigned int lzf_mem, 
-                int cnt, FILE *fp)
-{
-	int i, j = 0, err = 0;
-	uint32_t *val = 0;
-	unsigned char in_buffer[1024*1024];
-	unsigned char out_buffer[1024*1024];
-	unsigned char check_buffer[1024*1024];
-	uint32_t *buf = (uint32_t *)in_buffer;
-
-        if (fp == NULL) {
-                for (i = 0; i < cnt; i++)
-                        in_buffer[i] = i % 0x100;
-        } else {
-                i = fread(in_buffer, cnt, 1, fp);
-        }
-	/*printf("COMPRESS, cnt %d, %p, %d\n", cnt, fp, i);
-        HexDump(in_buffer, cnt);*/
-
-        memcpy(system_mem + 0x10000, in_buffer, cnt);
-#if 0	
-	/* fill the chain desc memory */
-	chain_desc *desc = system_mem;
-	memset((void*)desc, 0, sizeof(*desc));
-	desc->nad  = 0;
-	desc->sad  = phys_mem + 0x10000;
-	desc->dad  = phys_mem + 0x50000;
-	desc->sbc  = cnt;
-	desc->dbc  = 1024 * 1024;
-	desc->dc   = DC_COMPRESS | DC_CTRL;
-        desc->cad  = phys_mem + 0x01000;
-
-        //printf("submit it\n");
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 0); /* enable it */
-	lzf_write(lzf_mem, ADMA_OFS_NDAR, phys_mem);
-	lzf_write(lzf_mem, ADMA_OFS_CCR, 2); /* enable it */
-        //printf("submit done\n");
-	
-	i = cnt;
-	while ((val = lzf_read(lzf_mem, ADMA_OFS_CSR) & (1<<10)) && i) {
-		pcisim_wait(100, 0xffff);
-		//i --;
-                //printf("%d\n", i);
-	}
-	if (i == 0) {
-		printf("ERROR\n");
-		//return -1;
-	}
-        memset(check_buffer, 0, cnt*2);
-        int olen = lzsCompress(in_buffer, cnt, check_buffer, cnt*2);
-        if (olen % 4)
-                olen += 4;
-	buf = check_buffer;
-	int err = 0;
-        uint32_t *c = system_mem + 0x50000;
-	for (i = 0; i < olen/4; i ++, c++) {
-                printf("%04X FPGA/C  %08X, %08X %s\n", i, *c, buf[i], 
-                                buf[i] != *c ? "XXXX" : "");
-                if (buf[i] != *c) {
-			err ++;
-		}
-	}
-        c = system_mem + 0x1000;
-	for (i = 0; i < 8; i ++, c++) {
-                printf("%02X CTL  %08X\n", i, *c);
-	}
-#endif
-	if (err == 0)
-		printf("\tPASSED\n");
-	else
-		printf("\tFAILED\n");
-	return 0;
-}
-
-static int do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
+static int 
+do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
 {
         job_entry_t *j;
-        unsigned long src_buf_phys, 
-                      dst_buf_phys, 
-                      src_dat_phys, 
-                      dst_dat_phys;
+        unsigned long src_buf_phys, dst_buf_phys, 
+                      src_dat_phys, dst_dat_phys;
         unsigned char *src, *dst;
         int i;
 
@@ -696,7 +296,10 @@ static int do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
 
         lzf_wait(phys_mem, lzf_mem);
 
-        HexDump(dst, cnt);
+        if (verbose)
+                HexDump(dst, cnt);
+        for (i = i; i < cnt; i ++)
+                assert(dst[i] == i);
 
 	return 0;
 }
@@ -808,12 +411,18 @@ main(int argc, char *argv[])
 	unsigned int lzf_mem =  0xfa000000;
 	unsigned int phys_mem = 0xa0000000;
 	unsigned sum;
-	int cnt = 64;
+	int cnt = 64, loop = 0;
 	unsigned int opt = 0, p = 0;
         FILE *fp = NULL;
 
-	while ((p = getopt(argc, argv, "NMCUAFhn:fr:")) != EOF) {
+	while ((p = getopt(argc, argv, "NMCUAFhn:fr:vl:")) != EOF) {
 		switch (p) {
+                case 'l':
+                        loop = atoi(optarg);
+                        break;
+                case 'v':
+                        verbose = 1;
+                        break;
                 case 'r':
                         fp = fopen(optarg, "r");
                         if (fp == NULL) {
@@ -912,7 +521,8 @@ main(int argc, char *argv[])
 	if (opt & DO_MEMCPY && do_memcpy(phys_mem, lzf_mem, cnt) != 0)
 		return -1;
 	
-        if (opt & DO_COMPRESS && do_compress(phys_mem, lzf_mem, cnt, fp) != 0)
+        if (opt & DO_COMPRESS && do_compress(phys_mem, lzf_mem, cnt, fp, 
+                                loop) != 0)
 		return -1;
 	
 	if (opt & DO_UNCOMPRESS && do_uncompress(phys_mem, lzf_mem, cnt, 
