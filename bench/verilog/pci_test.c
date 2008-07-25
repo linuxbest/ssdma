@@ -157,7 +157,7 @@ new_job_entry(unsigned long phys_mem)
         return j;
 }
 
-#define SG_MAX_SIZE 0x40
+static int max_sg_size = 0x40;
 
 static int 
 map_bufs(unsigned long phys, int size, unsigned long *res, 
@@ -167,7 +167,7 @@ map_bufs(unsigned long phys, int size, unsigned long *res,
         unsigned long addr = phys, hw_addr;
         int bytes_to_go = size;
 
-        if (bytes_to_go <= SG_MAX_SIZE) {
+        if (bytes_to_go <= max_sg_size) {
                 b = tlsf_malloc_align(NULL, &hw_addr, 32, 32, phys_mem);
                 b->desc_next = 0;
                 b->desc      = bytes_to_go;
@@ -181,8 +181,8 @@ map_bufs(unsigned long phys, int size, unsigned long *res,
                 int this_mapping_len = bytes_to_go;
                 int offset = 0;
                 while (this_mapping_len > 0) {
-                        int this_len = this_mapping_len > SG_MAX_SIZE ?
-                                SG_MAX_SIZE : this_mapping_len;
+                        int this_len = this_mapping_len > max_sg_size ?
+                                max_sg_size : this_mapping_len;
                         b = tlsf_malloc_align(NULL, &hw_addr, 32, 32, phys_mem);
                         b->desc_next = 0;
                         b->desc      = this_len;
@@ -301,8 +301,11 @@ main(int argc, char *argv[])
 	unsigned int opt = 0, p = 0;
         FILE *fp = NULL;
 
-	while ((p = getopt(argc, argv, "NMCUAFhn:fr:vl:")) != EOF) {
+	while ((p = getopt(argc, argv, "NMCUAFhn:fr:vl:g:")) != EOF) {
 		switch (p) {
+                case 'g':
+                        max_sg_size = 1<<(atoi(optarg));
+                        break;
                 case 'l':
                         loop = atoi(optarg);
                         break;
@@ -381,6 +384,7 @@ main(int argc, char *argv[])
 	
 	lzf_dev.mmr_base = lzf_mem;
 
+        printf("max sg size is %x\n", max_sg_size);
         do_test(phys_mem, lzf_mem, cnt, fp, loop, opt);
 
  done:
