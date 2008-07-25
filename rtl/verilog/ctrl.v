@@ -621,10 +621,15 @@ module ctrl(/*AUTOARG*/
      else
        m_reset1 <= #1 0;
 
-   always @(posedge wb_clk_i)
+   always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
-	m_enable0 <= #1 m_enable0_n;
-	m_enable1 <= #1 m_enable1_n;
+	if (wb_rst_i) begin
+	   m_enable0 <= #1 1'b0;
+	   m_enable1 <= #1 1'b0;
+	end else begin
+	   m_enable0 <= #1 m_enable0_n;
+	   m_enable1 <= #1 m_enable1_n;
+	end
      end
 
    always @(posedge wb_clk_i)
