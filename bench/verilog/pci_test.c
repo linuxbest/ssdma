@@ -206,14 +206,8 @@ map_bufs(unsigned long phys, int size, unsigned long *res,
 }
 
 static int 
-do_uncompress(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp)
-{
-        return 0;
-}
-
-static int 
-do_compress(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
-                int loop)
+do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
+                int loop, int ops)
 {
         job_entry_t *j = NULL, *prev = NULL, *h = NULL;
         unsigned long src_buf_phys, dst_buf_phys, 
@@ -232,7 +226,7 @@ do_compress(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                 for (i = 0; i < cnt; i++)
                         src[i] = i;
 
-                j->desc->dc_fc     = DC_COMPRESS | DC_CTRL;
+                j->desc->dc_fc     = ops | DC_CTRL;
                 j->desc->src_desc  = src_buf_phys;
                 j->desc->dst_desc  = dst_buf_phys;
                 j->next = NULL;
@@ -266,116 +260,6 @@ do_compress(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                 sssert(dst[i] == i);*/
 	return 0;
 }
-
-static int 
-do_memcpy(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
-{
-        job_entry_t *j;
-        unsigned long src_buf_phys, dst_buf_phys, 
-                      src_dat_phys, dst_dat_phys;
-        unsigned char *src, *dst;
-        int i;
-
-        j = new_job_entry(phys_mem);
-        src = tlsf_malloc_align(NULL, &src_dat_phys, 32, cnt, phys_mem);
-        dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, cnt, phys_mem);
-        map_bufs(src_dat_phys, cnt, &src_buf_phys, phys_mem);
-        map_bufs(dst_dat_phys, cnt, &dst_buf_phys, phys_mem);
-
-        for (i = 0; i < cnt; i++)
-                src[i] = i;
-
-        j->desc->dc_fc     = DC_MEMCPY /*| DC_CTRL*/;
-        j->desc->src_desc  = src_buf_phys;
-        j->desc->dst_desc  = dst_buf_phys;
-        /*printf("buf %x, %x\n", src_buf_phys, dst_buf_phys);*/
-
-        lzf_write(lzf_mem, OFS_CCR,  0);
-        lzf_write(lzf_mem, OFS_NDAR, j->desc_phys);
-        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
-
-        lzf_wait(phys_mem, lzf_mem);
-
-        if (verbose)
-                HexDump(dst, cnt);
-        for (i = i; i < cnt; i ++)
-                assert(dst[i] == i);
-
-	return 0;
-}
-
-/*
- * A simple chain test 
- */
-static int 
-do_null(unsigned int phys_mem, unsigned int lzf_mem)
-{
-        job_entry_t *j, *n;
-
-        j = new_job_entry(phys_mem);
-        n = new_job_entry(phys_mem);
-
-        j->desc->dc_fc     = DC_NULL | DC_CONT;
-        j->desc->next_desc = n->desc_phys;
-
-        n->desc->dc_fc     = DC_NULL;
-        n->desc->ctl_addr  = 0xFFFFFFFF;
-        n->desc->next_desc = 0x1FFFFFFF;
-
-        lzf_write(lzf_mem, OFS_NDAR , j->desc_phys);
-        lzf_write(lzf_mem, OFS_CCR , 2); /* enable it */
-
-        lzf_wait(phys_mem, lzf_mem);
-        lzf_write(lzf_mem, OFS_CCR, 0);
-
-        assert(lzf_read(lzf_mem, 0x16*4) == 0x1ffffff8);
-
-        return 0;
-}
-
-static int do_fill(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
-{
-        job_entry_t *j;
-        unsigned long buf_phys, dat_phys;
-        buf_desc_t *buf;
-        unsigned char *dat;
-
-        j = new_job_entry(phys_mem);
-        buf = tlsf_malloc_align(NULL, &buf_phys, 32, sizeof(*buf), phys_mem);
-        dat = tlsf_malloc_align(NULL, &dat_phys, 32, 0x100, phys_mem);
-
-        j->desc->dc_fc     = DC_FILL | ('a' << 16);
-        j->desc->dst_desc  = buf_phys;
-
-        buf->desc     = 0x80 | LZF_SG_LAST;
-        buf->desc_adr = dat_phys;
-
-        lzf_write(lzf_mem, OFS_CCR,  0);
-        lzf_write(lzf_mem, OFS_NDAR, j->desc_phys);
-        lzf_write(lzf_mem, OFS_CCR,  CCR_ENABLE);
-
-        lzf_wait(phys_mem, lzf_mem);
-
-        int i;
-        for (i = 0; i < 0x80; i++)
-                assert(dat[i] == 'a');
-
-	return 0;
-}
-
-static int do_fill_loop(unsigned int phys_mem, unsigned int lzf_mem, int cnt)
-{
-        /* TODO */
-}
-
-enum DO_OPT {
-	DO_NULL = 1<<0,
-	DO_FILL = 1<<1,
-	DO_MEMCPY = 1<<2,
-	DO_COMPRESS =  1<<3,
-	DO_UNCOMPRESS = 1<<4,
-        DO_FILL_LOOP  = 1<<5,
-};
 
 static int 
 dev_scan(int dev)
@@ -440,25 +324,19 @@ main(int argc, char *argv[])
 			       "\t-A ALL tested\n", argv[0]);
 			return -1;
 		case 'N':
-			opt |= DO_NULL;
+			opt = DC_NULL;
 			break;
 		case 'F':
-			opt |= DO_FILL;
+			opt = DC_FILL;
 			break;
-                case 'f':
-			opt |= DO_FILL_LOOP;
-                        break;
 		case 'M':
-			opt |= DO_MEMCPY;
+			opt = DC_MEMCPY;
 			break;
 		case 'C':
-			opt |= DO_COMPRESS;
+			opt = DC_COMPRESS;
 			break;
 		case 'U':
-			opt |= DO_UNCOMPRESS;
-			break;
-		case 'A':
-			opt = 0xFFFFFFFF;
+			opt = DC_UNCOMPRESS;
 			break;
                 case 'n':
                         cnt = atoi(optarg);
@@ -500,34 +378,8 @@ main(int argc, char *argv[])
 	dev_scan(idx);
 	
 	lzf_dev.mmr_base = lzf_mem;
-        /*dump_reg(lzf_mem);*/
-        /*test_0(phys_mem, lzf_mem);*/
-#if 0	
-	if (sum != DMA_MAGIC_NUM) {
-		printf("Magic %x\n", sum);
-                sum = lzf_read(lzf_mem, ADMA_OFS_MAGIC);
-                return -1;
-	}
-	printf("MAGIC: %08X, %x\n", sum, ADMA_OFS_MAGIC * 4);
-#endif
-	if (opt & DO_NULL && do_null(phys_mem, lzf_mem) != 0)
-		return -1;
-	
-	if (opt & DO_FILL && do_fill(phys_mem, lzf_mem, cnt) != 0)
-		return -1;
-	if (opt & DO_FILL_LOOP && do_fill_loop(phys_mem, lzf_mem, cnt) != 0)
-		return -1;
-	
-	if (opt & DO_MEMCPY && do_memcpy(phys_mem, lzf_mem, cnt) != 0)
-		return -1;
-	
-        if (opt & DO_COMPRESS && do_compress(phys_mem, lzf_mem, cnt, fp, 
-                                loop) != 0)
-		return -1;
-	
-	if (opt & DO_UNCOMPRESS && do_uncompress(phys_mem, lzf_mem, cnt, 
-                                fp) != 0)
-		return -1;
+
+        do_test(phys_mem, lzf_mem, cnt, fp, loop, opt);
 
  done:
 	return 0;
