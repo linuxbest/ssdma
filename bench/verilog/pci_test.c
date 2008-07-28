@@ -250,12 +250,12 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
 
         j = h;
         while (j) {
-                if (verbose) {
-                        //HexDump(j->res, 32);
-                        //HexDump(j->dst, j->res->ocnt);
-                }
                 printf("ocnt %d, err %d, cycle %d\n", 
                                 j->res->ocnt, j->res->err, j->res->cycle);
+                if (verbose) {
+                        HexDump(j->res, 32);
+                        HexDump(j->d, j->res->ocnt);
+                }
                 j = j->next;
         }
         /*for (i = i; i < cnt; i ++)
