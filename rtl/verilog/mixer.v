@@ -18,8 +18,8 @@ module mixer(/*AUTOARG*/
    wbs_dat_o2, wbs_dat64_o2, wbs_ack2, wbs_err2, wbs_rty2,
    wbs_dat_o3, wbs_dat64_o3, wbs_ack3, wbs_err3, wbs_rty3,
    wbs_dat_o4, wbs_dat64_o4, wbs_ack4, wbs_err4, wbs_rty4,
-   wbm_cyc_o, wbm_stb_o, wbm_we_o, wbm_cab_o, wbm_pref_o,
-   wbm_sel_o, wbm_adr_o, wbm_dat_o, wbm_dat64_o,
+   wbm_cyc_o, wbm_stb_o, wbm_we_o, wbm_cab_o, wbm_sel_o,
+   wbm_adr_o, wbm_dat_o, wbm_dat64_o,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_cyc0, wbs_stb0, wbs_we0,
    wbs_pref0, wbs_cab0, wbs_sel0, wbs_adr0, wbs_dat_i0,
@@ -124,8 +124,7 @@ module mixer(/*AUTOARG*/
    output      wbm_cyc_o,
 	       wbm_stb_o,
 	       wbm_we_o,
-	       wbm_cab_o,
-	       wbm_pref_o;
+	       wbm_cab_o;
    output [3:0] wbm_sel_o;
    output [31:0] wbm_adr_o,
 		 wbm_dat_o,
@@ -141,7 +140,6 @@ module mixer(/*AUTOARG*/
     .gnt(gnt[]),
     .I({wbs_@4,wbs_@3,wbs_@2,wbs_@1,wbs_@0}),
     );*/
-
    mo o_cyc(/*AUTOINST*/
 	    // Outputs
 	    .O				(wbm_cyc_o),		 // Templated
@@ -158,33 +156,18 @@ module mixer(/*AUTOARG*/
 	    .I				({wbs_stb4,wbs_stb3,wbs_stb2,wbs_stb1,wbs_stb0}), // Templated
 	    .wb_clk_i			(wb_clk_i),
 	    .wb_rst_i			(wb_rst_i));
-   mo o_we(/*AUTOINST*/
-	   // Outputs
-	   .O				(wbm_we_o),		 // Templated
-	   // Inputs
-	   .gnt				(gnt[4:0]),		 // Templated
-	   .I				({wbs_we4,wbs_we3,wbs_we2,wbs_we1,wbs_we0}), // Templated
-	   .wb_clk_i			(wb_clk_i),
-	   .wb_rst_i			(wb_rst_i));
-   mo o_pref(/*AUTOINST*/
-	     // Outputs
-	     .O				(wbm_pref_o),		 // Templated
-	     // Inputs
-	     .gnt			(gnt[4:0]),		 // Templated
-	     .I				({wbs_pref4,wbs_pref3,wbs_pref2,wbs_pref1,wbs_pref0}), // Templated
-	     .wb_clk_i			(wb_clk_i),
-	     .wb_rst_i			(wb_rst_i));
-   mo o_cab(/*AUTOINST*/
+   mo o_we (/*AUTOINST*/
 	    // Outputs
-	    .O				(wbm_cab_o),		 // Templated
+	    .O				(wbm_we_o),		 // Templated
 	    // Inputs
 	    .gnt			(gnt[4:0]),		 // Templated
-	    .I				({wbs_cab4,wbs_cab3,wbs_cab2,wbs_cab1,wbs_cab0}), // Templated
+	    .I				({wbs_we4,wbs_we3,wbs_we2,wbs_we1,wbs_we0}), // Templated
 	    .wb_clk_i			(wb_clk_i),
 	    .wb_rst_i			(wb_rst_i));
-
+   
    /* we only support */
    assign 	 wbm_sel_o = 4'b1111;
+   assign 	 wbm_cab_o = 1'b1;
    
    mo32 o_adr(
 	      // Outputs

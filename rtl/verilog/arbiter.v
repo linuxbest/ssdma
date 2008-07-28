@@ -16,7 +16,7 @@
 
 module arbiter(/*AUTOARG*/
    // Outputs
-   gnt,
+   gnt, gnt0, gnt1, gnt2, gnt3, gnt4,
    // Inputs
    wb_clk_i, wb_rst_i, wbs_cyc0, wbs_cyc1, wbs_cyc2,
    wbs_cyc3, wbs_cyc4
@@ -105,5 +105,12 @@ module arbiter(/*AUTOARG*/
 	  
 	endcase // case(gnt)
      end // always @ (...
+
+   output gnt0, gnt1, gnt2, gnt3, gnt4;
+   assign gnt0 = gnt[0];
+   assign gnt1 = gnt[1];
+   assign gnt2 = gnt[2];
+   assign gnt3 = gnt[3];
+   assign gnt4 = gnt[4];
    
 endmodule // gnt

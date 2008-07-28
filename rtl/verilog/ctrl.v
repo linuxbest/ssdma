@@ -46,7 +46,7 @@
  */
 module ctrl(/*AUTOARG*/
    // Outputs
-   wbs_cyc4, wbs_stb4, wbs_we4, wbs_pref4, wbs_cab4,
+   wbs_cyc4, wbs_stb4, wbs_we4, wbm_pref_o, wbs_cab4,
    wbs_sel4, wbs_adr4, wbs_dat_i4, wbs_dat64_i4, ss_we0,
    ss_we1, ss_we2, ss_we3, ss_done0, ss_done1, ss_done2,
    ss_done3, ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0,
@@ -58,7 +58,7 @@ module ctrl(/*AUTOARG*/
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
    ndar_dirty, ndar, wb_int_clear, append, enable, ocnt0,
-   ocnt1
+   ocnt1, gnt4
    );
 
    input wb_clk_i;
@@ -68,7 +68,7 @@ module ctrl(/*AUTOARG*/
    output wbs_cyc4, 		// cycle signal
 	  wbs_stb4, 		// strobe 
 	  wbs_we4, 		// we
-	  wbs_pref4,
+	  wbm_pref_o,
 	  wbs_cab4;		// 
    output [3:0] wbs_sel4;	// byte select
    output [31:0] wbs_adr4, 	// address 
@@ -130,6 +130,7 @@ module ctrl(/*AUTOARG*/
    output 	 m_enable1;
 
    input [15:0]  ocnt0, ocnt1;
+   input  	 gnt4;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -197,7 +198,7 @@ module ctrl(/*AUTOARG*/
 	wbs_cab4 <= #1 wbs_cab4_n;
 	wbs_sel4 <= #1 wbs_sel4_n;
      end
-   assign wbs_pref4 = 0;
+   assign wbm_pref_o = gnt4 ? 0 : 1'bz;
    
    reg inc_reset, inc_active;
    reg [31:3] wbs_adr4_r, wbs_adr4_n;
@@ -361,12 +362,25 @@ module ctrl(/*AUTOARG*/
 	else
 	  m_cyc1 <= #1 m_cyc1 + 1'b1;
      end
-// synopsys translate_on   
-   always @(/*AS*/append or append_mode or c_done0
-	    or c_done1 or c_done2 or c_done3 or cdar
-	    or ctl_adr0 or ctl_adr1 or dar_r or dc0 or dc1
-	    or enable or inc or m_enable0 or m_enable1
-	    or ndar or ndar_dirty or next_desc or state
+// synopsys translate_on
+   
+   reg enable_ndar_dirty, enable_append;
+   always @(posedge wb_clk_i)
+     enable_ndar_dirty <= #1 enable && ndar_dirty;
+   always @(posedge wb_clk_i)
+     enable_append <= #1 enable && append;
+
+   reg job0_done, job1_done;
+   always @(posedge wb_clk_i)
+     job0_done <= #1 c_done0 && c_done1;
+   always @(posedge wb_clk_i)
+     job1_done <= #1 c_done2 && c_done3;
+   
+   always @(/*AS*/append_mode or cdar or ctl_adr0
+	    or ctl_adr1 or dar_r or dc0 or dc1
+	    or enable_append or enable_ndar_dirty or inc
+	    or job0_done or job1_done or m_enable0
+	    or m_enable1 or ndar or next_desc or state
 	    or wbs_ack4 or wbs_cab4 or wbs_cyc4 or wbs_err4
 	    or wbs_rty4 or wbs_sel4 or wbs_stb4 or wbs_we4)
      begin
@@ -396,7 +410,7 @@ module ctrl(/*AUTOARG*/
 	
 	case (state)
 	  S_IDLE:   begin
-	     if (enable && ndar_dirty) begin
+	     if (enable_ndar_dirty) begin
 		ndar_dirty_clear_n = 1;
 		wbs_adr4_n = ndar;
 		
@@ -407,7 +421,7 @@ module ctrl(/*AUTOARG*/
 		wbs_sel4_n = 4'b1111;
 		state_n    = S_CMD0;
 		inc_reset  = 1;
-	     end if (enable && append) begin
+	     end if (enable_append) begin
 		append_mode_n = 1;
 		wbs_adr4_n = dar_r;
 		
@@ -486,7 +500,7 @@ module ctrl(/*AUTOARG*/
 	  end
 	  
 	  S_WAIT0:   begin
-	     if (c_done0 && c_done1) begin
+	     if (job0_done) begin
 		if (dc0[7]) begin
 		   wbs_adr4_n = ctl_adr0;
 		   
@@ -538,7 +552,7 @@ module ctrl(/*AUTOARG*/
 	  end
 	  
 	  S_WAIT1:  begin
-	     if (c_done2 && c_done3) begin
+	     if (job1_done) begin
 		if (dc1[7]) begin
 		   wbs_adr4_n = ctl_adr1;
 		   

@@ -16,13 +16,13 @@
 
 module ss_sg(/*AUTOARG*/
    // Outputs
-   wbs_cyc, wbs_stb, wbs_we, wbs_pref, wbs_cab, wbs_sel,
+   wbs_cyc, wbs_stb, wbs_we, wbm_pref_o, wbs_cab, wbs_sel,
    wbs_adr, sg_state, sg_desc, sg_addr, sg_next, ss_xfer,
    ss_last, c_done,
    // Inputs
    wb_clk_i, wb_rst_i, rw, wbs_dat_o, wbs_dat64_o, wbs_ack,
-   wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done, ss_dc,
-   ss_start, ss_end, ss_stop
+   wbs_err, wbs_rty, gnt, ss_dat, ss_we, ss_adr, ss_done,
+   ss_dc, ss_start, ss_end, ss_stop
    );
    /*AUTOOUTPUT*/
    /*AUTOINPUT*/
@@ -36,8 +36,8 @@ module ss_sg(/*AUTOARG*/
    output wbs_cyc, 		// cycle signal
 	  wbs_stb, 		// strobe 
 	  wbs_we, 		// we
-	  wbs_pref,
-	  wbs_cab;		// 
+	  wbm_pref_o,
+	  wbs_cab;		//
    output [3:0] wbs_sel;	// byte select
    output [31:0] wbs_adr/*, 	// address 
 		 wbs_dat_i, 	// data output
@@ -47,7 +47,8 @@ module ss_sg(/*AUTOARG*/
    input 	 wbs_ack, 	// acknowledge
 		 wbs_err, 	// error report
 		 wbs_rty;	// retry report
-
+   input 	 gnt;
+   
    input [31:0]  ss_dat;	// data from ss_adma
    input 	 ss_we;		// we singla from ss_adma
    input [1:0] 	 ss_adr;	// address from ss_adma
@@ -96,17 +97,19 @@ module ss_sg(/*AUTOARG*/
    reg 		 wbs_cyc, wbs_cyc_n;
    reg 		 wbs_stb, wbs_stb_n;
    reg 		 wbs_we,  wbs_we_n;
-   reg 		 wbs_pref,wbs_pref_n;
+   reg 		 wbs_pref_r,wbs_pref_n;
    reg 		 wbs_cab, wbs_cab_n;
    reg [3:0] 	 wbs_sel, wbs_sel_n;
    always @(posedge wb_clk_i)
      begin
-	wbs_stb <= #1 wbs_stb_n;
-	wbs_we  <= #1 wbs_we_n;
-	wbs_pref<= #1 wbs_pref_n;
-	wbs_cab <= #1 wbs_cab_n;
-	wbs_sel <= #1 wbs_sel_n;
+	wbs_stb   <= #1 wbs_stb_n;
+	wbs_we    <= #1 wbs_we_n;
+	wbs_pref_r<= #1 wbs_pref_n;
+	wbs_cab   <= #1 wbs_cab_n;
+	wbs_sel   <= #1 wbs_sel_n;
      end
+   assign wbm_pref_o = gnt ? wbs_pref_r : 1'bz;
+   
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i)
@@ -180,12 +183,16 @@ module ss_sg(/*AUTOARG*/
 	end
      end
 
+   reg ss_start_reg;
+   always @(posedge wb_clk_i)
+     ss_start_reg <= #1 ss_start;
+   
    always @(/*AS*/cnt or err or io or rw or sg_addr
 	    or sg_last or sg_len or sg_next or ss_adr
 	    or ss_dat or ss_dc or ss_done or ss_end
-	    or ss_start or ss_stop or ss_we or state
+	    or ss_start_reg or ss_stop or ss_we or state
 	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
-	    or wbs_dat_o or wbs_err or wbs_pref or wbs_rty
+	    or wbs_dat_o or wbs_err or wbs_pref_r or wbs_rty
 	    or wbs_sel or wbs_stb or wbs_we)
      begin
 	state_n   = state;
@@ -204,7 +211,7 @@ module ss_sg(/*AUTOARG*/
 	wbs_cyc_n = wbs_cyc;
 	wbs_stb_n = wbs_stb;
 	wbs_we_n  = wbs_we;
-	wbs_pref_n= wbs_pref;
+	wbs_pref_n= wbs_pref_r;
 	wbs_cab_n = wbs_cab;
 	wbs_sel_n = wbs_sel;
 
@@ -322,7 +329,7 @@ module ss_sg(/*AUTOARG*/
 	  S_B_WAIT: begin
 	     if (ss_end && io) begin /* if no io xfer, end is not correct */
 		state_n = S_END;
-	     end else if (ss_start) begin
+	     end else if (ss_start_reg) begin
 		wbs_adr_start = 1;
 		wbs_adr_n = sg_addr;
 		wbs_cyc_n = 1'b1;

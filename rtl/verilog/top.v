@@ -21,8 +21,8 @@ module top(/*AUTOARG*/
    PCI_INTBn, PCI_PERRn, PCI_PAR, PCI_REQ64n, PCI_ACK64n,
    PCI_PAR64,
    // Inputs
-   USB_PC7, USB_PC6, USB_FRDn, CLK24, PCI_CLK, PCI_IDSEL,
-   PCI_GNTn
+   wb_clk_i, USB_PC7, USB_PC6, USB_FRDn, CLK24, PCI_CLK,
+   PCI_IDSEL, PCI_GNTn
    );
 
    /* PCI */
@@ -56,6 +56,7 @@ module top(/*AUTOARG*/
    input		USB_FRDn;		// To usb of spi_usb.v
    input		USB_PC6;		// To usb of spi_usb.v
    input		USB_PC7;		// To usb of spi_usb.v
+   input		wb_clk_i;		// To adma of ss_adma.v, ...
    // End of automatics
    /*AUTOOUTPUT*/
    // Beginning of automatic outputs (from unused autoinst outputs)
@@ -82,7 +83,6 @@ module top(/*AUTOARG*/
    wire			spi_en;			// From adma of ss_adma.v
    wire			spi_sel_i;		// From usb of spi_usb.v
    wire			spi_sel_o;		// From adma of ss_adma.v
-   wire			wb_clk_i;		// From bridge of bridge.v
    wire			wb_int_o;		// From adma of ss_adma.v
    wire			wb_rst_i;		// From bridge of bridge.v
    wire			wbm_ack_i;		// From bridge of bridge.v
@@ -191,7 +191,6 @@ module top(/*AUTOARG*/
 		 .wbs_cyc_i		(wbs_cyc_i),
 		 .wbs_cab_i		(wbs_cab_i),
 		 .wb_rst_i		(wb_rst_i),
-		 .wb_clk_i		(wb_clk_i),
 		 .wbm_rty_i		(wbm_rty_i),
 		 .wbm_err_i		(wbm_err_i),
 		 .wbm_ack_i		(wbm_ack_i),
@@ -226,6 +225,7 @@ module top(/*AUTOARG*/
 		 .wbs_ack_o		(wbs_ack_o),
 		 .wbs_dat_o		(wbs_dat_o[31:0]),
 		 .wb_int_o		(wb_int_o),
+		 .wb_clk_i		(wb_clk_i),
 		 .wbm_we_o		(wbm_we_o),
 		 .wbm_stb_o		(wbm_stb_o),
 		 .wbm_cyc_o		(wbm_cyc_o),

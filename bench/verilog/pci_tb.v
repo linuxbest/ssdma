@@ -18,9 +18,10 @@ module main;
    tri1        par64;
 
    /* 66MHZ */
-   reg 	       clk = 1;
+   reg 	       clk = 1, wb_clk = 1;
    always #7.5 clk = !clk;
-
+   always #5.0 wb_clk = !wb_clk;
+   
    // This is the system arbiter.
    pci_arbiter arb(clk, reset, frame, irdy, req, gnt);
    
@@ -48,7 +49,7 @@ module main;
    wire usb_fwrn;
    wire spi_sel;
    top //#(.PCI_MEM_ADDRESS(19'h7d0), .PCI_MEM_ENABLE(1))
-     top (.PCI_CLK(clk), .PCI_RSTn(reset),
+     top (.wb_clk_i(wb_clk), .PCI_CLK(clk), .PCI_RSTn(reset),
 	  .PCI_FRAMEn(frame), .PCI_IRDYn(irdy), .PCI_TRDYn(trdy),
 	  .PCI_STOPn(stop), .PCI_DEVSELn(devsel), .PCI_IDSEL(ad[18]),
 	  .PCI_AD(ad), .PCI_CBE(c_be), .PCI_PAR(par),

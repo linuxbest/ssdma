@@ -1,7 +1,7 @@
 ctrl
  Number of Slices:                     229  out of   3584     6%  
  Number of Slice Flip Flops:           249  out of   7168     3%  
- Number of 4 input LUTs:               336  out of   7168     4%  
+ Number of 4 input LUTs:               337  out of   7168     4%  
    Minimum period: 7.891ns (Maximum Frequency: 126.728MHz)
 
 ss_sg
@@ -63,8 +63,8 @@ spi_usb
    Minimum period: 5.298ns (Maximum Frequency: 188.751MHz)
 
 ss_adma
- Number of Slices:                    2069  out of   3584    57%  
- Number of Slice Flip Flops:          1870  out of   7168    26%  
- Number of 4 input LUTs:              3692  out of   7168    51%  
-   Minimum period: 13.292ns (Maximum Frequency: 75.231MHz)
+ Number of Slices:                    3112  out of   3584    86%  
+ Number of Slice Flip Flops:          2714  out of   7168    37%  
+ Number of 4 input LUTs:              5722  out of   7168    79%  
+   Minimum period: 15.262ns (Maximum Frequency: 65.524MHz)
 
