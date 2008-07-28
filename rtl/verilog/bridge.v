@@ -14,8 +14,8 @@
 module bridge(/*AUTOARG*/
    // Outputs
    PCI_SERRn, wbs_dat_i, wbs_adr_i, wbs_sel_i, wbs_we_i,
-   wbs_stb_i, wbs_cyc_i, wbs_cab_i, wb_rst_i, wbm_rty_i,
-   wbm_err_i, wbm_ack_i, wbm_dat_i, wbm_dat64_i,
+   wbs_stb_i, wbs_cyc_i, wbs_cab_i, wb_rst_i, wb_clk_i,
+   wbm_rty_i, wbm_err_i, wbm_ack_i, wbm_dat_i, wbm_dat64_i,
    // Inouts
    PCI_AD, PCI_AD64, PCI_CBE, PCI_CBE64, PCI_FRAMEn,
    PCI_IRDYn, PCI_TRDYn, PCI_DEVSELn, PCI_STOPn, PCI_LOCKn,
@@ -23,9 +23,9 @@ module bridge(/*AUTOARG*/
    PCI_PAR, PCI_REQ64n, PCI_ACK64n, PCI_PAR64,
    // Inputs
    PCI_CLK, PCI_IDSEL, PCI_GNTn, wbs_rty_o, wbs_err_o,
-   wbs_ack_o, wbs_dat_o, wb_int_o, wb_clk_i, wbm_we_o,
-   wbm_stb_o, wbm_cyc_o, wbm_cab_o, wbm_pref_o, wbm_sel_o,
-   wbm_dat_o, wbm_dat64_o, wbm_adr_o
+   wbs_ack_o, wbs_dat_o, wb_int_o, wbm_we_o, wbm_stb_o,
+   wbm_cyc_o, wbm_cab_o, wbm_pref_o, wbm_sel_o, wbm_dat_o,
+   wbm_dat64_o, wbm_adr_o
    );
    inout [31:0] PCI_AD;
    inout [31:0] PCI_AD64;
@@ -68,7 +68,8 @@ module bridge(/*AUTOARG*/
    input 	 wb_int_o;
    output 	 wb_rst_i;
    assign 	 wb_rst_i = ~PCI_RSTn;
-   input 	 wb_clk_i;
+   output 	 wb_clk_i;
+   assign 	 wb_clk_i = PCI_CLK;
    assign        PCI_INTBn= 1'b1; /* must wire to GND */
 
    /* WB Master */
@@ -157,7 +158,7 @@ module bridge(/*AUTOARG*/
    
    pci_bridge32 
      pci_bridge32(/* WB system signal */
-		  .wb_clk_i(wb_clk_i),
+		  .wb_clk_i(PCI_CLK),
 		  .wb_rst_i(wb_rst_i),
 		  .wb_rst_o(),
 		  .wb_int_i(wb_int_o),

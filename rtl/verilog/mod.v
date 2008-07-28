@@ -119,7 +119,7 @@ module mod(/*AUTOARG*/
 		 .m_last		(m_src_last),
 		 .rst			(wb_rst_i),
 		 .src_empty		(src_empty));
-`ifdef DECODE
+
    decode_dp decode(
 		    // Outputs
 		    .m_dst		(m_dst[63:0]),
@@ -128,7 +128,7 @@ module mod(/*AUTOARG*/
 		    .m_src_getn		(m_src_getn),
 		    //.m_dst_last         (m_dst_last),
 		    // Inputs
-		    .ce			(dc[6] && m_enable && 1'b0),
+		    .ce			(dc[6] && m_enable),
 		    .clk		(wb_clk_i),
 		    .rst		(wb_rst_i),
 		    .fo_full		(fo_full),
@@ -136,7 +136,7 @@ module mod(/*AUTOARG*/
 		    .m_src_empty	(src_empty),
 		    .m_last		(m_src_last),
 		    .sbc_done           (m_src_last));
-`endif		    
+		    
 endmodule // mod
 
 // Local Variables:
