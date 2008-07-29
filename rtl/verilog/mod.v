@@ -112,7 +112,7 @@ module mod(/*AUTOARG*/
 		 .m_src_getn		(m_src_getn),
                  .m_dst_last            (m_dst_last),
 		 // Inputs
-		 .ce			(dc[5] && m_enable),
+		 .ce			(dc[5] && m_enable && 1'b0),
 		 .clk			(wb_clk_i),
 		 .fi			(m_src[63:0]),
 		 .fo_full		(fo_full),

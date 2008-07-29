@@ -6,7 +6,7 @@ ofile=SUMMARY.txt
 
 > $ofile
 
-M="ctrl ss_sg mixer arbiter copy fill fifo_control tpram ch wbm spi_usb encode decode ss_adma"
+M="ctrl ss_sg mixer arbiter copy fill fifo_control tpram ch wbm spi_usb encode decode_dp ss_adma top"
 for i in $M
 do
   echo $i >> $ofile

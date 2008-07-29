@@ -68,15 +68,21 @@ encode
  Number of 4 input LUTs:               606  out of   7168     8%  
    Minimum period: 9.423ns (Maximum Frequency: 106.123MHz)
 
-decode
- Number of Slices:                     194  out of   3584     5%  
- Number of Slice Flip Flops:           169  out of   7168     2%  
- Number of 4 input LUTs:               356  out of   7168     4%  
-   Minimum period: 10.528ns (Maximum Frequency: 94.981MHz)
+decode_dp
+ Number of Slices:                     522  out of   3584    14%  
+ Number of Slice Flip Flops:           424  out of   7168     5%  
+ Number of 4 input LUTs:               931  out of   7168    12%  
+   Minimum period: 13.372ns (Maximum Frequency: 74.781MHz)
 
 ss_adma
- Number of Slices:                    2059  out of   3584    57%  
- Number of Slice Flip Flops:          1856  out of   7168    25%  
- Number of 4 input LUTs:              3693  out of   7168    51%  
-   Minimum period: 13.292ns (Maximum Frequency: 75.231MHz)
+ Number of Slices:                    1306  out of   3584    36%  
+ Number of Slice Flip Flops:          1306  out of   7168    18%  
+ Number of 4 input LUTs:              2395  out of   7168    33%  
+   Minimum period: 13.257ns (Maximum Frequency: 75.434MHz)
+
+top
+ Number of Slices:                    2477  out of   3584    69%  
+ Number of Slice Flip Flops:          2854  out of   7168    39%  
+ Number of 4 input LUTs:              4313  out of   7168    60%  
+   Minimum period: 16.564ns (Maximum Frequency: 60.371MHz)
 
