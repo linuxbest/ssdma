@@ -87,7 +87,7 @@ module codeout (/*AUTOARG*/
      begin
 	if (wb_rst_i)
 	  m_dst_last_r <= #1 1'b0;
-	else if (done)
+	else if (done[0])
 	  m_dst_last_r <= #1 1'b1;
      end
 
