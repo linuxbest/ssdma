@@ -206,6 +206,27 @@ map_bufs(unsigned long phys, int size, unsigned long *res,
 }
 
 static int 
+load_src(unsigned char *src, int cnt, int ops, FILE *fp, unsigned int phys_mem)
+{
+        int i = 0;
+        unsigned char *p = src;
+        unsigned long tmp_data_phys;
+
+        if (ops == DC_UNCOMPRESS)
+                p = tlsf_malloc_align(NULL, &tmp_data_phys, 32, cnt, phys_mem);
+
+        for (i = 0; i < cnt; i++)
+                p[i] = i;
+
+        if (ops == DC_UNCOMPRESS)
+                i = lzsCompress(p, cnt, src, cnt);
+        else
+                i = cnt;
+
+        return i;
+}
+
+static int 
 do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
                 int loop, int ops)
 {
@@ -223,8 +244,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                 map_bufs(dst_dat_phys, cnt, &dst_buf_phys, phys_mem);
                 j->s = src;
                 j->d = dst;
-                for (i = 0; i < cnt; i++)
-                        src[i] = i;
+                load_src(src, cnt, ops, fp, phys_mem);
 
                 j->desc->dc_fc     = ops | DC_CTRL;
                 j->desc->src_desc  = src_buf_phys;

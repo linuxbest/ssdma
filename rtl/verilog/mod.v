@@ -112,24 +112,24 @@ module mod(/*AUTOARG*/
 		 .fi(m_src),
 		 .clk(wb_clk_i),
 		 .rst(wb_rst_i),
-		 .out_data(en_out_data),
-		 .out_done(en_out_done),
-		 .out_valid(en_out_valid),
+		 .data_o(en_out_data),
+		 .done_o(en_out_done),
+		 .valid_o(en_out_valid),
+		 .m_last(m_src_last),
 		 /*AUTOINST*/
 		 // Outputs
 		 .m_src_getn		(m_src_getn),
 		 // Inputs
 		 .fo_full		(fo_full),
-		 .m_last		(m_last),
 		 .src_empty		(src_empty));
    
    decode decode(.ce(dc[6] && m_enable),
 		 .fi(m_src),
 		 .clk(wb_clk_i),
 		 .rst(wb_rst_i),
-		 .out_data(de_out_data),
-		 .out_done(de_out_done),
-		 .out_valid(de_out_valid),
+		 .data_o(de_out_data),
+		 .done_o(de_out_done),
+		 .valid_o(de_out_valid),
 		 /*AUTOINST*/
 		 // Outputs
 		 .m_src_getn		(m_src_getn),

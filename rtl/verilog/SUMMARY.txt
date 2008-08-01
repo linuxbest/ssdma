@@ -63,10 +63,10 @@ spi_usb
    Minimum period: 5.298ns (Maximum Frequency: 188.751MHz)
 
 encode
- Number of Slices:                     330  out of   3584     9%  
- Number of Slice Flip Flops:           277  out of   7168     3%  
- Number of 4 input LUTs:               606  out of   7168     8%  
-   Minimum period: 9.423ns (Maximum Frequency: 106.123MHz)
+ Number of Slices:                     298  out of   3584     8%  
+ Number of Slice Flip Flops:           265  out of   7168     3%  
+ Number of 4 input LUTs:               547  out of   7168     7%  
+   Minimum period: 9.633ns (Maximum Frequency: 103.810MHz)
 
 decode_dp
  Number of Slices:                     522  out of   3584    14%  
@@ -75,14 +75,14 @@ decode_dp
    Minimum period: 13.372ns (Maximum Frequency: 74.781MHz)
 
 ss_adma
- Number of Slices:                    1306  out of   3584    36%  
+ Number of Slices:                    1305  out of   3584    36%  
  Number of Slice Flip Flops:          1306  out of   7168    18%  
  Number of 4 input LUTs:              2395  out of   7168    33%  
    Minimum period: 13.257ns (Maximum Frequency: 75.434MHz)
 
 top
- Number of Slices:                    2477  out of   3584    69%  
+ Number of Slices:                    2472  out of   3584    68%  
  Number of Slice Flip Flops:          2854  out of   7168    39%  
- Number of 4 input LUTs:              4313  out of   7168    60%  
-   Minimum period: 16.564ns (Maximum Frequency: 60.371MHz)
+ Number of 4 input LUTs:              4310  out of   7168    60%  
+   Minimum period: 16.570ns (Maximum Frequency: 60.350MHz)
 
