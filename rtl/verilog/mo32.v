@@ -34,6 +34,6 @@ module mo32(/*AUTOARG*/
 	      gnt_r[3] ? I3 :
 	      gnt_r[2] ? I2 :
 	      gnt_r[1] ? I1 :
-	      gnt_r[0] ? I0 : 32'hz;
+	      /*gnt_r[0] ?*/ I0 /*: 32'h0*/;
    
 endmodule // mixer0
