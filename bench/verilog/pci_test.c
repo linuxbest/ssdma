@@ -234,17 +234,17 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
         unsigned long src_buf_phys, dst_buf_phys, 
                       src_dat_phys, dst_dat_phys;
         unsigned char *src, *dst;
-        int i;
+        int i, src_cnt;
 
         do {
                 j = new_job_entry(phys_mem);
                 src = tlsf_malloc_align(NULL, &src_dat_phys, 32, cnt, phys_mem);
                 dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, cnt, phys_mem);
-                map_bufs(src_dat_phys, cnt, &src_buf_phys, phys_mem);
+                src_cnt = load_src(src, cnt, ops, fp, phys_mem);
+                map_bufs(src_dat_phys, src_cnt, &src_buf_phys, phys_mem);
                 map_bufs(dst_dat_phys, cnt, &dst_buf_phys, phys_mem);
                 j->s = src;
                 j->d = dst;
-                load_src(src, cnt, ops, fp, phys_mem);
 
                 j->desc->dc_fc     = ops | DC_CTRL;
                 j->desc->src_desc  = src_buf_phys;

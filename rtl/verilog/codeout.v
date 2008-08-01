@@ -102,11 +102,10 @@ module codeout (/*AUTOARG*/
      end
 
    always @(posedge wb_clk_i)
-     if (valid_i)
-       $write("%h\n", data_i);
-   
-   always @(posedge wb_clk_i)
-     m_endn_r <= #1 ~done;
+     if (done == 2'b11)
+       m_endn_r <= #1 1'b0;
+     else
+       m_endn_r <= #1 1'b1;
    
    assign m_dst      = dc[5] | dc[6] ? m_dst_r      : 64'hz;
    assign m_dst_last = dc[5] | dc[6] ? m_dst_last_r : 1'bz;
