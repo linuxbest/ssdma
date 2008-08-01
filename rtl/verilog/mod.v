@@ -103,40 +103,57 @@ module mod(/*AUTOARG*/
 
    wire 	 fo_full   = m_dst_full  || m_dst_almost_full;
    wire 	 src_empty = m_src_empty || m_src_almost_empty;
+
+   wire [15:0] 	 en_out_data,  de_out_data;
+   wire 	 en_out_valid, de_out_valid;
+   wire 	 en_out_done,  de_out_done;
    
-   encode encode(
+   encode encode(.ce(dc[5] && m_enable),
+		 .fi(m_src),
+		 .clk(wb_clk_i),
+		 .rst(wb_rst_i),
+		 .out_data(en_out_data),
+		 .out_done(en_out_done),
+		 .out_valid(en_out_valid),
+		 /*AUTOINST*/
 		 // Outputs
-		 .m_dst			(m_dst[63:0]),
-		 .m_dst_putn		(m_dst_putn),
-		 .m_endn		(m_endn),
 		 .m_src_getn		(m_src_getn),
-                 .m_dst_last            (m_dst_last),
 		 // Inputs
-		 .ce			(dc[5] && m_enable && 1'b0),
-		 .clk			(wb_clk_i),
-		 .fi			(m_src[63:0]),
 		 .fo_full		(fo_full),
-		 .m_last		(m_src_last),
-		 .rst			(wb_rst_i),
+		 .m_last		(m_last),
+		 .src_empty		(src_empty));
+   
+   decode decode(.ce(dc[6] && m_enable),
+		 .fi(m_src),
+		 .clk(wb_clk_i),
+		 .rst(wb_rst_i),
+		 .out_data(de_out_data),
+		 .out_done(de_out_done),
+		 .out_valid(de_out_valid),
+		 /*AUTOINST*/
+		 // Outputs
+		 .m_src_getn		(m_src_getn),
+		 // Inputs
+		 .fo_full		(fo_full),
 		 .src_empty		(src_empty));
 
-   decode_dp decode(
+   codeout codeout (/*AUTOINST*/
 		    // Outputs
 		    .m_dst		(m_dst[63:0]),
 		    .m_dst_putn		(m_dst_putn),
+		    .m_dst_last		(m_dst_last),
 		    .m_endn		(m_endn),
-		    .m_src_getn		(m_src_getn),
-		    //.m_dst_last         (m_dst_last),
 		    // Inputs
-		    .ce			(dc[6] && m_enable && 1'b0),
-		    .clk		(wb_clk_i),
-		    .rst		(wb_rst_i),
-		    .fo_full		(fo_full),
-		    .fi			(m_src[63:0]),
-		    .m_src_empty	(src_empty),
-		    .m_last		(m_src_last),
-		    .sbc_done           (m_src_last));
-		    
+		    .wb_clk_i		(wb_clk_i),
+		    .wb_rst_i		(wb_rst_i),
+		    .dc			(dc[23:0]),
+		    .en_out_data	(en_out_data[15:0]),
+		    .de_out_data	(de_out_data[15:0]),
+		    .en_out_valid	(en_out_valid),
+		    .de_out_valid	(de_out_valid),
+		    .en_out_done	(en_out_done),
+		    .de_out_done	(de_out_done));
+   
 endmodule // mod
 
 // Local Variables:
