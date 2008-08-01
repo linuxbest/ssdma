@@ -11,9 +11,9 @@ ss_sg
    Minimum period: 9.949ns (Maximum Frequency: 100.512MHz)
 
 mixer
- Number of Slices:                     228  out of   3584     6%  
- Number of Slice Flip Flops:             5  out of   7168     0%  
- Number of 4 input LUTs:               410  out of   7168     5%  
+ Number of Slices:                     196  out of   3584     5%  
+ Number of Slice Flip Flops:             4  out of   7168     0%  
+ Number of 4 input LUTs:               355  out of   7168     4%  
    Minimum period: No path found
 
 arbiter
@@ -81,14 +81,14 @@ decode
    Minimum period: 13.273ns (Maximum Frequency: 75.341MHz)
 
 ss_adma
- Number of Slices:                    2571  out of   3584    71%  
- Number of Slice Flip Flops:          2106  out of   7168    29%  
- Number of 4 input LUTs:              4833  out of   7168    67%  
+ Number of Slices:                    2550  out of   3584    71%  
+ Number of Slice Flip Flops:          2101  out of   7168    29%  
+ Number of 4 input LUTs:              4811  out of   7168    67%  
    Minimum period: 15.290ns (Maximum Frequency: 65.404MHz)
 
 top
- Number of Slices:                    3736  out of   3584   104% (*) 
- Number of Slice Flip Flops:          3652  out of   7168    50%  
- Number of 4 input LUTs:              6637  out of   7168    92%  
-   Minimum period: 16.086ns (Maximum Frequency: 62.166MHz)
+ Number of Slices:                    3722  out of   3584   103% (*) 
+ Number of Slice Flip Flops:          3653  out of   7168    50%  
+ Number of 4 input LUTs:              6676  out of   7168    93%  
+   Minimum period: 16.885ns (Maximum Frequency: 59.224MHz)
 
