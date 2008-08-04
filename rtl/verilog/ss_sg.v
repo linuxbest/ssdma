@@ -18,7 +18,7 @@ module ss_sg(/*AUTOARG*/
    // Outputs
    wbs_cyc, wbs_stb, wbs_we, wbs_pref, wbs_cab, wbs_sel,
    wbs_adr, sg_state, sg_desc, sg_addr, sg_next, ss_xfer,
-   ss_last, c_done,
+   ss_last, err, c_done,
    // Inputs
    wb_clk_i, wb_rst_i, rw, wbs_dat_o, wbs_dat64_o, wbs_ack,
    wbs_err, wbs_rty, ss_dat, ss_we, ss_adr, ss_done, ss_dc,
@@ -82,6 +82,8 @@ module ss_sg(/*AUTOARG*/
    input 	 ss_stop;  /* stop io transcation */
    output 	 ss_xfer;  /* acknowledge data */
    output 	 ss_last;  /* last */
+
+   output [2:0]  err;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -220,6 +222,7 @@ module ss_sg(/*AUTOARG*/
 	     if (ss_we)
 	       state_n = S_CMD;
 	     io_n      = 1'b0;
+	     err_n     = state;
 	  end
 	  
 	  S_CMD: begin
@@ -339,10 +342,15 @@ module ss_sg(/*AUTOARG*/
 	  S_NEXT: begin
 	     if (ss_end) begin
 		state_n = S_END;
-	     end if (sg_last) begin
+	     end if (sg_last) begin /* if we are last sg and not got 
+				     * ss_end that means the fifo not 
+				     * full write to main memory.
+				     */
 		if (rw == 0) begin
 		   ss_xfer = 1'b1;
 		   ss_last = 1'b1;
+		end else begin
+		   err_n = state;
 		end
 		state_n = S_END;
 	     end else begin

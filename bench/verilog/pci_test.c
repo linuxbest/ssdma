@@ -228,7 +228,7 @@ load_src(unsigned char *src, int cnt, int ops, FILE *fp, unsigned int phys_mem)
 
 static int 
 do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
-                int loop, int ops)
+                int loop, int ops, int dst_cnt)
 {
         job_entry_t *j = NULL, *prev = NULL, *h = NULL;
         unsigned long src_buf_phys, dst_buf_phys, 
@@ -242,7 +242,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                 dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, cnt, phys_mem);
                 src_cnt = load_src(src, cnt, ops, fp, phys_mem);
                 map_bufs(src_dat_phys, src_cnt, &src_buf_phys, phys_mem);
-                map_bufs(dst_dat_phys, cnt, &dst_buf_phys, phys_mem);
+                map_bufs(dst_dat_phys, dst_cnt, &dst_buf_phys, phys_mem);
                 j->s = src;
                 j->d = dst;
 
@@ -317,12 +317,15 @@ main(int argc, char *argv[])
 	unsigned int lzf_mem =  0xfa000000;
 	unsigned int phys_mem = 0xa0000000;
 	unsigned sum;
-	int cnt = 64, loop = 0;
+	int cnt = 64, loop = 0, dst_cnt = 0;
 	unsigned int opt = 0, p = 0;
         FILE *fp = NULL;
 
-	while ((p = getopt(argc, argv, "NMCUAFhn:fr:vl:g:")) != EOF) {
+	while ((p = getopt(argc, argv, "NMCUAFhn:fr:vl:g:d:")) != EOF) {
 		switch (p) {
+                case 'd': 
+                        dst_cnt = atoi(optarg);
+                        break;
                 case 'g':
                         max_sg_size = 1<<(atoi(optarg));
                         break;
@@ -369,6 +372,10 @@ main(int argc, char *argv[])
 		}
 	}
 
+        if (dst_cnt == 0)
+                dst_cnt = cnt;
+        printf("%d, %d\n", cnt, dst_cnt);
+
         init_memory_pool(POOL_SIZE, system_mem);
 
 	pcisim_init(".", qemu_peek, qemu_poke);
@@ -405,7 +412,7 @@ main(int argc, char *argv[])
 	lzf_dev.mmr_base = lzf_mem;
 
         printf("max sg size is %x\n", max_sg_size);
-        do_test(phys_mem, lzf_mem, cnt, fp, loop, opt);
+        do_test(phys_mem, lzf_mem, cnt, fp, loop, opt, dst_cnt);
 
  done:
 	return 0;
