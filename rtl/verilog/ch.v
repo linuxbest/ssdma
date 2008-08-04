@@ -64,13 +64,13 @@ module ch(/*AUTOARG*/
 
    output [15:0] ocnt;
    
-   parameter 	 FIFO_WIDTH = 9;
+   parameter 	 FIFO_WIDTH = 8;
    wire [FIFO_WIDTH-1:0] src_waddr,
 			 src_raddr,
 			 dst_waddr,
 			 dst_raddr;
    
-   parameter 		 DATA_WIDTH = 72;
+   parameter 		 DATA_WIDTH = 65;
    wire [DATA_WIDTH-1:0] src_di,
 			 src_do,
 			 dst_di,
@@ -138,6 +138,7 @@ module ch(/*AUTOARG*/
 	      .oe_b(1'b1),
 	      .we_b(1'b0),
 	      .addr_b(src_raddr),
+              .di_b(),
 	      .do_b(src_do));
    tpram
      dst_ram (.clk_a(wb_clk_i),
@@ -155,6 +156,7 @@ module ch(/*AUTOARG*/
 	      .oe_b(1'b1),
 	      .we_b(1'b0),
 	      .addr_b(dst_raddr),
+              .di_b(),
 	      .do_b(dst_do));
    defparam 		 dst_control.ADDR_LENGTH = FIFO_WIDTH;
    defparam 		 src_control.ADDR_LENGTH = FIFO_WIDTH;   
@@ -175,13 +177,13 @@ module ch(/*AUTOARG*/
    /* DATA path */
    assign 		 src_di[63:32]= src_dat64_o;
    assign 		 src_di[31:00]= src_dat_o;
-   assign 		 src_di[71:64]= {src_last, 7'b0};
+   assign 		 src_di[64]   = src_last;
    
    assign 		 m_src       = src_do[63:0];
-   assign 		 m_src_last  = src_do[71];
+   assign 		 m_src_last  = src_do[64];
    
    assign 		 dst_di[63:0] = m_dst;
-   assign 		 dst_di[71:64]= {m_dst_last, 7'b0};
+   assign 		 dst_di[64]   = m_dst_last;
    
    assign 		 dst_dat64_i = dst_do[63:32];
    assign 		 dst_dat_i   = dst_do[31:00];
@@ -196,7 +198,7 @@ module ch(/*AUTOARG*/
    assign 		 dst_stop     = dst_almost_empty /*|| dst_empty*/;
    
    assign                src_end      = 1'b0;
-   assign 		 dst_end      = dst_do[71];
+   assign 		 dst_end      = dst_do[64];
 
    assign 		 src_start    = !src_half_full;
    assign 		 dst_start    = dst_half_full ||

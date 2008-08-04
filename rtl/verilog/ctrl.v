@@ -58,7 +58,7 @@ module ctrl(/*AUTOARG*/
    wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
    wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
    ndar_dirty, ndar, wb_int_clear, append, enable, ocnt0,
-   ocnt1, err0, err1, err2, err3
+   ocnt1, err0, err1, err2, err3, wbs_cyc_i
    );
 
    input wb_clk_i;
@@ -131,6 +131,8 @@ module ctrl(/*AUTOARG*/
 
    input [15:0]  ocnt0, ocnt1;
    input [2:0] 	 err0, err1, err2, err3;
+
+   input 	 wbs_cyc_i;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -309,12 +311,9 @@ module ctrl(/*AUTOARG*/
 		dc1       <= #1 wbs_dat_o4[23:0];
 	     end 
 	   endcase
-	end else if (m_reset0) begin // if (state == S_CMD1 && wbs_ack4)
-	   dc0 <= #1 0;
-	end else if (m_reset1) begin
-	   dc1 <= #1 0;
-	end
+	end 
      end // always @ (posedge wb_clk_i)
+
    assign ss_dc0 = dc0;
    assign ss_dc1 = dc0;
    assign ss_dc2 = dc1;
@@ -367,8 +366,9 @@ module ctrl(/*AUTOARG*/
 	    or ctl_adr0 or ctl_adr1 or dar_r or dc0 or dc1
 	    or enable or inc or m_enable0 or m_enable1
 	    or ndar or ndar_dirty or next_desc or state
-	    or wbs_ack4 or wbs_cab4 or wbs_cyc4 or wbs_err4
-	    or wbs_rty4 or wbs_sel4 or wbs_stb4 or wbs_we4)
+	    or wbs_ack4 or wbs_cab4 or wbs_cyc4 or wbs_cyc_i
+	    or wbs_err4 or wbs_rty4 or wbs_sel4 or wbs_stb4
+	    or wbs_we4)
      begin
 	state_n = state;
 	append_clear_n = 0;
@@ -527,6 +527,11 @@ module ctrl(/*AUTOARG*/
 	  end // case: S_CTL0
 
 	  S_TR0:   begin
+	     if (wbs_cyc_i)
+	       state_n = S_CYC0;
+	  end
+	  
+	  S_CYC0: begin
 	     if (dc0[14]) begin
 		state_n = S_WAIT1;
 	     end else begin
@@ -575,8 +580,13 @@ module ctrl(/*AUTOARG*/
 	       end
 	     endcase // case({wbs_ack4, wbs_rty4, wbs_err4})
 	  end // case: S_CTL1
+
+	  S_TR1:   begin
+	     if (wbs_cyc_i)
+	       state_n = S_CYC1;
+	  end
 	  
-	  S_TR1:    begin
+	  S_CYC1:    begin
 	     if (dc1[14]) 
 	       state_n = S_NEXT1;
 	     else
@@ -633,23 +643,23 @@ module ctrl(/*AUTOARG*/
      end
 
    reg [63:0] ctl0, ctl1;
-   always @(/*AS*/dc0 or err1 or inc or m_cyc0 or ocnt0)
+   always @(/*AS*/dc0 or inc or m_cyc0 or ocnt0)
      begin
 	ctl0 = 32'h0;
 	case (inc)
 	  2'b00: ctl0 = {ocnt0, 3'b000};
-	  2'b01: ctl0 = {err1};
+	  2'b01: /*ctl0 = {err1}*/;
 	  2'b10: ctl0 = {m_cyc0};
 	  2'b11: ctl0 = {dc0};
 	endcase
      end
    
-   always @(/*AS*/dc1 or err3 or inc or m_cyc1 or ocnt1)
+   always @(/*AS*/dc1 or inc or m_cyc1 or ocnt1)
      begin
 	ctl1 = 32'h0;
 	case (inc)
 	  2'b00: ctl1 = {ocnt1, 3'b000};
-	  2'b01: ctl1 = {err3};
+	  2'b01: /*ctl1 = {err3}*/;
 	  2'b10: ctl1 = {m_cyc1};
 	  2'b11: ctl1 = {dc1};
 	endcase

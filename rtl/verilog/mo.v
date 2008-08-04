@@ -30,6 +30,6 @@ module mo(/*AUTOARG*/
 	      gnt_r[3] ? I[3] :
 	      gnt_r[2] ? I[2] :
 	      gnt_r[1] ? I[1] :
-	      /*gnt_r[0] ?*/ I[0] /*: 1'bz*/;
+	      gnt_r[0] ? I[0] : 1'bz;
    
 endmodule // mixer0

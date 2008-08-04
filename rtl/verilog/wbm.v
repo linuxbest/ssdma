@@ -129,28 +129,16 @@ module wbm(/*AUTOARG*/
    // End of automatics
 
    reg 			valid_access;
-   always @(posedge wb_clk_i or posedge wb_rst_i)
-     if (wb_rst_i) begin
-	wbs_ack_o <= #1 1'b0;
-	wbs_err_o <= #1 1'b0;
-     end else if (valid_access) begin
-	wbs_ack_o <= #1 1'b1;
-	wbs_err_o <= #1 1'b0;
-     end else if (wbs_cyc_i & wbs_stb_i) begin
-	wbs_ack_o <= #1 1'b0;
-	wbs_err_o <= #1 1'b1;
-     end else begin
-	wbs_ack_o <= #1 1'b0;
-	wbs_err_o <= #1 1'b0;
-     end // else: !if(wbs_cyc_i & wbs_stb_i)
-
    /* valid access */
-   always @(/*AS*/wbs_cyc_i or wbs_sel_i or wbs_stb_i)
+   always @(/*AS*/wbs_adr_i)
      begin
-	if (wbs_cyc_i && wbs_stb_i && wbs_sel_i == 4'b1111)
+	if (wbs_adr_i[10]) 
 	  valid_access = 1;
 	else
 	  valid_access = 0;
+          $write("addr %h, do %h, di %h, we %h, %h, %h\n", 
+                          wbs_adr_i[6:2], wbs_dat_o, 
+                          wbs_dat_i, wbs_we_i, wbs_sel_i, valid_access);
      end
    
    /* rty */

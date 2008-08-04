@@ -46,7 +46,6 @@ module mod(/*AUTOARG*/
    pullup(m_endn);
    // synopsys translate_on
 
-   // synopsys translate_off
    read read(/*AUTOINST*/
 	     // Outputs
 	     .m_src_getn		(m_src_getn),
@@ -101,7 +100,6 @@ module mod(/*AUTOARG*/
 	     .m_src_empty		(m_src_empty),
 	     .m_dst_almost_full		(m_dst_almost_full),
 	     .m_dst_full		(m_dst_full));
-   // synopsys translate_on
 
    wire 	 fo_full   = m_dst_full  || m_dst_almost_full;
    wire 	 src_empty = m_src_empty || m_src_almost_empty;
@@ -154,7 +152,8 @@ module mod(/*AUTOARG*/
 		    .en_out_valid	(en_out_valid),
 		    .de_out_valid	(de_out_valid),
 		    .en_out_done	(en_out_done),
-		    .de_out_done	(de_out_done));
+		    .de_out_done	(de_out_done),
+		    .m_enable		(m_enable));
    
 endmodule // mod
 

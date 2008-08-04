@@ -64,13 +64,13 @@ pci_reset(unsigned phys_mem)
 static void
 lzf_write(unsigned long base, unsigned int off, unsigned long val)
 {
-	pcisim_writel(base + off, val);
+	pcisim_writel(base + off + 0x400, val);
 }
 
 static unsigned long 
 lzf_read(unsigned int base, unsigned int off)
 {
-	return pcisim_readl(base + off);
+	return pcisim_readl(base + off + 0x400);
 }
 
 #define readl(x)  pcisim_readl(x)
@@ -85,7 +85,7 @@ static pcidev_t *dev = &lzf_dev;
 static void dump_reg(unsigned int lzf_mem) 
 {
         int i = 0, j = 0;
-        for (i = 0; i < 4; i ++) {
+        for (i = 0; i < 8; i ++) {
                 uint32_t u0, u1, u2, u3;
                 u0 = lzf_read(lzf_mem, j*4); j++;
                 u1 = lzf_read(lzf_mem, j*4); j++;
@@ -405,14 +405,17 @@ main(int argc, char *argv[])
         // P_IMG_CTRL0
 	//pcisim_config_write((1<<idx) + 0x110, 3);
 
-	pcisim_config_write((1<<idx) + 4*5, lzf_mem);
+	pcisim_config_write((1<<idx) + 4*4, lzf_mem);
 
 	dev_scan(idx);
 	
 	lzf_dev.mmr_base = lzf_mem;
 
-        printf("max sg size is %x\n", max_sg_size);
-        do_test(phys_mem, lzf_mem, cnt, fp, loop, opt, dst_cnt);
+//        dump_reg(lzf_mem);
+        if (opt) {
+                printf("max sg size is %x\n", max_sg_size);
+                do_test(phys_mem, lzf_mem, cnt, fp, loop, opt, dst_cnt);
+        }
 
  done:
 	return 0;

@@ -262,10 +262,10 @@ module ss_sg(/*AUTOARG*/
 	     case ({wbs_ack, wbs_rty, wbs_err})
 	       3'b100: begin
 		  wbs_adr_inc = 1;
-		  if (cnt == 0) begin
+		  if (~cnt) begin
 		     sg_last_n = wbs_dat_o[20];
 		     sg_addr_start = 1;
-		     cnt_n = cnt + 1;
+		     cnt_n = 1;
 		  end else begin
 		     sg_next_n = wbs_dat_o[31:3];
 		     wbs_cyc_n = 1'b0;

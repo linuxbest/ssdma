@@ -66,7 +66,7 @@ module ss_adma(/*AUTOARG*/
    input		wbm_rty_i;		// To m0 of mixer.v
    input [31:0]		wbs_adr_i;		// To wbm of wbm.v
    input		wbs_cab_i;		// To wbm of wbm.v
-   input		wbs_cyc_i;		// To wbm of wbm.v
+   input		wbs_cyc_i;		// To wbm of wbm.v, ...
    input [31:0]		wbs_dat_i;		// To wbm of wbm.v
    input [3:0]		wbs_sel_i;		// To wbm of wbm.v
    input		wbs_stb_i;		// To wbm of wbm.v
@@ -656,7 +656,8 @@ module ss_adma(/*AUTOARG*/
 	     .err0			(err0[2:0]),
 	     .err1			(err1[2:0]),
 	     .err2			(err2[2:0]),
-	     .err3			(err3[2:0]));
+	     .err3			(err3[2:0]),
+	     .wbs_cyc_i			(wbs_cyc_i));
    
    ch0 ch0( /*AUTOINST*/
 	   // Outputs
