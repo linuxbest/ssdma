@@ -291,7 +291,7 @@ module wbm(/*AUTOARG*/
      begin
 	if (wb_rst_i)
 	  spi_reg <= #1 8'h0;
-	else if (wbs_adr_i[10] && (&wbs_adr_i[6:2]))
+	else if (wbs_adr_i[10] && (&wbs_adr_i[6:2]) && wbs_we_i)
 	  spi_reg <= #1 wbs_dat_i[23:16];
      end
    
