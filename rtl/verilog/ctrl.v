@@ -502,7 +502,7 @@ module ctrl(/*AUTOARG*/
 		   state_n    = S_TR0;
 		end
 	     end // if (c0_done && c1_done)
-	     m_enable1_n = 1'b1;
+	     m_enable1_n = dc0[14];
 	     m_cyc1_start= !m_enable1;
 	  end // case: S_WAIT0
 
