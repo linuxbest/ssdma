@@ -42,7 +42,7 @@ module codeout (/*AUTOARG*/
 	    or en_out_valid)
      begin
 	if (dc[5]) begin /* encode */
-	   data_i = en_out_data;
+	   data_i = {en_out_data[7:0], en_out_data[15:8]};
 	   valid_i= en_out_valid;
 	   done_i = en_out_done;
 	end else begin
