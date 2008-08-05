@@ -136,9 +136,6 @@ module wbm(/*AUTOARG*/
 	  valid_access = 1;
 	else
 	  valid_access = 0;
-          $write("addr %h, do %h, di %h, we %h, %h, %h\n", 
-                          wbs_adr_i[6:2], wbs_dat_o, 
-                          wbs_dat_i, wbs_we_i, wbs_sel_i, valid_access);
      end
    
    /* rty */

@@ -643,23 +643,23 @@ module ctrl(/*AUTOARG*/
      end
 
    reg [63:0] ctl0, ctl1;
-   always @(/*AS*/dc0 or inc or m_cyc0 or ocnt0)
+   always @(/*AS*/dc0 or err1 or inc or m_cyc0 or ocnt0)
      begin
 	ctl0 = 32'h0;
 	case (inc)
 	  2'b00: ctl0 = {ocnt0, 3'b000};
-	  2'b01: /*ctl0 = {err1}*/;
+	  2'b01: ctl0 = {err1};
 	  2'b10: ctl0 = {m_cyc0};
 	  2'b11: ctl0 = {dc0};
 	endcase
      end
    
-   always @(/*AS*/dc1 or inc or m_cyc1 or ocnt1)
+   always @(/*AS*/dc1 or err3 or inc or m_cyc1 or ocnt1)
      begin
 	ctl1 = 32'h0;
 	case (inc)
 	  2'b00: ctl1 = {ocnt1, 3'b000};
-	  2'b01: /*ctl1 = {err3}*/;
+	  2'b01: ctl1 = {err3};
 	  2'b10: ctl1 = {m_cyc1};
 	  2'b11: ctl1 = {dc1};
 	endcase

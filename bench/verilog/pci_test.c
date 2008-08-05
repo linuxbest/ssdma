@@ -227,6 +227,15 @@ load_src(unsigned char *src, int cnt, int ops, FILE *fp, unsigned int phys_mem)
 }
 
 static int 
+load_dst(unsigned char *dst, int cnt)
+{
+        int i;
+        for (i = 0; i < cnt; i++)
+                dst[i] = 0xff - i;
+        return 0;
+}
+
+static int 
 do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
                 int loop, int ops, int dst_cnt)
 {
@@ -238,9 +247,12 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
 
         do {
                 j = new_job_entry(phys_mem);
-                src = tlsf_malloc_align(NULL, &src_dat_phys, 32, cnt, phys_mem);
-                dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, cnt, phys_mem);
+                src = tlsf_malloc_align(NULL, &src_dat_phys, 32, cnt, 
+                                phys_mem);
+                dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, dst_cnt,
+                                phys_mem);
                 src_cnt = load_src(src, cnt, ops, fp, phys_mem);
+                load_dst(dst, dst_cnt);
                 map_bufs(src_dat_phys, src_cnt, &src_buf_phys, phys_mem);
                 map_bufs(dst_dat_phys, dst_cnt, &dst_buf_phys, phys_mem);
                 j->s = src;
@@ -274,7 +286,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                                 j->res->ocnt, j->res->err, j->res->cycle);
                 if (verbose) {
                         HexDump(j->res, 32);
-                        HexDump(j->d, j->res->ocnt);
+                        HexDump(j->d, dst_cnt);
                 }
                 j = j->next;
         }

@@ -342,16 +342,9 @@ module ss_sg(/*AUTOARG*/
 	  S_NEXT: begin
 	     if (ss_end) begin
 		state_n = S_END;
-	     end if (sg_last) begin /* if we are last sg and not got 
-				     * ss_end that means the fifo not 
-				     * full write to main memory.
-				     */
-		if (rw == 0) begin
-		   ss_xfer = 1'b1;
-		   ss_last = 1'b1;
-		end else begin
-		   err_n = state;
-		end
+	     end if (sg_last) begin
+		ss_xfer = 1'b1;
+		ss_last = 1'b1;
 		state_n = S_END;
 	     end else begin
 		state_n = S_D_REQ;
@@ -369,6 +362,9 @@ module ss_sg(/*AUTOARG*/
 	  end
 	  
 	  S_END: begin
+	     if (~ss_end) begin
+		err_n = state;
+	     end
 	     if (ss_done) begin /* XXXX reset all values */
 		state_n = S_IDLE;
 	     end
