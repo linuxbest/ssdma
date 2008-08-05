@@ -99,6 +99,8 @@ module ss_adma(/*AUTOARG*/
    wire [2:0]		err2;			// From r_2 of ss_sg.v
    wire [2:0]		err3;			// From r_3 of ss_sg.v
    wire [4:0]		gnt;			// From arbiter of arbiter.v
+   wire [7:0]		m_cap0;			// From mod_0 of mod.v
+   wire [7:0]		m_cap1;			// From mod_1 of mod.v
    wire [63:0]		m_dst0;			// From mod_0 of mod.v
    wire [63:0]		m_dst1;			// From mod_1 of mod.v
    wire			m_dst_almost_full0;	// From ch0 of ch0.v
@@ -570,6 +572,8 @@ module ss_adma(/*AUTOARG*/
 	   .ctrl_state			(ctrl_state[7:0]),
 	   .dc0				(dc0[23:0]),
 	   .dc1				(dc1[23:0]),
+	   .m_cap0			(m_cap0[7:0]),
+	   .m_cap1			(m_cap1[7:0]),
 	   .m_enable0			(m_enable0),
 	   .m_enable1			(m_enable1),
 	   .m_src_last0			(m_src_last0),
@@ -747,6 +751,7 @@ module ss_adma(/*AUTOARG*/
 	     .m_dst			(m_dst0[63:0]),		 // Templated
 	     .m_dst_last		(m_dst_last0),		 // Templated
 	     .m_endn			(m_endn0),		 // Templated
+	     .m_cap			(m_cap0[7:0]),		 // Templated
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),		 // Templated
 	     .m_reset			(m_reset0),		 // Templated
@@ -765,6 +770,7 @@ module ss_adma(/*AUTOARG*/
 	     .m_dst			(m_dst1[63:0]),		 // Templated
 	     .m_dst_last		(m_dst_last1),		 // Templated
 	     .m_endn			(m_endn1),		 // Templated
+	     .m_cap			(m_cap1[7:0]),		 // Templated
 	     // Inputs
 	     .wb_clk_i			(wb_clk_i),		 // Templated
 	     .m_reset			(m_reset1),		 // Templated

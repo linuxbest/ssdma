@@ -26,12 +26,12 @@ module wbm(/*AUTOARG*/
    wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i,
    spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
    ndar_dirty_clear, append_clear, wb_int_o, busy, ctl_adr0,
-   ctl_adr1, next_desc, ctrl_state, dc0, dc1, m_enable0,
-   m_enable1, m_src_last0, m_src_last1, m_src_almost_empty0,
-   m_src_almost_empty1, m_src_empty0, m_src_empty1,
-   m_dst_last0, m_dst_last1, m_dst_almost_full0,
-   m_dst_almost_full1, m_dst_full0, m_dst_full1, m_endn0,
-   m_endn1
+   ctl_adr1, next_desc, ctrl_state, dc0, dc1, m_cap0,
+   m_cap1, m_enable0, m_enable1, m_src_last0, m_src_last1,
+   m_src_almost_empty0, m_src_almost_empty1, m_src_empty0,
+   m_src_empty1, m_dst_last0, m_dst_last1,
+   m_dst_almost_full0, m_dst_almost_full1, m_dst_full0,
+   m_dst_full1, m_endn0, m_endn1
    );
    
    input wb_clk_i,
@@ -98,7 +98,8 @@ module wbm(/*AUTOARG*/
    input [7:0] 	ctrl_state;
 
    input [23:0] dc0, dc1;
-
+   input [7:0] 	m_cap0, m_cap1;
+   
    input 	m_enable0, m_enable1;
    input 	m_src_last0, m_src_last1;
    input 	m_src_almost_empty0, m_src_almost_empty1;
@@ -169,14 +170,15 @@ module wbm(/*AUTOARG*/
       spi_sel_o, spi_di_o,  spi_do_o, spi_clk_o} = spi_reg;
    
    always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1
-	    or dar or dc0 or dc1 or enable or m_dst0
-	    or m_dst1 or m_src0 or m_src1 or m_status0
-	    or m_status1 or ndar or next_desc or sg_addr0
-	    or sg_addr1 or sg_addr2 or sg_addr3 or sg_desc0
-	    or sg_desc1 or sg_desc2 or sg_desc3 or sg_next0
-	    or sg_next1 or sg_next2 or sg_next3 or sg_state0
-	    or sg_state1 or sg_state2 or sg_state3 or spi_i
-	    or wb_int_o or wbs_adr_i)
+	    or dar or dc0 or dc1 or enable or m_cap0
+	    or m_cap1 or m_dst0 or m_dst1 or m_src0
+	    or m_src1 or m_status0 or m_status1 or ndar
+	    or next_desc or sg_addr0 or sg_addr1 or sg_addr2
+	    or sg_addr3 or sg_desc0 or sg_desc1 or sg_desc2
+	    or sg_desc3 or sg_next0 or sg_next1 or sg_next2
+	    or sg_next3 or sg_state0 or sg_state1
+	    or sg_state2 or sg_state3 or spi_i or wb_int_o
+	    or wbs_adr_i)
      begin
 	wbs_dat_o = 32'h0;
 	case (wbs_adr_i[6:2])
@@ -212,8 +214,8 @@ module wbm(/*AUTOARG*/
 	  
 	  5'h18: wbs_dat_o = dc0;
 	  5'h19: wbs_dat_o = dc1;
-	  5'h1a: ;
-	  5'h1b: ;
+	  5'h1a: wbs_dat_o = m_cap0;
+	  5'h1b: wbs_dat_o = m_cap1;
 	  
 	  5'h1c: wbs_dat_o = {m_status0, m_src0, m_dst0};
 	  5'h1d: wbs_dat_o = {m_status1, m_src1, m_dst1};

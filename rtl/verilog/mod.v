@@ -13,7 +13,7 @@
 
 module mod(/*AUTOARG*/
    // Outputs
-   m_src_getn, m_dst_putn, m_dst, m_dst_last, m_endn,
+   m_src_getn, m_dst_putn, m_dst, m_dst_last, m_endn, m_cap,
    // Inputs
    wb_clk_i, m_reset, m_enable, dc, m_src, m_src_last,
    m_src_almost_empty, m_src_empty, m_dst_almost_full,
@@ -39,6 +39,8 @@ module mod(/*AUTOARG*/
    input 	 m_dst_full;
 
    output 	 m_endn;
+
+   output [7:0]  m_cap;
    
    // synopsys translate_off
    pullup(m_dst_putn);
@@ -155,6 +157,14 @@ module mod(/*AUTOARG*/
 		    .en_out_done	(en_out_done),
 		    .de_out_done	(de_out_done),
 		    .m_enable		(m_enable));
+
+   assign 	 m_cap = {1'b1,  /* decode */
+			  1'b1,  /* encode */
+			  1'b1,  /* memcpy */
+			  1'b0, 
+			  1'b0, 
+			  1'b0, 
+			  1'b0};
    
 endmodule // mod
 
