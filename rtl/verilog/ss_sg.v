@@ -302,7 +302,7 @@ module ss_sg(/*AUTOARG*/
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
 		     state_n   = S_NEXT;
-		  end else if (ss_stop) begin
+		  end else if (ss_stop || ss_end) begin
 		     wbs_cyc_n = 1'b0;
 		     wbs_we_n  = 1'b0;
 		     state_n   = S_B_WAIT;
