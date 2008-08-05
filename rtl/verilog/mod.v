@@ -44,9 +44,7 @@ module mod(/*AUTOARG*/
    pullup(m_dst_putn);
    pullup(m_src_getn);
    pullup(m_endn);
-   // synopsys translate_on
 
-   // synopsys translate_off
    read read(/*AUTOINST*/
 	     // Outputs
 	     .m_src_getn		(m_src_getn),

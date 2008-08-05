@@ -486,7 +486,7 @@ module ctrl(/*AUTOARG*/
 	  end
 	  
 	  S_WAIT0:   begin
-	     if (c_done0 && c_done1) begin
+	     if (/*c_done0 && */c_done1) begin
 		if (dc0[7]) begin
 		   wbs_adr4_n = ctl_adr0;
 		   
@@ -543,7 +543,7 @@ module ctrl(/*AUTOARG*/
 	  end
 	  
 	  S_WAIT1:  begin
-	     if (c_done2 && c_done3) begin
+	     if (/*c_done2 && */c_done3) begin
 		if (dc1[7]) begin
 		   wbs_adr4_n = ctl_adr1;
 		   

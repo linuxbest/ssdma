@@ -206,24 +206,28 @@ map_bufs(unsigned long phys, int size, unsigned long *res,
 }
 
 static int 
-load_src(unsigned char *src, int cnt, int ops, FILE *fp, unsigned int phys_mem)
+load_src(unsigned char *src, int cnt, int ops, FILE *fp, 
+                unsigned int phys_mem, unsigned char **o)
 {
         int i = 0;
         unsigned char *p = src;
         unsigned long tmp_data_phys;
 
+        *o  = tlsf_malloc_align(NULL, &tmp_data_phys, 32, cnt, phys_mem);
         if (ops == DC_UNCOMPRESS)
-                p = tlsf_malloc_align(NULL, &tmp_data_phys, 32, cnt, phys_mem);
+                p = *o;
 
-        for (i = 0; i < cnt; i++)
-                p[i] = i;
+        if (fp) 
+                fread(p, cnt, 1, fp);
+        else
+                for (i = 0; i < cnt; i++)
+                        p[i] = i;
 
         if (ops == DC_UNCOMPRESS)
                 i = lzsCompress(p, cnt, src, cnt);
         else
                 i = cnt;
-
-        return i;
+        return cnt;
 }
 
 static int 
@@ -234,6 +238,31 @@ load_dst(unsigned char *dst, int cnt)
                 dst[i] = 0xff - i;
         return 0;
 }
+static int 
+check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst, 
+                int dst_cnt, int ops, unsigned char *tmp)
+{
+        int err = 0, i = 0;
+        unsigned char *c_s = NULL;
+        int c_len = 0;
+
+        if (ops == DC_COMPRESS) {
+                c_len = lzsCompress(src, src_cnt, tmp, dst_cnt);
+                c_s = tmp;
+        }
+        if (ops == DC_UNCOMPRESS) {
+                c_len = src_cnt;
+                c_s = tmp;
+        }
+        for (i = 0; i < c_len; i ++) 
+                if (c_s[i] != dst[i])
+                        err ++;
+        if (err) {
+                HexDump(c_s, c_len);
+                HexDump(dst, dst_cnt);
+        } else
+                printf("PASSED\n");
+}
 
 static int 
 do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp, 
@@ -242,7 +271,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
         job_entry_t *j = NULL, *prev = NULL, *h = NULL;
         unsigned long src_buf_phys, dst_buf_phys, 
                       src_dat_phys, dst_dat_phys;
-        unsigned char *src, *dst;
+        unsigned char *src, *dst, *tmp;
         int i, src_cnt;
 
         do {
@@ -251,7 +280,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                                 phys_mem);
                 dst = tlsf_malloc_align(NULL, &dst_dat_phys, 32, dst_cnt,
                                 phys_mem);
-                src_cnt = load_src(src, cnt, ops, fp, phys_mem);
+                src_cnt = load_src(src, cnt, ops, fp, phys_mem, &tmp);
                 load_dst(dst, dst_cnt);
                 map_bufs(src_dat_phys, src_cnt, &src_buf_phys, phys_mem);
                 map_bufs(dst_dat_phys, dst_cnt, &dst_buf_phys, phys_mem);
@@ -288,6 +317,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                         HexDump(j->res, 32);
                         HexDump(j->d, dst_cnt);
                 }
+                check_src_dst(src, src_cnt, dst, dst_cnt, ops, tmp);
                 j = j->next;
         }
         /*for (i = i; i < cnt; i ++)

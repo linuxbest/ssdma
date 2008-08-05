@@ -109,7 +109,7 @@ module ch(/*AUTOARG*/
      dst_control (.rclock_in(wb_clk_i),
 		  .wclock_in(wb_clk_i),
 		  .renable_in(dst_xfer && ~dst_end),
-		  .wenable_in(!m_dst_putn),
+		  .wenable_in(!m_dst_putn & !m_dst_last),
 		  .reset_in(wb_rst_i),
 		  .clear_in(m_reset),
 		  .almost_empty_out(dst_almost_empty),
