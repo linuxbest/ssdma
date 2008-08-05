@@ -145,6 +145,8 @@ module ss_sg(/*AUTOARG*/
      begin
 	if (wb_rst_i)
 	  state <= #1 S_IDLE;
+	else if (ss_done)
+	  state <= #1 S_IDLE;
 	else
 	  state <= #1 state_n;
      end
@@ -184,11 +186,11 @@ module ss_sg(/*AUTOARG*/
 
    always @(/*AS*/cnt or err or io or rw or sg_addr
 	    or sg_last or sg_len or sg_next or ss_adr
-	    or ss_dat or ss_dc or ss_done or ss_end
-	    or ss_start or ss_stop or ss_we or state
-	    or wbs_ack or wbs_adr or wbs_cab or wbs_cyc
-	    or wbs_dat_o or wbs_err or wbs_pref or wbs_rty
-	    or wbs_sel or wbs_stb or wbs_we)
+	    or ss_dat or ss_dc or ss_end or ss_start
+	    or ss_stop or ss_we or state or wbs_ack
+	    or wbs_adr or wbs_cab or wbs_cyc or wbs_dat_o
+	    or wbs_err or wbs_pref or wbs_rty or wbs_sel
+	    or wbs_stb or wbs_we)
      begin
 	state_n   = state;
 
@@ -364,9 +366,6 @@ module ss_sg(/*AUTOARG*/
 	  S_END: begin
 	     if (~ss_end) begin
 		err_n = state;
-	     end
-	     if (ss_done) begin /* XXXX reset all values */
-		state_n = S_IDLE;
 	     end
 	  end
 	  
