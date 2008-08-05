@@ -115,13 +115,6 @@ module wbm(/*AUTOARG*/
    reg			enable;
    reg [31:3]		ndar;
    reg			ndar_dirty;
-   reg			spi_clk_o;
-   reg			spi_di_en;
-   reg			spi_di_o;
-   reg			spi_do_en;
-   reg			spi_do_o;
-   reg			spi_en;
-   reg			spi_sel_o;
    reg			wb_int_clear;
    reg			wbs_ack_o;
    reg [31:0]		wbs_dat_o;
@@ -163,6 +156,17 @@ module wbm(/*AUTOARG*/
    always @(/*AS*/m_dst_almost_full1 or m_dst_full1
 	    or m_dst_last1)
      m_dst1 = {m_dst_last1, m_dst_almost_full1, m_dst_full1};
+
+   reg [7:0] 	   spi_i;
+   always @(/*AS*/spi_clk_i or spi_di_en or spi_di_i
+	    or spi_do_en or spi_do_i or spi_en or spi_sel_i)
+     spi_i = {spi_en, spi_di_en, spi_do_en,
+	      spi_sel_i, spi_di_i,  spi_do_i, spi_clk_i};
+   
+   reg [7:0] 	   spi_reg;
+   assign 	   
+     {spi_en,    spi_di_en, spi_do_en,
+      spi_sel_o, spi_di_o,  spi_do_o, spi_clk_o} = spi_reg;
    
    always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1
 	    or dar or dc0 or dc1 or enable or m_dst0
@@ -171,7 +175,7 @@ module wbm(/*AUTOARG*/
 	    or sg_addr1 or sg_addr2 or sg_addr3 or sg_desc0
 	    or sg_desc1 or sg_desc2 or sg_desc3 or sg_next0
 	    or sg_next1 or sg_next2 or sg_next3 or sg_state0
-	    or sg_state1 or sg_state2 or sg_state3
+	    or sg_state1 or sg_state2 or sg_state3 or spi_i
 	    or wb_int_o or wbs_adr_i)
      begin
 	wbs_dat_o = 32'h0;
@@ -214,7 +218,7 @@ module wbm(/*AUTOARG*/
 	  5'h1c: wbs_dat_o = {m_status0, m_src0, m_dst0};
 	  5'h1d: wbs_dat_o = {m_status1, m_src1, m_dst1};
 	  5'h1e: ;
-          5'h1f: wbs_dat_o = 32'haa55;
+          5'h1f: wbs_dat_o = {spi_i, 16'haa55};
 	endcase
      end
 
@@ -282,5 +286,13 @@ module wbm(/*AUTOARG*/
 	   endcase // case(wbs_adr_i[3:2])
 	end
      end // always @ (...
+
+   always @(posedge wb_clk_i or posedge wb_rst_i)
+     begin
+	if (wb_rst_i)
+	  spi_reg <= #1 8'h0;
+	else if (wbs_adr_i[10] && (&wbs_adr_i[6:2]))
+	  spi_reg <= #1 wbs_dat_i[23:16];
+     end
    
 endmodule // wbm
