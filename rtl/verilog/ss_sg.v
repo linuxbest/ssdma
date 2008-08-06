@@ -113,6 +113,8 @@ module ss_sg(/*AUTOARG*/
      begin
 	if (wb_rst_i)
 	  wbs_cyc <= #1 0;
+	else if (ss_done)
+	  wbs_cyc <= #1 0;
 	else
 	  wbs_cyc <= #1 wbs_cyc_n;
      end

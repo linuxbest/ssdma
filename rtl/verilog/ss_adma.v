@@ -16,9 +16,9 @@ module ss_adma(/*AUTOARG*/
    // Outputs
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
    wbm_stb_o, wbm_sel_o, wbm_pref_o, wbm_dat_o, wbm_dat64_o,
-   wbm_cyc_o, wbm_cab_o, wbm_adr_o, spi_sel_o, spi_en,
-   spi_do_o, spi_do_en, spi_di_o, spi_di_en, spi_clk_o,
-   wb_int_o,
+   wbm_cyc_o, wbm_cab_o, spi_sel_o, spi_en, spi_do_o,
+   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, wb_int_o,
+   wbm_adr_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
@@ -36,7 +36,6 @@ module ss_adma(/*AUTOARG*/
    output		spi_do_o;		// From wbm of wbm.v
    output		spi_en;			// From wbm of wbm.v
    output		spi_sel_o;		// From wbm of wbm.v
-   output [31:0]	wbm_adr_o;		// From m0 of mixer.v
    output		wbm_cab_o;		// From m0 of mixer.v
    output		wbm_cyc_o;		// From m0 of mixer.v
    output [31:0]	wbm_dat64_o;		// From m0 of mixer.v
@@ -261,6 +260,8 @@ module ss_adma(/*AUTOARG*/
    wire			wbs_we3;		// From r_3 of ss_sg.v
    wire			wbs_we4;		// From ctrl of ctrl.v
    // End of automatics
+
+   output [31:0] 	wbm_adr_o;
    
    /* ss_sg AUTO_TEMPLATE "_\([0-9]+\)" (
     .wb_clk_i(wb_clk_i),
@@ -589,7 +590,9 @@ module ss_adma(/*AUTOARG*/
 	   .m_dst_full0			(m_dst_full0),
 	   .m_dst_full1			(m_dst_full1),
 	   .m_endn0			(m_endn0),
-	   .m_endn1			(m_endn1));
+	   .m_endn1			(m_endn1),
+	   .gnt				(gnt[4:0]),
+	   .wbm_adr_o			(wbm_adr_o[31:0]));
 
    ctrl ctrl(/*AUTOINST*/
 	     // Outputs

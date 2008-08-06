@@ -32,10 +32,10 @@ module spi_usb(/*AUTOARG*/
    /* SPI */
    inout 	SPI_SEL;
    
-   reg [23:0] cnt;
+   /*reg [23:0] cnt;
    always @(posedge CLK24)
      cnt <= #1 cnt + 1;
-   assign     LED = cnt[20] & ~cnt[22];
+   assign     LED = cnt[20] & ~cnt[22];*/
 
    input      spi_en,
 	      spi_clk_o,

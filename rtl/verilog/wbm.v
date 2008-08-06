@@ -31,7 +31,7 @@ module wbm(/*AUTOARG*/
    m_src_almost_empty0, m_src_almost_empty1, m_src_empty0,
    m_src_empty1, m_dst_last0, m_dst_last1,
    m_dst_almost_full0, m_dst_almost_full1, m_dst_full0,
-   m_dst_full1, m_endn0, m_endn1
+   m_dst_full1, m_endn0, m_endn1, gnt, wbm_adr_o
    );
    
    input wb_clk_i,
@@ -109,6 +109,9 @@ module wbm(/*AUTOARG*/
    input 	m_dst_almost_full0, m_dst_almost_full1;
    input 	m_dst_full0, m_dst_full1;
    input 	m_endn0, m_endn1;
+
+   input [4:0] 	gnt;
+   input [31:0] wbm_adr_o;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -170,15 +173,15 @@ module wbm(/*AUTOARG*/
       spi_sel_o, spi_di_o,  spi_do_o, spi_clk_o} = spi_reg;
    
    always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1
-	    or dar or dc0 or dc1 or enable or m_cap0
-	    or m_cap1 or m_dst0 or m_dst1 or m_src0
-	    or m_src1 or m_status0 or m_status1 or ndar
-	    or next_desc or sg_addr0 or sg_addr1 or sg_addr2
-	    or sg_addr3 or sg_desc0 or sg_desc1 or sg_desc2
-	    or sg_desc3 or sg_next0 or sg_next1 or sg_next2
-	    or sg_next3 or sg_state0 or sg_state1
-	    or sg_state2 or sg_state3 or spi_i or wb_int_o
-	    or wbs_adr_i)
+	    or ctrl_state or dar or dc0 or dc1 or enable
+	    or gnt or m_cap0 or m_cap1 or m_dst0 or m_dst1
+	    or m_src0 or m_src1 or m_status0 or m_status1
+	    or ndar or next_desc or sg_addr0 or sg_addr1
+	    or sg_addr2 or sg_addr3 or sg_desc0 or sg_desc1
+	    or sg_desc2 or sg_desc3 or sg_next0 or sg_next1
+	    or sg_next2 or sg_next3 or sg_state0
+	    or sg_state1 or sg_state2 or sg_state3 or spi_i
+	    or wb_int_o or wbm_adr_o or wbs_adr_i)
      begin
 	wbs_dat_o = 32'h0;
 	case (wbs_adr_i[6:2])
@@ -210,7 +213,7 @@ module wbm(/*AUTOARG*/
 	  5'h14: wbs_dat_o = {ctl_adr0, 3'b000};
 	  5'h15: wbs_dat_o = {ctl_adr1, 3'b000};
 	  5'h16: wbs_dat_o = {next_desc,3'b000};
-	  5'h17: ;
+	  5'h17: wbs_dat_o = {gnt,  ctrl_state};
 	  
 	  5'h18: wbs_dat_o = dc0;
 	  5'h19: wbs_dat_o = dc1;
@@ -219,7 +222,7 @@ module wbm(/*AUTOARG*/
 	  
 	  5'h1c: wbs_dat_o = {m_status0, m_src0, m_dst0};
 	  5'h1d: wbs_dat_o = {m_status1, m_src1, m_dst1};
-	  5'h1e: ;
+	  5'h1e: wbs_dat_o = wbm_adr_o;
           5'h1f: wbs_dat_o = {spi_i, 16'haa55};
 	endcase
      end

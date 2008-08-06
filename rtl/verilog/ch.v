@@ -64,7 +64,7 @@ module ch(/*AUTOARG*/
 
    output [15:0] ocnt;
    
-   parameter 	 FIFO_WIDTH = 8;
+   parameter 	 FIFO_WIDTH = 9;
    wire [FIFO_WIDTH-1:0] src_waddr,
 			 src_raddr,
 			 dst_waddr,

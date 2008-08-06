@@ -38,18 +38,18 @@ static int verbose = 0;
 static uint32_t qemu_peek(uint32_t addr)
 {
         uint32_t *val = (uint32_t *)system_mem;
+        //printf("qemu_peek: %08lx %08lx\n", addr, *val);
         addr /= 4;
         val += addr;
-        //printf("qemu_peek: %08lx %08lx\n", addr, *val);
         return *val;
 }
 
 static qemu_poke(uint32_t addr, uint32_t val)
 {
         uint32_t *p = (uint32_t *)system_mem;
+        //printf("qemu_poke: %08lx %08lx\n", addr, val);
         addr /= 4;
         p += addr;
-        //fprintf("qemu_poke: %08lx %08lx\n", addr, val);
         *p = val;
 }
 
@@ -254,12 +254,22 @@ check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst,
                 c_len = src_cnt;
                 c_s = tmp;
         }
-        for (i = 0; i < c_len; i ++) 
-                if (c_s[i] != dst[i])
+        for (i = 0; i < c_len; i ++) {
+                if (c_s[i] != dst[i]) {
                         err ++;
+                        printf("%04x: right/dma %02x/%02x\n", i, c_s[i], dst[i]);
+                }
+        }
         if (err) {
-                HexDump(c_s, c_len);
-                HexDump(dst, dst_cnt);
+                FILE *o;
+                o = fopen("/tmp/correct.dat", "w");
+                fwrite(c_s, c_len, 1, o);
+                fclose(o);
+                
+                o = fopen("/tmp/dmaout.dat", "w");
+                fwrite(dst, dst_cnt, 1, o);
+                fclose(o);
+                printf("BUG, %d\n", err);
         } else
                 printf("PASSED\n");
 }
@@ -284,6 +294,7 @@ do_test(unsigned int phys_mem, unsigned int lzf_mem, int cnt, FILE *fp,
                 load_dst(dst, dst_cnt);
                 map_bufs(src_dat_phys, src_cnt, &src_buf_phys, phys_mem);
                 map_bufs(dst_dat_phys, dst_cnt, &dst_buf_phys, phys_mem);
+                printf("src %08x, dst %08x\n", src_dat_phys, dst_dat_phys);
                 j->s = src;
                 j->d = dst;
 
