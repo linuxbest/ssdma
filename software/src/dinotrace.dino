@@ -1,0 +1,83 @@
+#print on
+
+signal_delete top.*
+
+signal_add top.CNT
+
+signal_add top.FRAMEn
+signal_add top.REQ64
+signal_add top.AD
+signal_add top.AD64
+signal_add top.CBE
+signal_add top.CBE64
+signal_add top.IRDYn
+signal_add top.TRDYn
+signal_add top.DEVSELn
+signal_add top.ACK64
+signal_add top.IDSEL
+signal_add top.PAR
+signal_add top.PAR64
+signal_add top.LOCKn
+signal_add top.PERRn
+signal_add top.REQn
+signal_add top.GNTn
+signal_add top.SERRn
+signal_add top.STOPn
+signal_add top.INTA
+signal_add top.INTA_reg
+#signal_add top.INTB
+
+signal_add top.ch_state
+signal_add top.dma_unit_state
+
+signal_add top.wbs_*
+signal_add top.wbm_*
+
+signal_radix top.CBE BINARY
+signal_radix top.CBE64 BINARY
+signal_radix top.state BINARY
+
+signal_states top.ch_state  = {
+        0=IDLE,
+        1=REQ,
+        2=XFER,
+        3=NEXT,
+        4=RESUME,
+        5=DONE,
+        6=RUN,
+        7=FLUSH,
+};
+
+signal_states top.dma_unit_state = {
+        0=IDLE,
+        1=REQ,
+        2=XFER,
+        3=DONE,
+};
+
+signal_states top.pci_state = {
+    0=IDLE,
+    1=ATTRIB,
+    2=BUSY,
+    4=MEM_R,
+    5=MEM_W,
+    6=CFG_R,
+    7=CFG_W,
+    8=M_DR_BUS,
+    9=M_DR_ADDR,
+    10=M_ATTRIB,
+    11=M_DEVSEL,
+    12=M_DATA,
+    13=M_TURN_AR,
+    14=M_S_TAR,
+    15=TGT_ABORT,
+};
+
+signal_states *CBE* = {
+    0/Intr, 1/Spec, 2/IOrd, 3/IOwr, 4/Rsvd, 5/Rsvd, 6/MemRd, 7/MemWr,
+    8/Rsvd, 9/Rsvd, A/CfgRd, B/CfgWr, C/MemRMul, D/DualAd, E/MemRdLn, F/MemWrIn}
+
+# Align grid to clock signal
+# # # Aligning to the first signal is the default.  We'll just change the color
+grid_signal 0   *
+grid_color  0   4
