@@ -1,11 +1,11 @@
 ifeq ($T,win32)
 CC=i586-mingw32msvc-gcc
-CFLAGS=-Wall -I../usblib -I.. -g
+CFLAGS=-Wall -I../usblib -I.. -I../include -g
 ADD=libusb_dyn.o
 VPATH=../usblib
 else
 CC=gcc
-CFLAGS=-Wall -I.. -g
+CFLAGS=-Wall -I.. -I../include -g
 LIBUSB=-lusb
 endif
 
