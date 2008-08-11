@@ -36,4 +36,4 @@ pcilog: pcilog.c
 	${CC} $^ -o $@ -DMAIN
 
 clean:
-	rm -f *.o fw *~ *#
+	rm -f *.o fw *~ 24xx pcilog pci_spi spi 
