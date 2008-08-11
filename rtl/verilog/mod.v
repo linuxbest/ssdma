@@ -133,6 +133,7 @@ module mod(/*AUTOARG*/
 		 .data_o(de_out_data),
 		 .done_o(de_out_done),
 		 .valid_o(de_out_valid),
+		 .m_last(m_src_last),
 		 /*AUTOINST*/
 		 // Outputs
 		 .m_src_getn		(m_src_getn),
