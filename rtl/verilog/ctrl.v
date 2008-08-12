@@ -650,7 +650,7 @@ module ctrl(/*AUTOARG*/
 	  2'b00: ctl0 = {ocnt0, 3'b000};
 	  2'b01: ctl0 = {err1};
 	  2'b10: ctl0 = {m_cyc0};
-	  2'b11: ctl0 = {dc0};
+	  2'b11: ctl0 = {8'h0, dc0};
 	endcase
      end
    
@@ -661,7 +661,7 @@ module ctrl(/*AUTOARG*/
 	  2'b00: ctl1 = {ocnt1, 3'b000};
 	  2'b01: ctl1 = {err3};
 	  2'b10: ctl1 = {m_cyc1};
-	  2'b11: ctl1 = {dc1};
+	  2'b11: ctl1 = {8'h1, dc1};
 	endcase
      end
    
