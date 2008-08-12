@@ -83,7 +83,6 @@ module mod(/*AUTOARG*/
 	     .m_src_empty		(m_src_empty),
 	     .m_dst_almost_full		(m_dst_almost_full),
 	     .m_dst_full		(m_dst_full));
-   // synopsys translate_on
    
    copy copy(/*AUTOINST*/
 	     // Outputs
@@ -103,6 +102,7 @@ module mod(/*AUTOARG*/
 	     .m_src_empty		(m_src_empty),
 	     .m_dst_almost_full		(m_dst_almost_full),
 	     .m_dst_full		(m_dst_full));
+   // synopsys translate_on
 
    wire 	 fo_full   = m_dst_full  || m_dst_almost_full;
    wire 	 src_empty = m_src_empty || m_src_almost_empty;
@@ -161,7 +161,7 @@ module mod(/*AUTOARG*/
 
    assign 	 m_cap = {1'b1,  /* decode */
 			  1'b1,  /* encode */
-			  1'b1,  /* memcpy */
+			  1'b0,  /* memcpy */
 			  1'b0, 
 			  1'b0, 
 			  1'b0, 
