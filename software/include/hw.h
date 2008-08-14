@@ -1,11 +1,28 @@
-enum { BIT_0 = 1<<0, 
-    BIT_1 = 1<<1, 
-    BIT_2 = 1<<2, 
-    BIT_3 = 1<<3, 
-    BIT_4 = 1<<4, 
-    BIT_5 = 1<<5, 
-    BIT_6 = 1<<6, 
-    BIT_7 = 1<<7 };
+/*
+ * Dragon fw -
+ * Copyright (c) 2008, Hu Gang <hugang@soulinfo.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
+enum { 
+        BIT_0 = 1<<0, 
+        BIT_1 = 1<<1, 
+        BIT_2 = 1<<2, 
+        BIT_3 = 1<<3, 
+        BIT_4 = 1<<4, 
+        BIT_5 = 1<<5, 
+        BIT_6 = 1<<6, 
+        BIT_7 = 1<<7 
+};
 
 #define FPGA_INIT_B  BIT_7 /* PC7/FRn */
 #define FPGA_WRn     BIT_6 /* PC6/WRn */

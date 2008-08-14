@@ -1,3 +1,18 @@
+/*
+ * Dragon fw -
+ * Copyright (c) 2008, Hu Gang <hugang@soulinfo.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
 /*----------------------------------------------------------------------------*\
 |                                                                              |
 | Copyright (C) 2003,  James A. Cureington                                     |
@@ -1212,12 +1227,12 @@ main(void)
     enable_ezusb();	
     init_timers();
 
-	/* blink_portA7(2, 1); */
-	while (1) { 
-        if (out3data) {
-            out3data --;
-            endpoint3_out();
-            OUT3BC = 0;
-        }
-	}
+    /* blink_portA7(2, 1); */
+    while (1) { 
+            if (out3data) {
+                    out3data --;
+                    endpoint3_out();
+                    OUT3BC = 0;
+            }
+    }
 }
