@@ -16,31 +16,30 @@ static void spi_start(void) /* 0x5D */
         MOV DPTR, #_AUTOPTRH;
         MOV A, #0x10;
         MOVX @DPTR, A;
-        INC DPTR;
-        MOV A, #0x00;
+        INC DPTR; /* ?? */
+        CLR A;
         MOVX @DPTR, A;
-        INC DPTR;
+        INC DPTR; /* ?? */
         _endasm;
 }
 
-static void spi_do(void)   /* 0x69 */
+static void spi_send_read(void)   /* 0x69 */
 {
         _asm
+        /* send 0x03 READ */
         CLR A;
         MOVX  @DPTR,A;
         MOVX  @DPTR,A;
         MOVX  @DPTR,A;
         MOVX  @DPTR,A;
-        MOV   A,#0xff;
-        MOVX  @DPTR,A
-        CLR   A
-        MOVX  @DPTR,A
+        MOVX  @DPTR,A;
+        MOVX  @DPTR,A;
         MOV   A,#0x80;
         MOVX  @DPTR,A
         MOVX  @DPTR,A
         CLR   A
         MOV   R0,#0x18;
-loop:
+loop:   /* send out address */
         MOVX  @DPTR,A;
         DJNZ  R0,loop;
         _endasm;
@@ -55,8 +54,9 @@ int main(void)
 
         FASTXFR = 0;
         spi_start();
-        spi_do();
+        spi_send_read();
 
+        /* PROG to high */
         PORTACFG = 0x10; /* enable fast write strobe */
         FASTXFR  = 0x40; /* FBLK */
         OUTC     = FPGA_PROG_B;
@@ -73,7 +73,7 @@ loop0:
         OUTC     = FPGA_PROG_B | FPGA_INIT_B;
         OEC      = (~FPGA_INIT_B) & (~FPGA_DONE);
         _asm
-loop1:
+loop1:                    /* wait for done to high */
         MOV  DPTR,#_PINSC;
         MOVX A,@DPTR;
         JNB  ACC.5,loop1;
