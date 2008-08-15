@@ -134,7 +134,7 @@ int ezusb_load_image(char *filename)
       fprintf(stderr, "unsupported type on line %d: %d\n", linenum, type);
       return 1;
     }
-
+    printf("len %04x, addr %04x, type %04x\n", len, off, type);
     if ((len * 2) > strlen(buf) - 11) {
       fprintf(stderr, "not enough data on line %d: expected %d, found %d\n", linenum, len * 2, strlen(buf) - 11);
       return 1;

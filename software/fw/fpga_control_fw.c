@@ -73,6 +73,7 @@
 #include "fpga_control_fw.h"
 
 #include "../include/fw.h"
+#include "../include/hw.h"
 
 #define HEART_BEAT_A7	0	/* only one of the "BEAT" define should be true */
 #define HEART_BEAT_C3	0	/* at one time                                  */

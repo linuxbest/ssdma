@@ -23,6 +23,8 @@ fpga_control_fw.ihx:	fpga_control_fw.c fpga_control_fw.h misc.asm vectors.asm \
 			sdcc \
 			misc.rel fpga_control_fw.c
 
+boot.ihx: boot.c
+	sdcc boot.c
 
 clean_firmware:
 		rm -f fpga_control_fw.asm fpga_control_fw.cdb fpga_control_fw.ihx \

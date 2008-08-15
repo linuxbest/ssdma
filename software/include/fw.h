@@ -12,8 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  */
-#include "hw.h"
-
 #define EP1_INFO  BIT_7
 
 typedef struct ep1_info {

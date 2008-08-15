@@ -7,6 +7,9 @@
 
 #include "ezusbfx.h"
 
+#include "dragon.h"
+//#include "../include/hw.h"
+
 static void spi_start(void) /* 0x5D */
 {
         _asm 
@@ -45,18 +48,18 @@ loop:
 
 int main(void)
 {
-        USBCS = 0x04;
-        OUTC  = 0x01;
-        OEC   = 0xCF;
-        OUTC  = 0x41;
+        USBCS = DISCOE;
+        OUTC  = SPI_SEL;
+        OEC   = ~FPGA_DONE;
+        OUTC  = SPI_SEL | FPGA_PROG_B;
 
         FASTXFR = 0;
         spi_start();
         spi_do();
 
-        PORTACFG = 0x10;
-        FASTXFR = 0x40;
-        OUTC = 0x40;
+        PORTACFG = 0x10; /* enable fast write strobe */
+        FASTXFR  = 0x40; /* FBLK */
+        OUTC     = FPGA_PROG_B;
         spi_start();
 
         _asm
@@ -67,8 +70,8 @@ loop0:
         _endasm;
 
         PORTACFG = 0x0;
-        OUTC = 0xC0;
-        OEC  = 0x4F;
+        OUTC     = FPGA_PROG_B | FPGA_INIT_B;
+        OEC      = (~FPGA_INIT_B) & (~FPGA_DONE);
         _asm
 loop1:
         MOV  DPTR,#_PINSC;
@@ -76,5 +79,5 @@ loop1:
         JNB  ACC.5,loop1;
         _endasm;
 
-        OEC  = 0x4E;
+        OEC      = (~FPGA_INIT_B) & (~FPGA_DONE) & (~SPI_SEL);
 }
