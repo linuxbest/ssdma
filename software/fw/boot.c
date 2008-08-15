@@ -62,7 +62,7 @@ int main(void)
         OUTC     = FPGA_PROG_B;
         spi_start();
 
-        _asm
+        _asm /* sleep ? */
         MOV R0, #0x20;
 loop0:
         MOVX A, @DPTR;
@@ -72,6 +72,7 @@ loop0:
         PORTACFG = 0x0;
         OUTC     = FPGA_PROG_B | FPGA_INIT_B;
         OEC      = (~FPGA_INIT_B) & (~FPGA_DONE);
+
         _asm
 loop1:                    /* wait for done to high */
         MOV  DPTR,#_PINSC;
