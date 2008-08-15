@@ -12,14 +12,11 @@
 
 static void spi_start(void) /* 0x5D */
 {
+        /* 0x1000 */
+        AUTOPTRH = 0x10;
+        AUTOPTRL = 0x00;
         _asm 
-        MOV DPTR, #_AUTOPTRH;
-        MOV A, #0x10;
-        MOVX @DPTR, A;
-        INC DPTR; /* ?? */
-        CLR A;
-        MOVX @DPTR, A;
-        INC DPTR; /* ?? */
+        MOV DPTR, #_AUTODATA;
         _endasm;
 }
 
