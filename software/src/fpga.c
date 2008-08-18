@@ -6,6 +6,7 @@
 #include <assert.h>
 
 #include "bit_read.h"
+#include "hw.h"
 #include "fw.h"
 
 static int
