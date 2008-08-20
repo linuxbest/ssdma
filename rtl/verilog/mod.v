@@ -110,14 +110,6 @@ module mod(/*AUTOARG*/
    wire [15:0] 	 en_out_data,  de_out_data;
    wire 	 en_out_valid, de_out_valid;
    wire 	 en_out_done,  de_out_done;
-
-   wire [10:0] 	 ce_hraddr, ce_hwaddr;
-   wire [7:0] 	 ce_hdata, ce_data;
-   wire 	 ce_hwe;
-
-   wire [10:0] 	 de_hraddr, de_hwaddr;
-   wire [7:0] 	 de_hdata, de_data;
-   wire 	 de_hwe;
    
    encode encode(.ce(dc[5] && m_enable),
 		 .fi(m_src),
@@ -127,11 +119,6 @@ module mod(/*AUTOARG*/
 		 .done_o(en_out_done),
 		 .valid_o(en_out_valid),
 		 .m_last(m_src_last),
-		 .hraddr(ce_hraddr),
-		 .hwaddr(ce_hwaddr),
-		 .hwe(ce_hwe),
-		 .hdata(ce_hdata),
-		 .hdata_o(ce_data),
 		 /*AUTOINST*/
 		 // Outputs
 		 .m_src_getn		(m_src_getn),
@@ -147,11 +134,6 @@ module mod(/*AUTOARG*/
 		 .done_o(de_out_done),
 		 .valid_o(de_out_valid),
 		 .m_last(m_src_last),
-		 .hraddr(de_hraddr),
-		 .hwaddr(de_hwaddr),
-		 .hwe(de_hwe),
-		 .hdata(de_hdata),
-		 .hdata_o(de_data),
 		 /*AUTOINST*/
 		 // Outputs
 		 .m_src_getn		(m_src_getn),
@@ -177,23 +159,6 @@ module mod(/*AUTOARG*/
 		    .de_out_done	(de_out_done),
 		    .m_enable		(m_enable));
 
-   history_mem history_mem (/*AUTOINST*/
-			    // Outputs
-			    .ce_hdata		(ce_hdata[7:0]),
-			    .de_hdata		(de_hdata[7:0]),
-			    // Inputs
-			    .wb_clk_i		(wb_clk_i),
-			    .wb_rst_i		(wb_rst_i),
-			    .dc			(dc[23:0]),
-			    .ce_hraddr		(ce_hraddr[10:0]),
-			    .ce_hwaddr		(ce_hwaddr[10:0]),
-			    .ce_hwe		(ce_hwe),
-			    .ce_data		(ce_data[7:0]),
-			    .de_hraddr		(de_hraddr[10:0]),
-			    .de_hwaddr		(de_hwaddr[10:0]),
-			    .de_hwe		(de_hwe),
-			    .de_data		(de_data[7:0]));
-   
    assign 	 m_cap = {1'b1,  /* decode */
 			  1'b1,  /* encode */
 			  1'b0,  /* memcpy */
