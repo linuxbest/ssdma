@@ -587,12 +587,12 @@ module ctrl(/*AUTOARG*/
 	  end
 	  
 	  S_CYC1:    begin
-	     if (dc1[14]) 
+	     if (dc1[10]) 
 	       state_n = S_NEXT1;
 	     else
 	       state_n = S_IDLE;
 	     dar_n = cdar;
-	     wb_int_set = dc1[15];
+	     wb_int_set = dc1_r[11];
 	     m_enable1_n = 1'b0;
 	  end
 	  
