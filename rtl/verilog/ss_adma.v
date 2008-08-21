@@ -269,7 +269,7 @@ module ss_adma(/*AUTOARG*/
     .\(.*\)(\1@[]),
     );
     */
-   ss_sg r_0(.rw(1'b0),
+   ss_sg r_0(
 	     /*AUTOINST*/
 	     // Outputs
 	     .wbs_cyc			(wbs_cyc0),		 // Templated
@@ -304,7 +304,7 @@ module ss_adma(/*AUTOARG*/
 	     .ss_end			(ss_end0),		 // Templated
 	     .ss_stop			(ss_stop0));		 // Templated
 
-   ss_sg r_1 (.rw(1'b1),
+   ss_sg r_1 (
 	      /*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc1),		 // Templated
@@ -339,7 +339,7 @@ module ss_adma(/*AUTOARG*/
 	      .ss_end			(ss_end1),		 // Templated
 	      .ss_stop			(ss_stop1));		 // Templated
 
-   ss_sg r_2 (.rw(1'b0),
+   ss_sg r_2 (
 	      /*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc2),		 // Templated
@@ -374,7 +374,7 @@ module ss_adma(/*AUTOARG*/
 	      .ss_end			(ss_end2),		 // Templated
 	      .ss_stop			(ss_stop2));		 // Templated
 
-   ss_sg r_3 (.rw(1'b1),
+   ss_sg r_3 (
 	      /*AUTOINST*/
 	      // Outputs
 	      .wbs_cyc			(wbs_cyc3),		 // Templated
@@ -408,7 +408,10 @@ module ss_adma(/*AUTOARG*/
 	      .ss_start			(ss_start3),		 // Templated
 	      .ss_end			(ss_end3),		 // Templated
 	      .ss_stop			(ss_stop3));		 // Templated
-   
+   defparam 		r_0.rw = 1'b0;
+   defparam 		r_1.rw = 1'b1;
+   defparam 		r_2.rw = 1'b0;
+   defparam 		r_3.rw = 1'b1;
    mixer m0 (/*AUTOINST*/
 	     // Outputs
 	     .wbs_dat_o0		(wbs_dat_o0[31:0]),

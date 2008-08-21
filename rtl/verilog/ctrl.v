@@ -454,7 +454,7 @@ module ctrl(/*AUTOARG*/
 		state_n    = append_mode ? S_CMD0 : S_CMD1;
 		inc_reset  = 1;
 	     end else begin
-		state_n    = S_WAIT0;
+		state_n    = append_mode ? S_IDLE : S_WAIT0;
 	     end // else: !if(dc0_r[10])
 	     if (append_mode) begin
 		append_clear_n= 1'b1;
