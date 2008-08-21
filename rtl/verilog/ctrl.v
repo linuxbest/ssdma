@@ -364,7 +364,7 @@ module ctrl(/*AUTOARG*/
 // synopsys translate_on   
    always @(/*AS*/append or append_mode or c_done1
 	    or c_done3 or cdar or ctl_adr0 or ctl_adr1
-	    or dar_r or dc0_r or dc1 or enable or inc
+	    or dar_r or dc0_r or dc1_r or enable or inc
 	    or m_enable0 or m_enable1 or ndar or ndar_dirty
 	    or next_desc or state or wbs_ack4 or wbs_cab4
 	    or wbs_cyc4 or wbs_cyc_i or wbs_err4 or wbs_rty4
@@ -544,7 +544,7 @@ module ctrl(/*AUTOARG*/
 	  
 	  S_WAIT1:  begin
 	     if (/*c_done2 && */c_done3) begin
-		if (dc1[7]) begin
+		if (dc1_r[7]) begin
 		   wbs_adr4_n = ctl_adr1;
 		   
 		   wbs_cyc4_n = 1'b1;
@@ -587,7 +587,7 @@ module ctrl(/*AUTOARG*/
 	  end
 	  
 	  S_CYC1:    begin
-	     if (dc1[10]) 
+	     if (dc1_r[10]) 
 	       state_n = S_NEXT1;
 	     else
 	       state_n = S_IDLE;
