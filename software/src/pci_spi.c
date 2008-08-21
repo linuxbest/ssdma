@@ -343,9 +343,41 @@ enum {
         SPI_SNIFFER = 1<<4,
 };
 
+#define PCI_DEVFN(slot,func)    ((((slot) & 0x1f) << 3) | ((func) & 0x07))
+#define PCI_SLOT(devfn)         (((devfn) >> 3) & 0x1f)
+#define PCI_FUNC(devfn)         ((devfn) & 0x07)
+
+static char *
+find_pci_device(long id)
+{
+        FILE *fp = fopen("/proc/bus/pci/devices", "r");
+        int dfn;
+        long dev;
+        char *buf = NULL;
+        int res = 0;
+
+        while (getline(&buf, &res, fp) != 0) {
+                sscanf(buf, "%4x\t%x", &dfn, &dev);
+                //printf("found %x, %x, %s\n", bus, dev, buf);
+                if (dev == id)
+                        goto found;
+                free(buf);
+                buf = NULL;
+        }
+
+        return NULL;
+found:
+        sprintf(buf, "/proc/bus/pci/%02d/%02d.%d", 
+                        dfn >> 8,
+                        PCI_SLOT(dfn & 0xff),
+                        PCI_FUNC(dfn & 0xff));
+        printf("found %x, %x, %s\n", dfn, dev, buf);
+        return buf;
+}
+
 int main(int argc, char *argv[])
 {
-        char *dev = "/proc/bus/pci/01/04.0";
+        char *dev = NULL;
         int fd;
         unsigned char config[64];
         int memPhys;
@@ -387,6 +419,9 @@ int main(int argc, char *argv[])
                                 break;
                 }
         }
+        if (dev == NULL)
+                dev = find_pci_device(0x01000003);
+
         fd = open(dev, O_RDWR);
         if (fd == -1) {
                 perror("open:");
