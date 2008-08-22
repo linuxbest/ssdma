@@ -424,15 +424,10 @@ module ctrl(/*AUTOARG*/
 	  S_CMD0:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  case (inc)
-		    2'b00: ;
-		    2'b01: ;
-		    2'b10: ;
-		    2'b11: begin
-		       wbs_cyc4_n = 1'b0;
-		       state_n    = S_NEXT0;
-		    end
-		  endcase // case(inc)
+		  if (&inc) begin
+		     wbs_cyc4_n = 1'b0;
+		     state_n    = S_NEXT0;
+		  end
 	       end
 	       3'b010: begin
 	       end
@@ -468,15 +463,10 @@ module ctrl(/*AUTOARG*/
 	  S_CMD1:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  case (inc)
-		    2'b00: ;
-		    2'b01: ;
-		    2'b10: ;
-		    2'b11: begin
-		       wbs_cyc4_n = 0;
-		       state_n    = S_WAIT0;
-		    end
-		  endcase // case(inc)
+		  if (&inc) begin
+		     wbs_cyc4_n = 0;
+		     state_n    = S_WAIT0;
+		  end
 	       end
 	       3'b010: begin
 	       end
@@ -509,15 +499,10 @@ module ctrl(/*AUTOARG*/
 	  S_CTL0:  begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  case (inc)
-		    2'b00: ;
-		    2'b01: ;
-		    2'b10: ;
-		    2'b11: begin
-		       wbs_cyc4_n = 0;
-		       state_n    = S_TR0;
-		    end
-		  endcase // case(inc)
+		  if (&inc) begin
+		     wbs_cyc4_n = 0;
+		     state_n    = S_TR0;
+		  end
 	       end
 	       3'b010: begin
 	       end
@@ -564,15 +549,10 @@ module ctrl(/*AUTOARG*/
 	  S_CTL1:   begin
 	     case ({wbs_ack4, wbs_rty4, wbs_err4})
 	       3'b100: begin
-		  case (inc)
-		    2'b00: ;
-		    2'b01: ;
-		    2'b10: ;
-		    2'b11: begin
-		       wbs_cyc4_n = 0;
-		       state_n    = S_TR1;
-		    end
-		  endcase // case(inc)
+		  if (&inc) begin
+		     wbs_cyc4_n = 0;
+		     state_n    = S_TR1;
+		  end
 	       end
 	       3'b010: begin
 	       end
