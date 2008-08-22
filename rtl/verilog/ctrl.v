@@ -520,9 +520,9 @@ module ctrl(/*AUTOARG*/
 	     if (dc0_r[10]) begin
 		state_n = S_WAIT1;
 	     end else begin
+		dar_n = cdar;
 		state_n = S_IDLE;
 	     end
-	     dar_n = cdar;
 	     wb_int_set = dc0_r[11];
 	     m_enable0_n = 1'b0;
 	  end
