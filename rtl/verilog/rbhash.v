@@ -165,20 +165,20 @@ module rbhash(/*AUTOARG*/
 	   buf_cnt <= #1 buf_cnt + 1'b1;
 	end
      end
-   wire [12:0] rb_cnt = buf_cnt;
    reg 	       rb_d1;
    
-   reg [10:0]  rb_min;
+   reg [12:0]  rb_cnt;
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i) begin
-	   rb_min <= #1 11'h0;
+	   rb_cnt <= #1 11'h0;
 	end else if (rb_d1) begin
-	   rb_min <= #1 11'h0;
+	   rb_cnt <= #1 11'h0;
 	end else if (dout_valid) begin
-	   rb_min <= #1 rb_min + 1'b1;
+	   rb_cnt <= #1 rb_cnt + 1'b1;
 	end
      end
+   wire [10:0] rb_min = buf_cnt;
 
    reg rb_min_passed;
    always @(posedge wb_clk_i)
@@ -208,9 +208,9 @@ module rbhash(/*AUTOARG*/
 	   rb_putn <= #1 1'b0;
 	   rb_hash <= #1 buf_cnt;
 	   rb_d1   <= #1 1'b0;
-	end else if (m_src_last) begin // fake last
+	end else if (m_src_last & state == S_RUN) begin // fake last
 	   rb_putn <= #1 1'b0;
-	   rb_hash <= #1 buf_cnt;
+	   rb_hash <= #1 dout;
 	   rb_d1   <= #1 1'b0;
 	end else begin
 	   rb_d1   <= #1 1'b0;
