@@ -154,7 +154,6 @@ module rbhash(/*AUTOARG*/
 		 iidxL == 3'h4 ? m_src[39:32] :
 		 iidxL == 3'h5 ? m_src[47:40] :
 		 iidxL == 3'h6 ? m_src[55:48] :	 m_src[63:56];
-   
    assign endn = state == S_END;
    
    reg [19:0] buf_cnt;
@@ -166,17 +165,50 @@ module rbhash(/*AUTOARG*/
 	   buf_cnt <= #1 buf_cnt + 1'b1;
 	end
      end
-   wire [11:0] rb_cnt = buf_cnt;
-
+   wire [12:0] rb_cnt = buf_cnt;
    reg 	       rb_d1;
+   
+   reg [10:0]  rb_min;
+   always @(posedge wb_clk_i or posedge wb_rst_i)
+     begin
+	if (wb_rst_i) begin
+	   rb_min <= #1 11'h0;
+	end else if (rb_d1) begin
+	   rb_min <= #1 11'h0;
+	end else if (dout_valid) begin
+	   rb_min <= #1 rb_min + 1'b1;
+	end
+     end
 
+   reg rb_min_passed;
    always @(posedge wb_clk_i)
      begin
-	if (dout_valid & (&rb_cnt | dout[11:0] == 12'h78)) begin
+	if (wb_rst_i) begin
+	   rb_min_passed <= #1 1'b0;
+	end else if (rb_d1) begin
+	   rb_min_passed <= #1 1'b0;
+	end else if (&rb_min & dout_valid) begin
+	   rb_min_passed <= #1 1'b1;
+	end 
+     end
+   /* 1) buffer == block size
+      2) buffer > min block size and last 12 bit is magic number
+    */
+   wire case0 = &rb_cnt;
+   wire case1 = (~rb_min_passed && (&rb_min)) | rb_min_passed;
+   wire case2 = dout[11:0] == 12'h78;
+   always @(posedge wb_clk_i)
+     begin
+	if (state != S_END & dout_valid & 
+	    (case0 | (case1 & case2))) begin
 	   rb_putn <= #1 1'b0;
 	   rb_d1   <= #1 1'b1;
 	   rb_hash <= #1 dout;
 	end else if (rb_d1) begin
+	   rb_putn <= #1 1'b0;
+	   rb_hash <= #1 buf_cnt;
+	   rb_d1   <= #1 1'b0;
+	end else if (m_src_last) begin // fake last
 	   rb_putn <= #1 1'b0;
 	   rb_hash <= #1 buf_cnt;
 	   rb_d1   <= #1 1'b0;

@@ -92,6 +92,7 @@
 /p/hw/ssadma/rtl/verilog/top.v
 /p/hw/ssadma/rtl/verilog/wbm.v
 /p/hw/ssadma/rtl/verilog/rbhash.v
+/p/hw/ssadma/rtl/verilog/tpram.v
 /p/hw/systemc_rabinpoly/rtl/verilog/rabinpoly.v
 /p/hw/systemc_rabinpoly/rtl/verilog/rabin.v
 /p/hw/systemc_rabinpoly/rtl/verilog/ringbuf.v
