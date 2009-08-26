@@ -374,7 +374,7 @@ main(int argc, char *argv[])
 	unsigned int opt = 0, p = 0;
         FILE *fp = NULL;
 
-	while ((p = getopt(argc, argv, "NMCUAFhn:fr:vl:g:d:")) != EOF) {
+	while ((p = getopt(argc, argv, "NMCUAFHhn:fr:vl:g:d:")) != EOF) {
 		switch (p) {
                 case 'd': 
                         dst_cnt = atoi(optarg);
@@ -418,6 +418,9 @@ main(int argc, char *argv[])
 			break;
 		case 'U':
 			opt = DC_UNCOMPRESS;
+			break;
+		case 'H':
+			opt = DC_HASH;
 			break;
                 case 'n':
                         cnt = atoi(optarg);
