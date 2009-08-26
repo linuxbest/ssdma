@@ -90,5 +90,10 @@
 /p/hw/ssadma/rtl/verilog/ss_user_constants.v
 /p/hw/ssadma/rtl/verilog/synchronizer_flop.v
 /p/hw/ssadma/rtl/verilog/top.v
-/p/hw/ssadma/rtl/verilog/tpram.v
 /p/hw/ssadma/rtl/verilog/wbm.v
+/p/hw/ssadma/rtl/verilog/rbhash.v
+/p/hw/systemc_rabinpoly/rtl/verilog/rabinpoly.v
+/p/hw/systemc_rabinpoly/rtl/verilog/rabin.v
+/p/hw/systemc_rabinpoly/rtl/verilog/ringbuf.v
+/p/hw/systemc_rabinpoly/rtl/verilog/ROM256X64_T.v
+/p/hw/systemc_rabinpoly/rtl/verilog/ROM256X64_U.v

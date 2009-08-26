@@ -46,6 +46,7 @@ module mod(/*AUTOARG*/
    pullup(m_dst_putn);
    pullup(m_src_getn);
    pullup(m_endn);
+   // synopsys translate_on
 
    rbhash rbhash(/*AUTOINST*/
 	     // Outputs
