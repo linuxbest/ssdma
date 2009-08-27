@@ -19,7 +19,8 @@ module top(/*AUTOARG*/
    PCI_CBE64, PCI_FRAMEn, PCI_IRDYn, PCI_TRDYn, PCI_DEVSELn,
    PCI_STOPn, PCI_LOCKn, PCI_REQn, PCI_RSTn, PCI_INTAn,
    PCI_INTBn, PCI_PERRn, PCI_PAR, PCI_REQ64n, PCI_ACK64n,
-   PCI_PAR64,
+   PCI_PAR64, spi_dat_pin, spi_cmd_pin, spi_sel_pin,
+   spi_clk_pin,
    // Inputs
    USB_PC7, USB_PC6, USB_FRDn, CLK24, PCI_CLK, PCI_IDSEL,
    PCI_GNTn
@@ -50,6 +51,11 @@ module top(/*AUTOARG*/
    inout        PCI_ACK64n;
    inout        PCI_PAR64;
 
+   inout 	spi_dat_pin;
+   inout 	spi_cmd_pin;
+   inout 	spi_sel_pin;
+   inout 	spi_clk_pin;
+   
    /*AUTOINPUT*/
    // Beginning of automatic inputs (from unused autoinst inputs)
    input		CLK24;			// To usb of spi_usb.v
@@ -80,6 +86,9 @@ module top(/*AUTOARG*/
    wire			spi_do_i;		// From usb of spi_usb.v
    wire			spi_do_o;		// From adma of ss_adma.v
    wire			spi_en;			// From adma of ss_adma.v
+   wire [7:0]		spi_en_reg;		// From adma of ss_adma.v
+   wire [7:0]		spi_in_reg;		// From spi of spi_tri.v
+   wire [7:0]		spi_out_reg;		// From adma of ss_adma.v
    wire			spi_sel_i;		// From usb of spi_usb.v
    wire			spi_sel_o;		// From adma of ss_adma.v
    wire			wb_clk_i;		// From bridge of bridge.v
@@ -145,8 +154,9 @@ module top(/*AUTOARG*/
 		.spi_do_en		(spi_do_en),
 		.spi_do_o		(spi_do_o),
 		.spi_en			(spi_en),
+		.spi_en_reg		(spi_en_reg[7:0]),
+		.spi_out_reg		(spi_out_reg[7:0]),
 		.spi_sel_o		(spi_sel_o),
-		.wbm_adr_o		(wbm_adr_o[31:0]),
 		.wbm_cab_o		(wbm_cab_o),
 		.wbm_cyc_o		(wbm_cyc_o),
 		.wbm_dat64_o		(wbm_dat64_o[31:0]),
@@ -160,10 +170,12 @@ module top(/*AUTOARG*/
 		.wbs_err_o		(wbs_err_o),
 		.wbs_rty_o		(wbs_rty_o),
 		.wb_int_o		(wb_int_o),
+		.wbm_adr_o		(wbm_adr_o[31:0]),
 		// Inputs
 		.spi_clk_i		(spi_clk_i),
 		.spi_di_i		(spi_di_i),
 		.spi_do_i		(spi_do_i),
+		.spi_in_reg		(spi_in_reg[7:0]),
 		.spi_sel_i		(spi_sel_i),
 		.wb_clk_i		(wb_clk_i),
 		.wb_rst_i		(wb_rst_i),
@@ -235,5 +247,17 @@ module top(/*AUTOARG*/
 		 .wbm_dat_o		(wbm_dat_o[31:0]),
 		 .wbm_dat64_o		(wbm_dat64_o[31:0]),
 		 .wbm_adr_o		(wbm_adr_o[31:0]));
+   
+   spi_tri spi (/*AUTOINST*/
+		// Outputs
+		.spi_in_reg		(spi_in_reg[7:0]),
+		// Inouts
+		.spi_dat_pin		(spi_dat_pin),
+		.spi_cmd_pin		(spi_cmd_pin),
+		.spi_sel_pin		(spi_sel_pin),
+		.spi_clk_pin		(spi_clk_pin),
+		// Inputs
+		.spi_out_reg		(spi_out_reg[7:0]),
+		.spi_en_reg		(spi_en_reg[7:0]));
    
 endmodule // top

@@ -16,14 +16,14 @@ module ss_adma(/*AUTOARG*/
    // Outputs
    wbs_rty_o, wbs_err_o, wbs_dat_o, wbs_ack_o, wbm_we_o,
    wbm_stb_o, wbm_sel_o, wbm_pref_o, wbm_dat_o, wbm_dat64_o,
-   wbm_cyc_o, wbm_cab_o, spi_sel_o, spi_en, spi_do_o,
-   spi_do_en, spi_di_o, spi_di_en, spi_clk_o, wb_int_o,
-   wbm_adr_o,
+   wbm_cyc_o, wbm_cab_o, spi_sel_o, spi_out_reg, spi_en_reg,
+   spi_en, spi_do_o, spi_do_en, spi_di_o, spi_di_en,
+   spi_clk_o, wb_int_o, wbm_adr_o,
    // Inputs
    wbs_we_i, wbs_stb_i, wbs_sel_i, wbs_dat_i, wbs_cyc_i,
    wbs_cab_i, wbs_adr_i, wbm_rty_i, wbm_err_i, wbm_dat_i,
    wbm_dat64_i, wbm_ack_i, wb_rst_i, wb_clk_i, spi_sel_i,
-   spi_do_i, spi_di_i, spi_clk_i
+   spi_in_reg, spi_do_i, spi_di_i, spi_clk_i
    );
    /*parameter*/
    
@@ -35,6 +35,8 @@ module ss_adma(/*AUTOARG*/
    output		spi_do_en;		// From wbm of wbm.v
    output		spi_do_o;		// From wbm of wbm.v
    output		spi_en;			// From wbm of wbm.v
+   output [7:0]		spi_en_reg;		// From wbm of wbm.v
+   output [7:0]		spi_out_reg;		// From wbm of wbm.v
    output		spi_sel_o;		// From wbm of wbm.v
    output		wbm_cab_o;		// From m0 of mixer.v
    output		wbm_cyc_o;		// From m0 of mixer.v
@@ -55,6 +57,7 @@ module ss_adma(/*AUTOARG*/
    input		spi_clk_i;		// To wbm of wbm.v
    input		spi_di_i;		// To wbm of wbm.v
    input		spi_do_i;		// To wbm of wbm.v
+   input [7:0]		spi_in_reg;		// To wbm of wbm.v
    input		spi_sel_i;		// To wbm of wbm.v
    input		wb_clk_i;		// To r_0 of ss_sg.v, ...
    input		wb_rst_i;		// To r_0 of ss_sg.v, ...
@@ -534,6 +537,8 @@ module ss_adma(/*AUTOARG*/
 	   .append			(append),
 	   .enable			(enable),
 	   .wb_int_clear		(wb_int_clear),
+	   .spi_en_reg			(spi_en_reg[7:0]),
+	   .spi_out_reg			(spi_out_reg[7:0]),
 	   // Inputs
 	   .wb_clk_i			(wb_clk_i),
 	   .wb_rst_i			(wb_rst_i),
@@ -578,6 +583,7 @@ module ss_adma(/*AUTOARG*/
 	   .dc1				(dc1[23:0]),
 	   .m_cap0			(m_cap0[7:0]),
 	   .m_cap1			(m_cap1[7:0]),
+	   .spi_in_reg			(spi_in_reg[7:0]),
 	   .m_enable0			(m_enable0),
 	   .m_enable1			(m_enable1),
 	   .m_src_last0			(m_src_last0),
