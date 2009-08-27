@@ -156,7 +156,7 @@ module bridge(/*AUTOARG*/
    
    pci_bridge32 
      pci_bridge32(/* WB system signal */
-		  .wb_clk_i(PCI_CLK),
+		  .wb_clk_i(wb_clk_i),
 		  .wb_rst_i(wb_rst_i),
 		  .wb_rst_o(),
 		  .wb_int_i(wb_int_o),

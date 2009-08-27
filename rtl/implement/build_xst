@@ -17,7 +17,7 @@ if [ -f script/$M.lst ]; then
 else
         ls *.v > script/$M.lst
 fi
-cat script/$M.lst | awk '{print "verilog work ../"$1}' > script/$M.xst
+cat script/$M.lst | awk '{print "verilog work "$1}' > script/$M.xst
 
 cat > script/$M.cmd << EOF
 run
@@ -29,6 +29,8 @@ run
 -opt_mode SPEED
 -opt_level 1
 -p $D
+-max_fanout 2048
+-equivalent_register_removal no
 EOF
 
 cat > script/$M <<EOF
@@ -36,7 +38,8 @@ cat > script/$M <<EOF
 set -e 
 set -x 
 export M=$M
-. /p/imgs/ise10.1.env
+#. /p/imgs/ise10.1.env
+. /opt/ise11.1/settings32.sh
 mkdir -p xst
 cd xst && xst -ifn ../script/$M.cmd -ofn $M.log
 EOF
