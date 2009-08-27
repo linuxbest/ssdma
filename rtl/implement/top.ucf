@@ -194,3 +194,8 @@ NET "PCI_CLK" PERIOD = 15.000;
 #NET "PCI_SERRn"   OFFSET = OUT 11 ns AFTER "PCI_CLK" ;
 #NET "PCI_PERRn"   OFFSET = OUT 11 ns AFTER "PCI_CLK" ;
 #
+
+NET "spi_sel_pin" LOC = "F11";
+NET "spi_dat_pin" LOC = "F12";
+NET "spi_clk_pin" LOC = "F13";
+NET "spi_cmd_pin" LOC = "F14";
