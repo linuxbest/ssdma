@@ -67,9 +67,7 @@ module bridge(/*AUTOARG*/
    /* WB */
    input 	 wb_int_o;
    output 	 wb_rst_i;
-   assign 	 wb_rst_i = ~PCI_RSTn;
    output 	 wb_clk_i;
-   assign 	 wb_clk_i = PCI_CLK;
    assign        PCI_INTBn= 1'b1; /* must wire to GND */
 
    /* WB Master */
@@ -360,4 +358,11 @@ module bridge(/*AUTOARG*/
    bufif0 PERR_buf     ( PCI_PERRn, PERR_out, PERR_en ) ;
    bufif0 SERR_buf     ( PCI_SERRn, SERR_out, SERR_en ) ;
 
+   clock clk (/*AUTOINST*/
+	      // Outputs
+	      .wb_clk_i			(wb_clk_i),
+	      .wb_rst_i			(wb_rst_i),
+	      // Inputs
+	      .PCI_CLK			(PCI_CLK),
+	      .PCI_RSTn			(PCI_RSTn));
 endmodule // bridege

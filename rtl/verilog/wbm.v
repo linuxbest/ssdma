@@ -321,7 +321,7 @@ module wbm(/*AUTOARG*/
 	   spi_out_reg <= #1 8'h0;
 	end else if (wbs_adr_i[10] && wbs_adr_i[6:2] == 5'h19 && 
 		     wbs_we_i) begin
-	   spi_out_reg <= #1 wbs_dat_i[7:0];
+	   spi_out_reg <= #1 wbs_dat_i[31:24];
 	end
      end
    always @(posedge wb_clk_i)
@@ -330,7 +330,7 @@ module wbm(/*AUTOARG*/
 	   spi_en_reg <= #1 8'h0;
 	end else if (wbs_adr_i[10] && wbs_adr_i[6:2] == 5'h1a && 
 		     wbs_we_i) begin
-	   spi_en_reg <= #1 wbs_dat_i[7:0];
+	   spi_en_reg <= #1 wbs_dat_i[31:24];
 	end
      end
 endmodule // wbm

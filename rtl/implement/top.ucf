@@ -154,7 +154,7 @@ NET "PCI_TRDYn" LOC="W25" |IOSTANDARD = PCI66_3 | BYPASS;
 # G GNTn
 #
 # TIME CHECK
-NET "PCI_CLK" PERIOD = 15.000;
+#NET "PCI_CLK" PERIOD = 15.000;
 #INST "PCI_CBE<*>" TNM = "PCI_CBE_GRP";
 #INST "PCI_CBE64<*>" TNM = "PCI_CBE_GRP";
 #INST "PCI_AD<*>" TNM = "PCI_AD_GRP";
@@ -195,7 +195,7 @@ NET "PCI_CLK" PERIOD = 15.000;
 #NET "PCI_PERRn"   OFFSET = OUT 11 ns AFTER "PCI_CLK" ;
 #
 
-NET "spi_sel_pin" LOC = "F11";
-NET "spi_dat_pin" LOC = "F12";
-NET "spi_clk_pin" LOC = "F13";
-NET "spi_cmd_pin" LOC = "F14";
+NET "spi_sel_pin" LOC = "D13" | PULLUP | IOSTANDARD = PCI66_3;
+NET "spi_dat_pin" LOC = "F12" | PULLUP | IOSTANDARD = PCI66_3;
+NET "spi_clk_pin" LOC = "F13" | PULLUP | IOSTANDARD = PCI66_3;
+NET "spi_cmd_pin" LOC = "F14" | PULLUP | IOSTANDARD = PCI66_3;
