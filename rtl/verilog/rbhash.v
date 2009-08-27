@@ -55,7 +55,7 @@ module rbhash(/*AUTOARG*/
 		.clk			(wb_clk_i),
 		.resetn			(m_enable),
 		.din			(din[7:0]),
-		.empty			(m_src_empty));
+		.empty			(endn|m_src_empty));
 
    reg 		 getn_reg;
    
@@ -104,7 +104,7 @@ module rbhash(/*AUTOARG*/
 	   iidxL <= #1 iidxL + 1'b1;
 	end
      end
-   
+
    always @(/*AS*/dc or iidxL or m_dst_full or m_enable
 	    or m_src_almost_empty or m_src_empty
 	    or m_src_last or pop or state)
@@ -147,13 +147,20 @@ module rbhash(/*AUTOARG*/
 	endcase
      end
 
+   reg [63:0] m_src_d1;
+   always @(posedge wb_clk_i)
+     begin
+	if (pop && iidxL == 0)
+	  m_src_d1 <= #1 m_src;
+     end
+   
    assign din  = iidxL == 3'h0 ? m_src[07:00] :
 		 iidxL == 3'h1 ? m_src[15:08] :
 		 iidxL == 3'h2 ? m_src[23:16] :
 		 iidxL == 3'h3 ? m_src[31:24] :
 		 iidxL == 3'h4 ? m_src[39:32] :
 		 iidxL == 3'h5 ? m_src[47:40] :
-		 iidxL == 3'h6 ? m_src[55:48] :	 m_src[63:56];
+		 iidxL == 3'h6 ? m_src[55:48] :	 m_src_d1[63:56];
    assign endn = state == S_END;
    
    reg [19:0] buf_cnt;
@@ -216,8 +223,7 @@ module rbhash(/*AUTOARG*/
 	   rb_d1   <= #1 1'b0;
 	   rb_putn <= #1 1'b1;
 	end
-     end
-   
+     end // always @ (posedge wb_clk_i)
 endmodule // fill
 // Local Variables:
 // verilog-library-directories:("." "/p/hw/systemc_rabinpoly/rtl/verilog")
