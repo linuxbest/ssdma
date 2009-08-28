@@ -357,7 +357,7 @@ module bridge(/*AUTOARG*/
    bufif0 PAR64_buf    ( PCI_PAR64, PAR64_out, PAR64_en ) ;
    bufif0 PERR_buf     ( PCI_PERRn, PERR_out, PERR_en ) ;
    bufif0 SERR_buf     ( PCI_SERRn, SERR_out, SERR_en ) ;
-
+`ifdef USE_CLOCK
    clock clk (/*AUTOINST*/
 	      // Outputs
 	      .wb_clk_i			(wb_clk_i),
@@ -365,4 +365,8 @@ module bridge(/*AUTOARG*/
 	      // Inputs
 	      .PCI_CLK			(PCI_CLK),
 	      .PCI_RSTn			(PCI_RSTn));
+`else
+   assign wb_clk_i = PCI_CLK;
+   assign wb_rst_i = ~PCI_RSTn;
+`endif
 endmodule // bridege

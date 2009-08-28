@@ -50,7 +50,7 @@ module clock (/*AUTOARG*/
    defparam Vid_DCM.DLL_FREQUENCY_MODE = "HIGH";
    defparam Vid_DCM.DUTY_CYCLE_CORRECTION = "TRUE";
    defparam Vid_DCM.STARTUP_WAIT = "FALSE";
-   defparam Vid_DCM.CLKFX_DIVIDE   = 4;
+   defparam Vid_DCM.CLKFX_DIVIDE   = 8;
    defparam Vid_DCM.CLKFX_MULTIPLY = 8;
    defparam Vid_DCM.CLK_FEEDBACK = "NONE";
 
