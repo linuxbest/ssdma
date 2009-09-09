@@ -258,7 +258,7 @@ check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst,
 #define BREAKMARK_VALUE 0x78
 #define MIN_CHUNK_SIZE  4096
 #define MAX_CHUNK_SIZE  8192
-		int csize = 0, ofs = 0;
+		int csize = 0, ofs = 0, err = 0;
 		rabin_reset();
 		for (i = 0; i < RABIN_WINDOW_SIZE; i++) 
 			rabin_slide8(src[i]);
@@ -271,8 +271,16 @@ check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst,
 				ofs += csize;
 				printf("%016llx, %04x\n", res->hash, res->offset);
 				printf("%016llx, %04x\n", hash, ofs);
+				if (res->hash != hash || res->offset != ofs) 
+					err ++;
 			}
 		}
+		if (err == 0) {
+			printf("PASSED\n");
+		} else {
+			printf("FAILED\n");
+		}
+		return 0;
 	}
         if (ops == DC_COMPRESS) {
                 c_len = lzsCompress(src, src_cnt, tmp, dst_cnt);
