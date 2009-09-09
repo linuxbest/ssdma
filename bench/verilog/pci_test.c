@@ -12,6 +12,8 @@
 #define IfPrint(c) (c >= 32 && c < 127 ? c : '.')
 
 #include "tlsf.h"
+#include "rabinpoly.h"
+#include "rabinpoly.c"
 
 static void HexDump(unsigned char *p_Buffer, unsigned long p_Size)
 {
@@ -246,6 +248,32 @@ check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst,
         unsigned char *c_s = NULL;
         int c_len = 0;
 
+	if (ops == DC_HASH) {
+		typedef struct {
+			uint64_t hash;
+			uint32_t offset;
+			uint32_t pad;
+		} rabin_res_t;
+	       	rabin_res_t *res = (void *)dst;;
+#define BREAKMARK_VALUE 0x78
+#define MIN_CHUNK_SIZE  4096
+#define MAX_CHUNK_SIZE  8192
+		int csize = 0, ofs = 0;
+		rabin_reset();
+		for (i = 0; i < RABIN_WINDOW_SIZE; i++) 
+			rabin_slide8(src[i]);
+		for (; i < src_cnt; i ++) {
+			uint64_t hash = rabin_slide8(src[i]);
+			csize = i - ofs;
+			if ((csize >= MIN_CHUNK_SIZE && hash % MIN_CHUNK_SIZE == BREAKMARK_VALUE) ||
+					(csize >= MAX_CHUNK_SIZE) ||
+					(i+1 == src_cnt)) {
+				ofs += csize;
+				printf("%016llx, %04x\n", res->hash, res->offset);
+				printf("%016llx, %04x\n", hash, ofs);
+			}
+		}
+	}
         if (ops == DC_COMPRESS) {
                 c_len = lzsCompress(src, src_cnt, tmp, dst_cnt);
                 c_s = tmp;
@@ -358,6 +386,8 @@ dev_scan(int dev)
 		
                 if (pcisim_config_read(1<<i) == (0x3 << 16 | 0x100))
                         idx = i;
+                if (pcisim_config_read(1<<i) == (0x9 << 16 | 0x100))
+                        idx = i;
 	}
 	
 	return idx;
@@ -467,6 +497,7 @@ main(int argc, char *argv[])
 	
 	lzf_dev.mmr_base = lzf_mem;
 
+	rabin_init();
 //        dump_reg(lzf_mem);
         if (opt) {
                 printf("max sg size is %x\n", max_sg_size);
