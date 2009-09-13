@@ -58,7 +58,7 @@ module top(/*AUTOARG*/
    
    /*AUTOINPUT*/
    // Beginning of automatic inputs (from unused autoinst inputs)
-   input		CLK24;			// To usb of spi_usb.v
+   input		CLK24;			// To usb of spi_usb.v, ...
    input		USB_FRDn;		// To usb of spi_usb.v
    input		USB_PC6;		// To usb of spi_usb.v
    input		USB_PC7;		// To usb of spi_usb.v
@@ -237,6 +237,7 @@ module top(/*AUTOARG*/
 		 .wbs_err_o		(wbs_err_o),
 		 .wbs_ack_o		(wbs_ack_o),
 		 .wbs_dat_o		(wbs_dat_o[31:0]),
+		 .CLK24			(CLK24),
 		 .wb_int_o		(wb_int_o),
 		 .wbm_we_o		(wbm_we_o),
 		 .wbm_stb_o		(wbm_stb_o),

@@ -100,3 +100,5 @@
 /p/hw/systemc_rabinpoly/rtl/verilog/ringbuf.v
 /p/hw/systemc_rabinpoly/rtl/verilog/ROM256X64_T.v
 /p/hw/systemc_rabinpoly/rtl/verilog/ROM256X64_U.v
+/p/hw/systemc_rabinpoly/rtl/vlog_sc1/rabin64_fp.v  
+/p/hw/systemc_rabinpoly/rtl/vlog_sc1/rabin8_fp.v

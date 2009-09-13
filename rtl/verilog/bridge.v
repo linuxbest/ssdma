@@ -23,9 +23,9 @@ module bridge(/*AUTOARG*/
    PCI_PAR, PCI_REQ64n, PCI_ACK64n, PCI_PAR64,
    // Inputs
    PCI_CLK, PCI_IDSEL, PCI_GNTn, wbs_rty_o, wbs_err_o,
-   wbs_ack_o, wbs_dat_o, wb_int_o, wbm_we_o, wbm_stb_o,
-   wbm_cyc_o, wbm_cab_o, wbm_pref_o, wbm_sel_o, wbm_dat_o,
-   wbm_dat64_o, wbm_adr_o
+   wbs_ack_o, wbs_dat_o, CLK24, wb_int_o, wbm_we_o,
+   wbm_stb_o, wbm_cyc_o, wbm_cab_o, wbm_pref_o, wbm_sel_o,
+   wbm_dat_o, wbm_dat64_o, wbm_adr_o
    );
    inout [31:0] PCI_AD;
    inout [31:0] PCI_AD64;
@@ -63,6 +63,7 @@ module bridge(/*AUTOARG*/
 		 wbs_stb_i,
 		 wbs_cyc_i,
 		 wbs_cab_i;/*always 0 */
+   input 	 CLK24;
    
    /* WB */
    input 	 wb_int_o;
@@ -357,15 +358,19 @@ module bridge(/*AUTOARG*/
    bufif0 PAR64_buf    ( PCI_PAR64, PAR64_out, PAR64_en ) ;
    bufif0 PERR_buf     ( PCI_PERRn, PERR_out, PERR_en ) ;
    bufif0 SERR_buf     ( PCI_SERRn, SERR_out, SERR_en ) ;
-`ifdef USE_CLOCK
+//`define USE_CLOCK
+`ifdef  USE_CLOCK
    clock clk (/*AUTOINST*/
 	      // Outputs
 	      .wb_clk_i			(wb_clk_i),
 	      .wb_rst_i			(wb_rst_i),
 	      // Inputs
 	      .PCI_CLK			(PCI_CLK),
-	      .PCI_RSTn			(PCI_RSTn));
+	      .PCI_RSTn			(PCI_RSTn),
+	      .CLK24			(CLK24));
 `else
+//   reg wb_clk_i = 1'b1;
+//   always #3.5 wb_clk_i = !wb_clk_i;
    assign wb_clk_i = PCI_CLK;
    assign wb_rst_i = ~PCI_RSTn;
 `endif

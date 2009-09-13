@@ -15,24 +15,24 @@ module clock (/*AUTOARG*/
    // Outputs
    wb_clk_i, wb_rst_i,
    // Inputs
-   PCI_CLK, PCI_RSTn
+   PCI_CLK, PCI_RSTn, CLK24
    );
    input PCI_CLK,
 	 PCI_RSTn;
-
+   input CLK24;
    output wb_clk_i;
    output wb_rst_i;
 
    wire   clk_locked;
    // Tie DCM to output of first division
    DCM Vid_DCM (
-		.CLKIN     (PCI_CLK), // insert clock input
+		.CLKIN     (CLK24), // insert clock input
 		.CLKFB     (),    // insert clock feedback
 		.DSSEN     (1'b0),// Spread spectrum enable input
 		.PSINCDEC  (1'b0),// Phase shifting - increment/decrement input
 		.PSEN      (1'b0),// Phase shifting - enable input
 		.PSCLK     (1'b0),// Phase shifting - clock input
-		.RST       (~PCI_RSTn),// DCM reset input
+		.RST       (1'b0),// DCM reset input
 		.CLK0      (), // clock output
 		.CLK90     (), // clock output
 		.CLK180    (), // clock output
@@ -50,8 +50,8 @@ module clock (/*AUTOARG*/
    defparam Vid_DCM.DLL_FREQUENCY_MODE = "HIGH";
    defparam Vid_DCM.DUTY_CYCLE_CORRECTION = "TRUE";
    defparam Vid_DCM.STARTUP_WAIT = "FALSE";
-   defparam Vid_DCM.CLKFX_DIVIDE   = 8;
-   defparam Vid_DCM.CLKFX_MULTIPLY = 8;
+   defparam Vid_DCM.CLKFX_DIVIDE   = 2;
+   defparam Vid_DCM.CLKFX_MULTIPLY = 4;
    defparam Vid_DCM.CLK_FEEDBACK = "NONE";
 
    reg [15:0] rst_sync_r;
