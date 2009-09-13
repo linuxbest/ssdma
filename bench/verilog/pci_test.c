@@ -254,7 +254,7 @@ check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst,
 			uint32_t offset;
 			uint32_t pad;
 		} rabin_res_t;
-	       	rabin_res_t *res = (void *)dst;;
+	       	rabin_res_t *res = (void *)dst;
 #define BREAKMARK_VALUE 0x78
 #define MIN_CHUNK_SIZE  4096
 #define MAX_CHUNK_SIZE  8192
@@ -266,13 +266,19 @@ check_src_dst(unsigned char *src, int src_cnt, unsigned char * dst,
 			uint64_t hash = rabin_slide8(src[i]);
 			csize = i - ofs;
 			if ((csize >= MIN_CHUNK_SIZE && hash % MIN_CHUNK_SIZE == BREAKMARK_VALUE) ||
-					(csize >= MAX_CHUNK_SIZE) ||
-					(i+1 == src_cnt)) {
+					(csize >= MAX_CHUNK_SIZE) || (i+1 == src_cnt)) {
 				ofs += csize;
-				printf("%016llx, %04x\n", res->hash, res->offset);
-				printf("%016llx, %04x\n", hash, ofs);
-				if (res->hash != hash || res->offset != ofs) 
+				printf("HW %016llx, %04x", 
+						res->hash, res->offset);
+				printf(" SF %016llx, %04x", hash, csize);
+				if (res->hash != hash || 
+						res->offset != csize) {
+					printf(" ERROR\n");
 					err ++;
+				} else {
+					printf(" PASS\n");
+				}
+				res ++;
 			}
 		}
 		if (err == 0) {

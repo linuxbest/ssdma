@@ -48,7 +48,7 @@ module mod(/*AUTOARG*/
    pullup(m_endn);
    // synopsys translate_on
 
-   rbhash rbhash(/*AUTOINST*/
+   rabin64_fp rbhash(/*AUTOINST*/
 	     // Outputs
 	     .m_src_getn		(m_src_getn),
 	     .m_dst_putn		(m_dst_putn),

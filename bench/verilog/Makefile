@@ -4,7 +4,8 @@ OC_DIR?=/p/hw/oc-pci/rtl/verilog
 LZFDMA?=/p/hw/lzs/kernel
 LZS?=/p/hw/lzs
 VPATH=../../rtl/verilog:$(PCISIM)/ver
-RBHASH=/p/hw/systemc_rabinpoly/rtl/verilog/
+RBHASH=/p/hw/systemc_rabinpoly/rtl/vlog_sc1/
+RBROM=/p/hw/systemc_rabinpoly/rtl/verilog
 
 TLSF_DIR = TLSF-2.4/src/
 VPATH+=${TLSF_DIR}
@@ -18,7 +19,7 @@ tb_adma: tb_adma.v ben_adma.v dummy_spi.v
 	iverilog -Wall -o $@ $^ -y ../../rtl/verilog/
 
 tpci: top.v pci_tb.v pci_arbiter.v  pci_master.v  pci_memory.v
-	iverilog -DENCODE -DDECODE -Wall -y $(OC_DIR) -I $(OC_DIR) -y ../../rtl/verilog/ -y ${LZS}/encode/rtl/verilog -y ${LZS}/decode/rtl/verilog -y ${RBHASH} -o $@ $^
+	iverilog -DENCODE -DDECODE -Wall -y $(OC_DIR) -I $(OC_DIR) -y ../../rtl/verilog/ -y ${LZS}/encode/rtl/verilog -y ${LZS}/decode/rtl/verilog -y ${RBHASH} -y ${RBROM} -o $@ $^
 trun: tpci tc
 	vvp -M${PCISIM}/vpi/ -mpci tpci
 trun0: tpci tc
