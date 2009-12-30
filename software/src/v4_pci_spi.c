@@ -449,6 +449,8 @@ int main(int argc, char *argv[])
         }
         if (dev == NULL)
                 dev = find_pci_device(0x01000009);
+        if (dev == NULL)
+                dev = find_pci_device(0x01000003);
 
         fd = open(dev, O_RDWR);
         if (fd == -1) {
@@ -458,7 +460,7 @@ int main(int argc, char *argv[])
 
         if (read(fd, config, sizeof(config)) == sizeof(config)) {
                 if (config[1] == 0x01 && config[0] == 0x00 && 
-                                config[3] == 0x00 && config[2] == 0x09)
+                                config[3] == 0x00 && (config[2] == 0x09| config[2] == 0x3))
                         found = 1;
                 printf("PCI device %02x%02x:%02x%02x  %s\n", 
                                 config[1], config[0], config[3], config[2], 

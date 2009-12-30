@@ -13,7 +13,8 @@ all: fw 24xx spi pcilog
 
 pci_spi: pci_spi.o bit_read.o
 	${CC} $^ -o $@
-
+v4_pci_spi: v4_pci_spi.o bit_read.o
+	${CC} $^ -o $@
 spi: spi.o bit_read.o
 	${CC} $^ -o $@ ${LIBUSB}
 
