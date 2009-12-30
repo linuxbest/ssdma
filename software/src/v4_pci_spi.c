@@ -416,6 +416,8 @@ int main(int argc, char *argv[])
         int len = 210 * 1024;
         int found = 0;
 
+	printf("Only Support Virtex4 Base Device, hardware version after bbf25\n");
+
         while ((opt = getopt(argc, argv, "d:D:f:rweisl:")) != -1) {
                 switch (opt) {
                         case 'd':
