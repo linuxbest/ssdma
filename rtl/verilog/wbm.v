@@ -14,24 +14,23 @@
  ***********************************************************************/
 module wbm(/*AUTOARG*/
    // Outputs
-   wbs_dat_o, wbs_ack_o, wbs_err_o, wbs_rty_o, spi_sel_o,
-   spi_di_o, spi_do_o, spi_clk_o, spi_en, spi_do_en,
-   spi_di_en, ndar_dirty, ndar, append, enable,
-   wb_int_clear, spi_en_reg, spi_out_reg,
+   wbs_dat_o, wbs_ack_o, wbs_err_o, wbs_rty_o, spi_sel_o, spi_di_o,
+   spi_do_o, spi_clk_o, spi_en, spi_do_en, spi_di_en, ndar_dirty,
+   ndar, append, enable, wb_int_clear, spi_en_reg, spi_out_reg,
+   sys_rst,
    // Inputs
-   wb_clk_i, wb_rst_i, sg_state0, sg_state1, sg_state2,
-   sg_state3, sg_desc0, sg_desc1, sg_desc2, sg_desc3,
-   sg_addr0, sg_addr1, sg_addr2, sg_addr3, sg_next0,
-   sg_next1, sg_next2, sg_next3, wbs_sel_i, wbs_cyc_i,
-   wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i, wbs_dat_i,
-   spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
-   ndar_dirty_clear, append_clear, wb_int_o, busy, ctl_adr0,
-   ctl_adr1, next_desc, ctrl_state, dc0, dc1, m_cap0,
-   m_cap1, spi_in_reg, m_enable0, m_enable1, m_src_last0,
-   m_src_last1, m_src_almost_empty0, m_src_almost_empty1,
-   m_src_empty0, m_src_empty1, m_dst_last0, m_dst_last1,
-   m_dst_almost_full0, m_dst_almost_full1, m_dst_full0,
-   m_dst_full1, m_endn0, m_endn1, gnt, wbm_adr_o
+   wb_clk_i, wb_rst_i, sg_state0, sg_state1, sg_state2, sg_state3,
+   sg_desc0, sg_desc1, sg_desc2, sg_desc3, sg_addr0, sg_addr1,
+   sg_addr2, sg_addr3, sg_next0, sg_next1, sg_next2, sg_next3,
+   wbs_sel_i, wbs_cyc_i, wbs_stb_i, wbs_we_i, wbs_cab_i, wbs_adr_i,
+   wbs_dat_i, spi_sel_i, spi_di_i, spi_do_i, spi_clk_i, dar, csr,
+   ndar_dirty_clear, append_clear, wb_int_o, busy, ctl_adr0, ctl_adr1,
+   next_desc, ctrl_state, dc0, dc1, m_cap0, m_cap1, spi_in_reg,
+   m_enable0, m_enable1, m_src_last0, m_src_last1,
+   m_src_almost_empty0, m_src_almost_empty1, m_src_empty0,
+   m_src_empty1, m_dst_last0, m_dst_last1, m_dst_almost_full0,
+   m_dst_almost_full1, m_dst_full0, m_dst_full1, m_endn0, m_endn1,
+   gnt, wbm_adr_o
    );
    
    input wb_clk_i,
@@ -116,6 +115,8 @@ module wbm(/*AUTOARG*/
 
    input [4:0] 	gnt;
    input [31:0] wbm_adr_o;
+
+   output 	sys_rst;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -158,25 +159,21 @@ module wbm(/*AUTOARG*/
    reg [7:0] 	   m_dst0, m_dst1;
    always @(/*AS*/m_enable0 or m_endn0)
      m_status0 = {m_enable0, m_endn0};
-   always @(/*AS*/m_src_almost_empty0 or m_src_empty0
-	    or m_src_last0)
+   always @(/*AS*/m_src_almost_empty0 or m_src_empty0 or m_src_last0)
      m_src0 = {m_src_last0, m_src_almost_empty0, m_src_empty0};
-   always @(/*AS*/m_dst_almost_full0 or m_dst_full0
-	    or m_dst_last0)
+   always @(/*AS*/m_dst_almost_full0 or m_dst_full0 or m_dst_last0)
      m_dst0 = {m_dst_last0, m_dst_almost_full0, m_dst_full0};
    
    always @(/*AS*/m_enable1 or m_endn1)
      m_status1 = {m_enable1, m_endn1};
-   always @(/*AS*/m_src_almost_empty1 or m_src_empty1
-	    or m_src_last1)
+   always @(/*AS*/m_src_almost_empty1 or m_src_empty1 or m_src_last1)
      m_src1 = {m_src_last1, m_src_almost_empty1, m_src_empty1};
-   always @(/*AS*/m_dst_almost_full1 or m_dst_full1
-	    or m_dst_last1)
+   always @(/*AS*/m_dst_almost_full1 or m_dst_full1 or m_dst_last1)
      m_dst1 = {m_dst_last1, m_dst_almost_full1, m_dst_full1};
 
    reg [7:0] 	   spi_i;
-   always @(/*AS*/spi_clk_i or spi_di_en or spi_di_i
-	    or spi_do_en or spi_do_i or spi_en or spi_sel_i)
+   always @(/*AS*/spi_clk_i or spi_di_en or spi_di_i or spi_do_en
+	    or spi_do_i or spi_en or spi_sel_i)
      spi_i = {spi_en, spi_di_en, spi_do_en,
 	      spi_sel_i, spi_di_i,  spi_do_i, spi_clk_i};
    
@@ -185,17 +182,15 @@ module wbm(/*AUTOARG*/
      {spi_en,    spi_di_en, spi_do_en,
       spi_sel_o, spi_di_o,  spi_do_o, spi_clk_o} = spi_reg;
    
-   always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1
-	    or ctrl_state or dar or dc0 or dc1 or enable
-	    or gnt or m_cap0 or m_cap1 or m_dst0 or m_dst1
-	    or m_src0 or m_src1 or m_status0 or m_status1
-	    or ndar or next_desc or sg_addr0 or sg_addr1
+   always @(/*AS*/append or busy or ctl_adr0 or ctl_adr1 or ctrl_state
+	    or dar or dc0 or dc1 or enable or gnt or m_cap0 or m_cap1
+	    or m_dst0 or m_dst1 or m_src0 or m_src1 or m_status0
+	    or m_status1 or ndar or next_desc or sg_addr0 or sg_addr1
 	    or sg_addr2 or sg_addr3 or sg_desc0 or sg_desc1
 	    or sg_desc2 or sg_desc3 or sg_next0 or sg_next1
-	    or sg_next2 or sg_next3 or sg_state0
-	    or sg_state1 or sg_state2 or sg_state3
-	    or spi_en_reg or spi_i or spi_in_reg
-	    or spi_out_reg or wb_int_o or wbm_adr_o
+	    or sg_next2 or sg_next3 or sg_state0 or sg_state1
+	    or sg_state2 or sg_state3 or spi_en_reg or spi_i
+	    or spi_in_reg or spi_out_reg or wb_int_o or wbm_adr_o
 	    or wbs_adr_i)
      begin
 	wbs_dat_o = 32'h0;
@@ -269,6 +264,7 @@ module wbm(/*AUTOARG*/
 	   enable <= #1 wbs_dat_i[1];
 	end
      end
+   
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i) begin
@@ -289,10 +285,22 @@ module wbm(/*AUTOARG*/
 	   append <= #1 0;
 	end
      end
+   reg sys_rst_reg;
+   always @(posedge wb_clk_i or posedge wb_rst_i)
+     begin
+	if (wb_rst_i)
+	  begin
+	     sys_rst_reg <= #1 1'b0;
+	  end
+	else if (ccr_we)
+	  begin
+	     sys_rst_reg <= #1 wbs_dat_i[31];
+	  end
+     end // always @ (posedge wb_clk_i or posedge wb_rst_i)
+   assign sys_rst = wb_rst_i | sys_rst_reg;
    
    /* ndar_we and ccr_we */
-   always @(/*AS*/enable or valid_access or wbs_adr_i
-	    or wbs_we_i)
+   always @(/*AS*/enable or valid_access or wbs_adr_i or wbs_we_i)
      begin
 	ndar_we = 0;
 	ccr_we  = 0;
