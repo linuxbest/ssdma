@@ -39,7 +39,7 @@ set -e
 set -x 
 export M=$M
 #. /p/imgs/ise10.1.env
-. /opt/ise11.1/settings32.sh
+#. /opt/ise11.1/settings32.sh
 mkdir -p xst
 cd xst && xst -ifn ../script/$M.cmd -ofn $M.log
 EOF

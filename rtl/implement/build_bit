@@ -3,7 +3,7 @@
 set -e -x
 
 #. /p/imgs/ise10.1.env
-. /opt/ise11.1/settings32.sh
+#. /opt/ise11.1/settings32.sh
 
 export TOP_LEVEL=$1
 #xst -ifn ../bin/build_xst.cmd -ofn synth.log
