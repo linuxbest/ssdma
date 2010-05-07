@@ -146,7 +146,6 @@ module ctrl(/*AUTOARG*/
    reg			m_reset0;
    reg			m_reset1;
    reg			ndar_dirty_clear;
-   reg			wb_int_o;
    reg [31:0]		wbs_adr4;
    reg			wbs_cab4;
    reg			wbs_cyc4;
@@ -321,15 +320,17 @@ module ctrl(/*AUTOARG*/
    assign ss_dc1 = dc0_r;
    assign ss_dc2 = dc1_r;
    assign ss_dc3 = dc1_r;
-   
+  
+   reg wb_int_reg;
    reg wb_int_next, wb_int_set;
    always @(posedge wb_clk_i or posedge wb_rst_i)
      begin
 	if (wb_rst_i)
-	  wb_int_o <= #1 1'b0;
-	else if (wb_int_enable)
-	  wb_int_o <= #1 wb_int_next;
+	  wb_int_reg <= #1 1'b0;
+	else 
+	  wb_int_reg <= #1 wb_int_next;
      end
+   assign wb_int_o = wb_int_reg & wb_int_enable;
    always @(/*AS*/wb_int_clear or wb_int_o or wb_int_set)
      begin
 	wb_int_next = wb_int_o;
