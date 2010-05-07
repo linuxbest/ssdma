@@ -296,10 +296,21 @@ module wbm(/*AUTOARG*/
 	else if (ccr_we)
 	  begin
 	     sys_rst_reg <= #1 wbs_dat_i[31];
-	     wb_int_enable<=#1 wbs_dat_i[30];
 	  end
      end // always @ (posedge wb_clk_i or posedge wb_rst_i)
    assign sys_rst = wb_rst_i | sys_rst_reg;
+
+   always @(posedge wb_clk_i)
+     begin
+	if (wb_rst_i)
+	  begin
+	     wb_int_enable<=#1 1'b0;
+	  end
+	else if (wbs_we_i && valid_access && wbs_adr_i[3:2] == 2'b01)
+	  begin
+	     wb_int_enable<=#1 wbs_dat_i[30];
+	  end
+     end
    
    /* ndar_we and ccr_we */
    always @(/*AS*/enable or valid_access or wbs_adr_i or wbs_we_i)
