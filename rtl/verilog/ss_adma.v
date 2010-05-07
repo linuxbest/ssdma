@@ -191,6 +191,7 @@ module ss_adma(/*AUTOARG*/
    wire			ss_xfer2;		// From r_2 of ss_sg.v
    wire			ss_xfer3;		// From r_3 of ss_sg.v
    wire			wb_int_clear;		// From wbm of wbm.v
+   wire			wb_int_enable;		// From wbm of wbm.v
    wire			wbs_ack0;		// From m0 of mixer.v
    wire			wbs_ack1;		// From m0 of mixer.v
    wire			wbs_ack2;		// From m0 of mixer.v
@@ -537,6 +538,7 @@ module ss_adma(/*AUTOARG*/
 	   .append			(append),
 	   .enable			(enable),
 	   .wb_int_clear		(wb_int_clear),
+	   .wb_int_enable		(wb_int_enable),
 	   .spi_en_reg			(spi_en_reg[7:0]),
 	   .spi_out_reg			(spi_out_reg[7:0]),
 	   .sys_rst			(sys_rst),
@@ -666,6 +668,7 @@ module ss_adma(/*AUTOARG*/
 	     .ndar_dirty		(ndar_dirty),
 	     .ndar			(ndar[31:3]),
 	     .wb_int_clear		(wb_int_clear),
+	     .wb_int_enable		(wb_int_enable),
 	     .append			(append),
 	     .enable			(enable),
 	     .ocnt0			(ocnt0[15:0]),

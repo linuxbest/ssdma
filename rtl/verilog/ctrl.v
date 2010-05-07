@@ -46,19 +46,18 @@
  */
 module ctrl(/*AUTOARG*/
    // Outputs
-   wbs_cyc4, wbs_stb4, wbs_we4, wbs_pref4, wbs_cab4,
-   wbs_sel4, wbs_adr4, wbs_dat_i4, wbs_dat64_i4, ss_we0,
-   ss_we1, ss_we2, ss_we3, ss_done0, ss_done1, ss_done2,
-   ss_done3, ss_dat0, ss_dat1, ss_dat2, ss_dat3, ss_adr0,
-   ss_adr1, ss_adr2, ss_adr3, ss_dc0, ss_dc1, ss_dc2,
-   ss_dc3, wb_int_o, dar, csr, ndar_dirty_clear, busy,
-   append_clear, dc0, dc1, ctl_adr0, ctl_adr1, next_desc,
-   m_reset0, m_reset1, m_enable0, m_enable1, ctrl_state,
+   wbs_cyc4, wbs_stb4, wbs_we4, wbs_pref4, wbs_cab4, wbs_sel4,
+   wbs_adr4, wbs_dat_i4, wbs_dat64_i4, ss_we0, ss_we1, ss_we2, ss_we3,
+   ss_done0, ss_done1, ss_done2, ss_done3, ss_dat0, ss_dat1, ss_dat2,
+   ss_dat3, ss_adr0, ss_adr1, ss_adr2, ss_adr3, ss_dc0, ss_dc1,
+   ss_dc2, ss_dc3, wb_int_o, dar, csr, ndar_dirty_clear, busy,
+   append_clear, dc0, dc1, ctl_adr0, ctl_adr1, next_desc, m_reset0,
+   m_reset1, m_enable0, m_enable1, ctrl_state,
    // Inputs
-   wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4,
-   wbs_err4, wbs_rty4, c_done0, c_done1, c_done2, c_done3,
-   ndar_dirty, ndar, wb_int_clear, append, enable, ocnt0,
-   ocnt1, err0, err1, err2, err3, wbs_cyc_i
+   wb_clk_i, wb_rst_i, wbs_dat_o4, wbs_dat64_o4, wbs_ack4, wbs_err4,
+   wbs_rty4, c_done0, c_done1, c_done2, c_done3, ndar_dirty, ndar,
+   wb_int_clear, wb_int_enable, append, enable, ocnt0, ocnt1, err0,
+   err1, err2, err3, wbs_cyc_i
    );
 
    input wb_clk_i;
@@ -114,6 +113,7 @@ module ctrl(/*AUTOARG*/
    input [31:3]  ndar;
    
    input 	 wb_int_clear;
+   input         wb_int_enable;
    input 	 append, enable;
    output 	 busy;
    
@@ -133,6 +133,8 @@ module ctrl(/*AUTOARG*/
    input [2:0] 	 err0, err1, err2, err3;
 
    input 	 wbs_cyc_i;
+   wire [31:0]	 wbs_dat64_i4;
+   wire [31:0]	 wbs_dat_i4;
    
    /*AUTOREG*/
    // Beginning of automatic regs (for this module's undeclared outputs)
@@ -325,7 +327,7 @@ module ctrl(/*AUTOARG*/
      begin
 	if (wb_rst_i)
 	  wb_int_o <= #1 1'b0;
-	else
+	else if (wb_int_enable)
 	  wb_int_o <= #1 wb_int_next;
      end
    always @(/*AS*/wb_int_clear or wb_int_o or wb_int_set)
@@ -362,13 +364,12 @@ module ctrl(/*AUTOARG*/
 	  m_cyc1 <= #1 m_cyc1 + 1'b1;
      end
 // synopsys translate_on   
-   always @(/*AS*/append or append_mode or c_done1
-	    or c_done3 or cdar or ctl_adr0 or ctl_adr1
-	    or dar_r or dc0_r or dc1_r or enable or inc
-	    or m_enable0 or m_enable1 or ndar or ndar_dirty
-	    or next_desc or state or wbs_ack4 or wbs_cab4
-	    or wbs_cyc4 or wbs_cyc_i or wbs_err4 or wbs_rty4
-	    or wbs_sel4 or wbs_stb4 or wbs_we4)
+   always @(/*AS*/append or append_mode or c_done1 or c_done3 or cdar
+	    or ctl_adr0 or ctl_adr1 or dar_r or dc0_r or dc1_r
+	    or enable or inc or m_enable0 or m_enable1 or ndar
+	    or ndar_dirty or next_desc or state or wbs_ack4
+	    or wbs_cab4 or wbs_cyc4 or wbs_cyc_i or wbs_err4
+	    or wbs_rty4 or wbs_sel4 or wbs_stb4 or wbs_we4)
      begin
 	state_n = state;
 	append_clear_n = 0;

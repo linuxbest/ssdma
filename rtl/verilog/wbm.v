@@ -16,8 +16,8 @@ module wbm(/*AUTOARG*/
    // Outputs
    wbs_dat_o, wbs_ack_o, wbs_err_o, wbs_rty_o, spi_sel_o, spi_di_o,
    spi_do_o, spi_clk_o, spi_en, spi_do_en, spi_di_en, ndar_dirty,
-   ndar, append, enable, wb_int_clear, spi_en_reg, spi_out_reg,
-   sys_rst,
+   ndar, append, enable, wb_int_clear, wb_int_enable, spi_en_reg,
+   spi_out_reg, sys_rst,
    // Inputs
    wb_clk_i, wb_rst_i, sg_state0, sg_state1, sg_state2, sg_state3,
    sg_desc0, sg_desc1, sg_desc2, sg_desc3, sg_addr0, sg_addr1,
@@ -89,7 +89,7 @@ module wbm(/*AUTOARG*/
    
    output 	 ndar_dirty;
    output [31:3] ndar;
-   output 	 append, enable, wb_int_clear;
+   output 	 append, enable, wb_int_clear, wb_int_enable;
 
    input [31:3] ctl_adr0,
 		ctl_adr1,
@@ -134,6 +134,7 @@ module wbm(/*AUTOARG*/
    reg [7:0]		spi_out_reg;
    reg			spi_sel_o;
    reg			wb_int_clear;
+   reg			wb_int_enable;
    reg			wbs_ack_o;
    reg [31:0]		wbs_dat_o;
    reg			wbs_err_o;
@@ -295,6 +296,7 @@ module wbm(/*AUTOARG*/
 	else if (ccr_we)
 	  begin
 	     sys_rst_reg <= #1 wbs_dat_i[31];
+	     wb_int_enable<=#1 wbs_dat_i[30];
 	  end
      end // always @ (posedge wb_clk_i or posedge wb_rst_i)
    assign sys_rst = wb_rst_i | sys_rst_reg;
